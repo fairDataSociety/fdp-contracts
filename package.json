@@ -1,0 +1,26 @@
+{
+  "name": "fdp-contracts",
+  "version": "0.0.1",
+  "description": "Fair Data Protocol smart contracts and its utilities",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fairDataSociety/fdp-contracts.git"
+  },
+  "keywords": [
+    "web3",
+    "ethereum",
+    "ethereum-swarm",
+    "smart-contract",
+    "solidity"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fairDataSociety/fdp-contracts/issues"
+  },
+  "homepage": "https://github.com/fairDataSociety/fdp-contracts#readme"
+}
