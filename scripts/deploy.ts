@@ -1,15 +1,46 @@
-import { ethers } from "hardhat";
+import { namehash, keccak256, toUtf8Bytes, hexZeroPad } from 'ethers/lib/utils'
+import { ethers } from 'hardhat'
 
-async function main() {
-  const Greeter = await ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+async function deployENS() {
+  const ENS = await ethers.getContractFactory('ENSRegistry')
+  const ens = await ENS.deploy()
 
-  await greeter.deployed();
+  await ens.deployed()
 
-  console.log("Greeter deployed to:", greeter.address);
+  const publicResolver = await ethers.getContractFactory('PublicResolver')
+  const resolver = await publicResolver.deploy(ens.address)
+
+  const ownerAddress = await ens.owner(hexZeroPad('0x0', 32))
+
+  await ens.setSubnodeOwner(hexZeroPad('0x0', 32), keccak256(toUtf8Bytes('eth')), ownerAddress)
+  await ens.setSubnodeOwner(namehash('eth'), keccak256(toUtf8Bytes('datafund')), ownerAddress)
+
+  await resolver.deployed()
+  await ens.setResolver(namehash('datafund.eth'), resolver.address)
+
+  const SubdomainRegistrar = await ethers.getContractFactory('SubdomainRegistrar')
+  const registrar = await SubdomainRegistrar.deploy(ens.address, namehash('datafund.eth'))
+
+  await registrar.deployed()
+  await ens.setSubnodeOwner(namehash('eth'), keccak256(toUtf8Bytes('datafund')), registrar.address)
+
+  console.log(`ENSRegistry deployed to:`, ens.address)
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+async function deployGreeter() {
+  const Greeter = await ethers.getContractFactory('Greeter')
+  const greeter = await Greeter.deploy('Hello, Hardhat!')
+
+  await greeter.deployed()
+
+  console.log('Greeter deployed to:', greeter.address)
+}
+
+async function main() {
+  await Promise.all([deployENS(), deployGreeter()])
+}
+
+main().catch(error => {
+  console.error(error)
+  process.exitCode = 1
+})
