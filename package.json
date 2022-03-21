@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "bee:run": "./bee-factory/scripts/environment.sh start",
-    "bee:stop": "./bee-factory/scripts/environment.sh stop"
+    "bee:stop": "./bee-factory/scripts/environment.sh stop",
+    "deploy": "npx hardhat run --network localhost scripts/deploy.ts"
   },
   "repository": {
     "type": "git",

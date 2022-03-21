@@ -10,6 +10,8 @@ async function deployENS() {
   const publicResolver = await ethers.getContractFactory('PublicResolver')
   const resolver = await publicResolver.deploy(ens.address)
 
+  console.log(`PublicResolver deployed to: ${resolver.address}`)
+
   const ownerAddress = await ens.owner(hexZeroPad('0x0', 32))
 
   await ens.setSubnodeOwner(hexZeroPad('0x0', 32), keccak256(toUtf8Bytes('eth')), ownerAddress)
@@ -21,23 +23,16 @@ async function deployENS() {
   const SubdomainRegistrar = await ethers.getContractFactory('SubdomainRegistrar')
   const registrar = await SubdomainRegistrar.deploy(ens.address, namehash('datafund.eth'))
 
+  console.log(`SubdomainRegistrar deployed to: ${registrar.address}`)
+
   await registrar.deployed()
   await ens.setSubnodeOwner(namehash('eth'), keccak256(toUtf8Bytes('datafund')), registrar.address)
 
   console.log(`ENSRegistry deployed to:`, ens.address)
 }
 
-async function deployGreeter() {
-  const Greeter = await ethers.getContractFactory('Greeter')
-  const greeter = await Greeter.deploy('Hello, Hardhat!')
-
-  await greeter.deployed()
-
-  console.log('Greeter deployed to:', greeter.address)
-}
-
 async function main() {
-  await Promise.all([deployENS(), deployGreeter()])
+  await deployENS()
 }
 
 main().catch(error => {
