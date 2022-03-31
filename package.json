@@ -6,7 +6,8 @@
   "scripts": {
     "bee:run": "./bee-factory/scripts/environment.sh start",
     "bee:stop": "./bee-factory/scripts/environment.sh stop",
-    "deploy": "npx hardhat run --network localhost scripts/deploy.ts"
+    "deploy": "npx hardhat run --network localhost scripts/deploy.ts",
+    "deploy:bee": "npx hardhat run --network bee scripts/deploy.ts"
   },
   "repository": {
     "type": "git",

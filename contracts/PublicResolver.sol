@@ -1,20 +1,13 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import './ENS.sol';
+import "./ENS.sol";
 
 /**
  * A simple resolver anyone can use; only allows the owner of a node to set its
  * address.
  */
 contract PublicResolver {
-  bytes4 constant INTERFACE_META_ID = 0x01ffc9a7;
-  bytes4 constant ADDR_INTERFACE_ID = 0x3b3b57de;
-  bytes4 constant CONTENT_INTERFACE_ID = 0xd8389dc5;
-  bytes4 constant NAME_INTERFACE_ID = 0x691f3431;
-  bytes4 constant ABI_INTERFACE_ID = 0x2203ab56;
-  bytes4 constant PUBKEY_INTERFACE_ID = 0xc8690233;
-  bytes4 constant TEXT_INTERFACE_ID = 0x59d1d43c;
-  bytes4 constant MULTIHASH_INTERFACE_ID = 0xe89401a1;
 
   event AddrChanged(bytes32 indexed node, address a);
   event ContentChanged(bytes32 indexed node, bytes32 hash);
@@ -39,80 +32,80 @@ contract PublicResolver {
     bytes multihash;
   }
 
-  ENS ens;
+  ENS private ens;
 
-  mapping(bytes32 => Record) records;
+  mapping(bytes32 => Record) private records;
 
-  modifier only_owner(bytes32 node) {
-    require(ens.owner(node) == msg.sender);
+  modifier only_owner(bytes32 _node) {
+    require(ens.owner(_node) == msg.sender, "Owner is not sender");
     _;
   }
 
   /**
    * Constructor.
-   * @param ensAddr The ENS registrar contract.
+   * @param _ensAddr The ENS registrar contract.
    */
 
-  constructor(ENS ensAddr) public {
-    ens = ensAddr;
+  constructor(ENS _ensAddr) {
+    ens = _ensAddr;
   }
 
   /**
    * Sets all required params in one attempt
    * May only be called by the owner of that node in the ENS registry.
-   * @param node The node to update.
-   * @param addr The address to set.
-   * @param content The content hash to set
-   * @param multihash The multihash to set
-   * @param x the X coordinate of the curve point for the public key.
-   * @param y the Y coordinate of the curve point for the public key.
-   * @param name The name to set.
+   * @param _node The node to update.
+   * @param _addr The address to set.
+   * @param _content The content hash to set
+   * @param _multihash The multihash to set
+   * @param _x the X coordinate of the curve point for the public key.
+   * @param _y the Y coordinate of the curve point for the public key.
+   * @param _name The name to set.
    */
   function setAll(
-    bytes32 node,
-    address addr,
-    bytes32 content,
-    bytes memory multihash,
-    bytes32 x,
-    bytes32 y,
-    string memory name
-  ) public only_owner(node) {
-    setAddr(node, addr);
-    setContent(node, content);
-    setMultihash(node, multihash);
-    setPubkey(node, x, y);
-    setName(node, name);
+    bytes32 _node,
+    address _addr,
+    bytes32 _content,
+    bytes memory _multihash,
+    bytes32 _x,
+    bytes32 _y,
+    string memory _name
+  ) public only_owner(_node) {
+    setAddr(_node, _addr);
+    setContent(_node, _content);
+    setMultihash(_node, _multihash);
+    setPubkey(_node, _x, _y);
+    setName(_node, _name);
   }
 
-  function getAll(bytes32 node)
+  function getAll(bytes32 _node)
     public
     view
     returns (
-      address addr,
-      bytes32 content,
-      bytes memory multihash,
-      bytes32 x,
-      bytes32 y,
-      string memory name
+      address _addr,
+      bytes32 _content,
+      bytes memory _multihash,
+      bytes32 _x,
+      bytes32 _y,
+      string memory _name
     )
   {
-    addr = records[node].addr;
-    content = records[node].content;
-    multihash = records[node].multihash;
-    x = records[node].pubkey.x;
-    y = records[node].pubkey.y;
-    name = records[node].name;
+    _addr = records[_node].addr;
+    _content = records[_node].content;
+    _multihash = records[_node].multihash;
+    _x = records[_node].pubkey.x;
+    _y = records[_node].pubkey.y;
+    _name = records[_node].name;
   }
 
   /**
    * Sets the address associated with an ENS node.
    * May only be called by the owner of that node in the ENS registry.
-   * @param node The node to update.
-   * @param addr The address to set.
+   * @param _node The node to update.
+   * @param _addr The address to set.
    */
-  function setAddr(bytes32 node, address addr) public only_owner(node) {
-    records[node].addr = addr;
-    emit AddrChanged(node, addr);
+  function setAddr(bytes32 _node, address _addr) public only_owner(_node) {
+    records[_node].addr = _addr;
+    emit AddrChanged(_node, _addr);
   }
 
   /**
@@ -120,178 +113,142 @@ contract PublicResolver {
    * May only be called by the owner of that node in the ENS registry.
    * Note that this resource type is not standardized, and will likely change
    * in future to a resource type based on multihash.
-   * @param node The node to update.
-   * @param hash The content hash to set
+   * @param _node The node to update.
+   * @param _hash The content hash to set
    */
-  function setContent(bytes32 node, bytes32 hash) public only_owner(node) {
-    records[node].content = hash;
-    emit ContentChanged(node, hash);
+  function setContent(bytes32 _node, bytes32 _hash) public only_owner(_node) {
+    records[_node].content = _hash;
+    emit ContentChanged(_node, _hash);
   }
 
   /**
    * Sets the multihash associated with an ENS node.
    * May only be called by the owner of that node in the ENS registry.
-   * @param node The node to update.
-   * @param hash The multihash to set
+   * @param _node The node to update.
+   * @param _hash The multihash to set
    */
-  function setMultihash(bytes32 node, bytes memory hash) public only_owner(node) {
-    records[node].multihash = hash;
-    emit MultihashChanged(node, hash);
+  function setMultihash(bytes32 _node, bytes memory _hash) public only_owner(_node) {
+    records[_node].multihash = _hash;
+    emit MultihashChanged(_node, _hash);
   }
 
   /**
    * Sets the name associated with an ENS node, for reverse records.
    * May only be called by the owner of that node in the ENS registry.
-   * @param node The node to update.
-   * @param name The name to set.
+   * @param _node The node to update.
+   * @param _name The name to set.
    */
-  function setName(bytes32 node, string memory name) public only_owner(node) {
-    records[node].name = name;
-    emit NameChanged(node, name);
+  function setName(bytes32 _node, string memory _name) public only_owner(_node) {
+    records[_node].name = _name;
+    emit NameChanged(_node, _name);
   }
 
   /**
    * Sets the ABI associated with an ENS node.
    * Nodes may have one ABI of each content type. To remove an ABI, set it to
    * the empty string.
-   * @param node The node to update.
-   * @param contentType The content type of the ABI
-   * @param data The ABI data.
+   * @param _node The node to update.
+   * @param _contentType The content type of the ABI
+   * @param _data The ABI data.
    */
   function setABI(
-    bytes32 node,
-    uint256 contentType,
-    bytes memory data
-  ) public only_owner(node) {
+    bytes32 _node,
+    uint256 _contentType,
+    bytes memory _data
+  ) public only_owner(_node) {
     // Content types must be powers of 2
-    require(((contentType - 1) & contentType) == 0);
+    require(((_contentType - 1) & _contentType) == 0, "");
 
-    records[node].abis[contentType] = data;
-    emit ABIChanged(node, contentType);
+    records[_node].abis[_contentType] = _data;
+    emit ABIChanged(_node, _contentType);
   }
 
   /**
    * Sets the SECP256k1 public key associated with an ENS node.
-   * @param node The ENS node to query
-   * @param x the X coordinate of the curve point for the public key.
-   * @param y the Y coordinate of the curve point for the public key.
+   * @param _node The ENS node to query
+   * @param _x the X coordinate of the curve point for the public key.
+   * @param _y the Y coordinate of the curve point for the public key.
    */
   function setPubkey(
-    bytes32 node,
-    bytes32 x,
-    bytes32 y
-  ) public only_owner(node) {
-    records[node].pubkey = PublicKey(x, y);
-    emit PubkeyChanged(node, x, y);
+    bytes32 _node,
+    bytes32 _x,
+    bytes32 _y
+  ) public only_owner(_node) {
+    records[_node].pubkey = PublicKey(_x, _y);
+    emit PubkeyChanged(_node, _x, _y);
   }
 
   /**
    * Sets the text data associated with an ENS node and key.
    * May only be called by the owner of that node in the ENS registry.
-   * @param node The node to update.
-   * @param key The key to set.
-   * @param value The text data value to set.
+   * @param _node The node to update.
+   * @param _key The key to set.
+   * @param _value The text data value to set.
    */
   function setText(
-    bytes32 node,
-    string memory key,
-    string memory value
-  ) public only_owner(node) {
-    records[node].text[key] = value;
-    emit TextChanged(node, key, key);
+    bytes32 _node,
+    string memory _key,
+    string memory _value
+  ) public only_owner(_node) {
+    records[_node].text[_key] = _value;
+    emit TextChanged(_node, _key, _key);
   }
 
   /**
    * Returns the text data associated with an ENS node and key.
-   * @param node The ENS node to query.
-   * @param key The text data key to query.
+   * @param _node The ENS node to query.
+   * @param _key The text data key to query.
    * @return The associated text data.
    */
-  function text(bytes32 node, string memory key) public view returns (string memory) {
-    return records[node].text[key];
+  function text(bytes32 _node, string memory _key) public view returns (string memory) {
+    return records[_node].text[_key];
   }
 
   /**
    * Returns the SECP256k1 public key associated with an ENS node.
    * Defined in EIP 619.
-   * @param node The ENS node to query
+   * @param _node The ENS node to query
    */
-  function pubkey(bytes32 node) public view returns (bytes32 x, bytes32 y) {
-    return (records[node].pubkey.x, records[node].pubkey.y);
+  function pubkey(bytes32 _node) public view returns (bytes32 x, bytes32 y) {
+    return (records[_node].pubkey.x, records[_node].pubkey.y);
   }
-
-  // /**
-  //  * Returns the ABI associated with an ENS node.
-  //  * Defined in EIP205.
-  //  * @param node The ENS node to query
-  //  * @param contentTypes A bitwise OR of the ABI formats accepted by the caller.
-  //  * @return contentType The content type of the return value
-  //  * @return data The ABI data
-  //  */
-  // function ABI(bytes32 node, uint256 contentTypes) public view returns (uint256 contentType, bytes memory data) {
-  //     Record storage record = records[node];
-  //     for (contentType = 1; contentType <= contentTypes; contentType <<= 1) {
-  //         if ((contentType & contentTypes) != 0 && record.abis[contentType].length > 0) {
-  //             data = record.abis[contentType];
-  //             return;
-  //         }
-  //     }
-  //     contentType = 0;
-  // }
 
   /**
    * Returns the name associated with an ENS node, for reverse records.
    * Defined in EIP181.
-   * @param node The ENS node to query.
+   * @param _node The ENS node to query.
    * @return The associated name.
    */
-  function name(bytes32 node) public view returns (string memory) {
-    return records[node].name;
+  function name(bytes32 _node) public view returns (string memory) {
+    return records[_node].name;
   }
 
   /**
    * Returns the content hash associated with an ENS node.
    * Note that this resource type is not standardized, and will likely change
    * in future to a resource type based on multihash.
-   * @param node The ENS node to query.
+   * @param _node The ENS node to query.
    * @return The associated content hash.
    */
-  function content(bytes32 node) public view returns (bytes32) {
-    return records[node].content;
+  function content(bytes32 _node) public view returns (bytes32) {
+    return records[_node].content;
   }
 
   /**
    * Returns the multihash associated with an ENS node.
-   * @param node The ENS node to query.
+   * @param _node The ENS node to query.
    * @return The associated multihash.
    */
-  function multihash(bytes32 node) public view returns (bytes memory) {
-    return records[node].multihash;
+  function multihash(bytes32 _node) public view returns (bytes memory) {
+    return records[_node].multihash;
   }
 
   /**
    * Returns the address associated with an ENS node.
-   * @param node The ENS node to query.
+   * @param _node The ENS node to query.
    * @return The associated address.
    */
-  function addr(bytes32 node) public view returns (address) {
-    return records[node].addr;
-  }
-
-  /**
-   * Returns true if the resolver implements the interface specified by the provided hash.
-   * @param interfaceID The ID of the interface to check for.
-   * @return True if the contract implements the requested interface.
-   */
-  function supportsInterface(bytes4 interfaceID) public pure returns (bool) {
-    return
-      interfaceID == ADDR_INTERFACE_ID ||
-      interfaceID == CONTENT_INTERFACE_ID ||
-      interfaceID == NAME_INTERFACE_ID ||
-      interfaceID == ABI_INTERFACE_ID ||
-      interfaceID == PUBKEY_INTERFACE_ID ||
-      interfaceID == TEXT_INTERFACE_ID ||
-      interfaceID == MULTIHASH_INTERFACE_ID ||
-      interfaceID == INTERFACE_META_ID;
+  function addr(bytes32 _node) public view returns (address) {
+    return records[_node].addr;
   }
 }

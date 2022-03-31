@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 interface ENS {
@@ -14,20 +15,20 @@ interface ENS {
   event NewTTL(bytes32 indexed node, uint64 ttl);
 
   function setSubnodeOwner(
-    bytes32 node,
-    bytes32 label,
-    address owner
+    bytes32 _node,
+    bytes32 _label,
+    address _owner
   ) external;
 
-  function setResolver(bytes32 node, address resolver) external;
+  function setResolver(bytes32 _node, address _resolver) external;
 
-  function setOwner(bytes32 node, address owner) external;
+  function setOwner(bytes32 _node, address _owner) external;
 
-  function setTTL(bytes32 node, uint64 ttl) external;
+  function setTTL(bytes32 _node, uint64 _ttl) external;
 
-  function owner(bytes32 node) external view returns (address);
+  function owner(bytes32 _node) external view returns (address);
 
-  function resolver(bytes32 node) external view returns (address);
+  function resolver(bytes32 _node) external view returns (address);
 
-  function ttl(bytes32 node) external view returns (uint64);
+  function ttl(bytes32 _node) external view returns (uint64);
 }
