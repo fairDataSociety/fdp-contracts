@@ -15,10 +15,14 @@ contract ENSRegistry is ENS {
 
   mapping(bytes32 => Record) private records;
 
+  event Print(bool result, address owner, address sender, bytes32 node);
+
   // Permits modifications only by the owner of the specified node.
   modifier only_owner(bytes32 _node) {
-    require(records[_node].owner == msg.sender, "Owner is not sender");
+    bool same = records[_node].owner == msg.sender;
+    emit Print(same, records[_node].owner, msg.sender, _node);
     _;
+    require(same, "Owner is not sender 1");
   }
 
   /**
