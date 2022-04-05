@@ -1,4 +1,4 @@
-import { namehash, keccak256, toUtf8Bytes, hexZeroPad } from 'ethers/lib/utils'
+import { namehash, keccak256, toUtf8Bytes, hexZeroPad, arrayify } from 'ethers/lib/utils'
 import { ethers } from 'hardhat'
 
 const ETH_DOMAIN = 'eth'
@@ -24,21 +24,27 @@ async function deployENS() {
   const ownerAddress = owner.address
 
   const ethDomainNamehash = keccak256(toUtf8Bytes(ETH_DOMAIN))
+  const ethDomainNft = keccak256(new Uint8Array([...new Uint8Array(32), ...arrayify(ethDomainNamehash)]))
   const subdomainHash = keccak256(toUtf8Bytes(MAIN_SUBDOMAIN))
   const fullSubdomainNamahash = namehash(FULL_SUBDOMAIN)
 
-  console.log(`ens.setSubnodeOwner(${hexZeroPad('0x0', 32)}, ${keccak256(toUtf8Bytes(ETH_DOMAIN))}, ${ownerAddress})`)
+  console.log(`ens.setSubnodeOwner(${hexZeroPad('0x0', 32)}, ${ethDomainNamehash}, ${ownerAddress})`)
 
-  const parentOwner = await ens.owner(hexZeroPad('0x0', 32))
+  const parentOwner = await ens.owner(new Uint8Array(32))
   console.log(`realOwner of ${hexZeroPad('0x0', 32)}: ${parentOwner}.`)
 
   await ens.setSubnodeOwner(hexZeroPad('0x0', 32), ethDomainNamehash, ownerAddress)
 
-  console.log(`ens.setSubnodeOwner(${ethDomainNamehash}, ${subdomainHash}, ${ownerAddress})`)
+  await new Promise(resolve => setTimeout(resolve, 15000))
 
-  const parentOwner2 = await ens.owner(ethDomainNamehash)
-  console.log(`2! realOwner of ${ethDomainNamehash}: ${parentOwner2}.`)
-  await ens.setSubnodeOwner(ethDomainNamehash, subdomainHash, ownerAddress)
+  const parentOwner2 = await ens.owner(ethDomainNft)
+  console.log(`2! realOwner of ${ethDomainNft}: ${parentOwner2}.`)
+  console.log(`ens.setSubnodeOwner(${ethDomainNft}, ${subdomainHash}, ${ownerAddress})`)
+  console.log('hellobello1')
+  await ens.setSubnodeOwner(ethDomainNft, subdomainHash, ownerAddress)
+  console.log('hellobello2')
+  await new Promise(resolve => setTimeout(resolve, 15000))
+  console.log('hellobello3')
 
   await resolver.deployed()
   await ens.setResolver(fullSubdomainNamahash, resolver.address)
@@ -49,7 +55,7 @@ async function deployENS() {
   console.log(`SubdomainRegistrar deployed to: ${registrar.address}`)
 
   await registrar.deployed()
-  await ens.setSubnodeOwner(ethDomainNamehash, subdomainHash, registrar.address)
+  await ens.setSubnodeOwner(ethDomainNft, subdomainHash, registrar.address)
 
   console.log(`ENSRegistry deployed to:`, ens.address)
 }
