@@ -23,16 +23,21 @@ async function deployENS() {
   const [owner] = await ethers.getSigners()
   const ownerAddress = owner.address
 
-  const ethDomainNamehash = namehash(ETH_DOMAIN)
+  const ethDomainNamehash = keccak256(toUtf8Bytes(ETH_DOMAIN))
   const subdomainHash = keccak256(toUtf8Bytes(MAIN_SUBDOMAIN))
   const fullSubdomainNamahash = namehash(FULL_SUBDOMAIN)
 
   console.log(`ens.setSubnodeOwner(${hexZeroPad('0x0', 32)}, ${keccak256(toUtf8Bytes(ETH_DOMAIN))}, ${ownerAddress})`)
 
-  await ens.setSubnodeOwner(hexZeroPad('0x0', 32), keccak256(toUtf8Bytes(ETH_DOMAIN)), ownerAddress)
+  const parentOwner = await ens.owner(hexZeroPad('0x0', 32))
+  console.log(`realOwner of ${hexZeroPad('0x0', 32)}: ${parentOwner}.`)
+
+  await ens.setSubnodeOwner(hexZeroPad('0x0', 32), ethDomainNamehash, ownerAddress)
 
   console.log(`ens.setSubnodeOwner(${ethDomainNamehash}, ${subdomainHash}, ${ownerAddress})`)
 
+  const parentOwner2 = await ens.owner(ethDomainNamehash)
+  console.log(`2! realOwner of ${ethDomainNamehash}: ${parentOwner2}.`)
   await ens.setSubnodeOwner(ethDomainNamehash, subdomainHash, ownerAddress)
 
   await resolver.deployed()
