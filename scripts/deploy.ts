@@ -1,5 +1,36 @@
 import { namehash, keccak256, toUtf8Bytes, hexZeroPad } from 'ethers/lib/utils'
 import { ethers } from 'hardhat'
+import { ENSRegistry } from '../typechain'
+
+const ETH_DOMAIN = 'eth'
+const MAIN_SUBDOMAIN = process.env.ENS_DOMAIN || 'fds'
+const FULL_SUBDOMAIN = `${MAIN_SUBDOMAIN}.${ETH_DOMAIN}`
+
+const INTERVAL = 1000
+const MAX_INTERVAL = 15 * INTERVAL
+
+function waitOwnerUpdated(ens: ENSRegistry, address: Uint8Array | string, ownerAddress: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    let elapsedMs = 0
+    const intervalHandle = setInterval(async () => {
+      try {
+        const owner = await ens.owner(address)
+        if (owner === ownerAddress) {
+          clearInterval(intervalHandle)
+          resolve()
+        }
+        elapsedMs += INTERVAL
+        if (elapsedMs >= MAX_INTERVAL) {
+          clearInterval(intervalHandle)
+          reject('Owner check timeout has expired')
+        }
+      } catch (error) {
+        clearInterval(intervalHandle)
+        reject(error)
+      }
+    }, INTERVAL)
+  })
+}
 
 async function deployENS() {
   const ENS = await ethers.getContractFactory('ENSRegistry')
@@ -12,21 +43,29 @@ async function deployENS() {
 
   console.log(`PublicResolver deployed to: ${resolver.address}`)
 
-  const ownerAddress = await ens.owner(hexZeroPad('0x0', 32))
+  const [owner] = await ethers.getSigners()
+  const ownerAddress = owner.address
 
-  await ens.setSubnodeOwner(hexZeroPad('0x0', 32), keccak256(toUtf8Bytes('eth')), ownerAddress)
-  await ens.setSubnodeOwner(namehash('eth'), keccak256(toUtf8Bytes('datafund')), ownerAddress)
+  const ethDomainNamehash = namehash(ETH_DOMAIN)
+  const subdomainHash = keccak256(toUtf8Bytes(MAIN_SUBDOMAIN))
+  const fullSubdomainNamahash = namehash(FULL_SUBDOMAIN)
+
+  await ens.setSubnodeOwner(hexZeroPad('0x0', 32), keccak256(toUtf8Bytes(ETH_DOMAIN)), ownerAddress)
+  await waitOwnerUpdated(ens, new Uint8Array(32), ownerAddress)
+
+  await ens.setSubnodeOwner(ethDomainNamehash, subdomainHash, ownerAddress)
+  await waitOwnerUpdated(ens, ethDomainNamehash, ownerAddress)
 
   await resolver.deployed()
-  await ens.setResolver(namehash('datafund.eth'), resolver.address)
+  await ens.setResolver(fullSubdomainNamahash, resolver.address)
 
   const SubdomainRegistrar = await ethers.getContractFactory('SubdomainRegistrar')
-  const registrar = await SubdomainRegistrar.deploy(ens.address, namehash('datafund.eth'))
+  const registrar = await SubdomainRegistrar.deploy(ens.address, fullSubdomainNamahash)
 
   console.log(`SubdomainRegistrar deployed to: ${registrar.address}`)
 
   await registrar.deployed()
-  await ens.setSubnodeOwner(namehash('eth'), keccak256(toUtf8Bytes('datafund')), registrar.address)
+  await ens.setSubnodeOwner(ethDomainNamehash, subdomainHash, registrar.address)
 
   console.log(`ENSRegistry deployed to:`, ens.address)
 }
