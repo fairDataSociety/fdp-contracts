@@ -17,7 +17,7 @@ function waitOwnerUpdated(ens: ENSRegistry, address: Uint8Array | string, ownerA
         const owner = await ens.owner(address)
         if (owner === ownerAddress) {
           clearInterval(intervalHandle)
-          resolve()
+          return resolve()
         }
         elapsedMs += INTERVAL
         if (elapsedMs >= MAX_INTERVAL) {
