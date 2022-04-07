@@ -1,3 +1,4 @@
+import { Transaction } from 'ethers'
 import { namehash, keccak256, toUtf8Bytes, hexZeroPad } from 'ethers/lib/utils'
 import { ethers } from 'hardhat'
 import { ENSRegistry } from '../typechain'
@@ -9,20 +10,20 @@ const FULL_SUBDOMAIN = `${MAIN_SUBDOMAIN}.${ETH_DOMAIN}`
 const INTERVAL = 1000
 const MAX_INTERVAL = 15 * INTERVAL
 
-function waitOwnerUpdated(ens: ENSRegistry, address: Uint8Array | string, ownerAddress: string): Promise<void> {
+function waitForTransactionMined(tx: Transaction): Promise<void> {
   return new Promise((resolve, reject) => {
     let elapsedMs = 0
     const intervalHandle = setInterval(async () => {
       try {
-        const owner = await ens.owner(address)
-        if (owner === ownerAddress) {
+        const txResult = await ethers.provider.getTransaction(tx.hash as string)
+        if (txResult.blockNumber) {
           clearInterval(intervalHandle)
           return resolve()
         }
         elapsedMs += INTERVAL
         if (elapsedMs >= MAX_INTERVAL) {
           clearInterval(intervalHandle)
-          reject('Owner check timeout has expired')
+          reject('Transaction mining timeout has expired')
         }
       } catch (error) {
         clearInterval(intervalHandle)
@@ -50,11 +51,11 @@ async function deployENS() {
   const subdomainHash = keccak256(toUtf8Bytes(MAIN_SUBDOMAIN))
   const fullSubdomainNamahash = namehash(FULL_SUBDOMAIN)
 
-  await ens.setSubnodeOwner(hexZeroPad('0x0', 32), keccak256(toUtf8Bytes(ETH_DOMAIN)), ownerAddress)
-  await waitOwnerUpdated(ens, new Uint8Array(32), ownerAddress)
+  let tx = await ens.setSubnodeOwner(hexZeroPad('0x0', 32), keccak256(toUtf8Bytes(ETH_DOMAIN)), ownerAddress)
+  await waitForTransactionMined(tx)
 
-  await ens.setSubnodeOwner(ethDomainNamehash, subdomainHash, ownerAddress)
-  await waitOwnerUpdated(ens, ethDomainNamehash, ownerAddress)
+  tx = await ens.setSubnodeOwner(ethDomainNamehash, subdomainHash, ownerAddress)
+  await waitForTransactionMined(tx)
 
   await resolver.deployed()
   await ens.setResolver(fullSubdomainNamahash, resolver.address)
