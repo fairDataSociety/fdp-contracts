@@ -1,7 +1,6 @@
 import { Transaction } from 'ethers'
 import { namehash, keccak256, toUtf8Bytes, hexZeroPad } from 'ethers/lib/utils'
 import { ethers } from 'hardhat'
-import { ENSRegistry } from '../typechain'
 
 const ETH_DOMAIN = 'eth'
 const MAIN_SUBDOMAIN = process.env.ENS_DOMAIN || 'fds'

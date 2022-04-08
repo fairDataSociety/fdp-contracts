@@ -1,0 +1,41 @@
+name: Build and publish image
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+env:
+  IMAGE_PREFIX: 'docker.pkg.github.com/ethersphere/fdp-contracts'
+  BEE_ENV_PREFIX: ''
+  BLOCKCHAIN_VERSION: ''
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Github
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login https://docker.pkg.github.com -u ${GITHUB_ACTOR} --password-stdin
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Set environment variables
+        run: |
+          BEE_ENV_PREFIX=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.sh BEE_ENV_PREFIX)
+          BLOCKCHAIN_VERSION=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.sh BLOCKCHAIN_VERSION)
+          echo "::set-env name=BLOCKCHAIN_VERSION::$BLOCKCHAIN_VERSION"
+          echo "::set-env name=BEE_ENV_PREFIX::$BEE_ENV_PREFIX"
+
+      - name: Build and publish image
+        run: ./scripts/build-image.sh
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: '${{env.IMAGE_PREFIX}}/${{env.BEE_ENV_PREFIX}}-blockchain-contracts:${{env.BLOCKCHAIN_VERSION}}.env'
+          path: dist/.env
