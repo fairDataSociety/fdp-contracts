@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Github
+      - name: Github authentication
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login https://docker.pkg.github.com -u ${GITHUB_ACTOR} --password-stdin
 
@@ -29,8 +29,8 @@ jobs:
         run: |
           BEE_ENV_PREFIX=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.sh BEE_ENV_PREFIX)
           BLOCKCHAIN_VERSION=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.sh BLOCKCHAIN_VERSION)
-          echo "::set-env name=BLOCKCHAIN_VERSION::$BLOCKCHAIN_VERSION"
-          echo "::set-env name=BEE_ENV_PREFIX::$BEE_ENV_PREFIX"
+          echo "BLOCKCHAIN_VERSION=$BLOCKCHAIN_VERSION" >> $GITHUB_ENV
+          echo "BEE_ENV_PREFIX=$BEE_ENV_PREFIX" >> $GITHUB_ENV
 
       - name: Build and publish image
         run: ./scripts/build-image.sh
