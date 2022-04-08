@@ -5,10 +5,10 @@ ROOT_PATH=$( cd "$ROOT_PATH/.." && pwd )
 # Getting env variables from bee-factory
 BEE_ENV_PREFIX=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.sh BEE_ENV_PREFIX)
 BLOCKCHAIN_VERSION=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.sh BLOCKCHAIN_VERSION)
-NAME="$BEE_ENV_PREFIX-blockchain"
-BLOCKCHAIN_CONTRACTS_NAME="$NAME-contracts"
-IMAGE_PREFIX="docker.pkg.github.com/ethersphere/fdp-contracts"
-BLOCKCHAIN_IMAGE_NAME="$IMAGE_PREFIX/$BLOCKCHAIN_CONTRACTS_NAME:$BLOCKCHAIN_VERSION"
+BLOCKCHAIN_IMAGE_NAME="$BEE_ENV_PREFIX-blockchain"
+CONTRACTS_IMAGE_NAME="$BLOCKCHAIN_IMAGE_NAME-contracts"
+CONTRACTS_IMAGE_PREFIX="docker.pkg.github.com/ethersphere/fdp-contracts"
+CONTRACTS_IMAGE_URL="$CONTRACTS_IMAGE_PREFIX/$CONTRACTS_IMAGE_NAME:$BLOCKCHAIN_VERSION"
 ENV_FILE="$ROOT_PATH/dist/.env"
 
 
@@ -17,6 +17,7 @@ npm run compile
 
 echo "Starting the blockchain image..."
 npm explore bee-factory -- npm install
+npm explore bee-factory -- ./scripts/network.sh
 npm explore bee-factory -- ./scripts/blockchain.sh
 
 echo "Deploying contracts to the bee container..."
@@ -34,14 +35,14 @@ echo "PUBLIC_RESOLVER_ADDRESS=$PUBLIC_RESOLVER_ADDRESS" >> $ENV_FILE
 echo "Contract addresses saved to: $ENV_FILE"
 
 echo "Creating a new image..."
-docker commit $NAME $BLOCKCHAIN_IMAGE_NAME
+docker commit $BLOCKCHAIN_IMAGE_NAME $CONTRACTS_IMAGE_URL
 
-echo "Image generated: $BLOCKCHAIN_IMAGE_NAME"
+echo "Image generated: $CONTRACTS_IMAGE_URL"
 
 echo "Stop and remove running blockchain node that the image built on..."
-docker container stop $NAME
-docker container rm $NAME
+docker container stop $BLOCKCHAIN_IMAGE_NAME
+docker container rm $BLOCKCHAIN_IMAGE_NAME
 
 # publish
-echo "Publishing new image: $BLOCKCHAIN_IMAGE_NAME"
-docker push "$BLOCKCHAIN_IMAGE_NAME"
+echo "Publishing new image: $CONTRACTS_IMAGE_URL"
+docker push "$CONTRACTS_IMAGE_URL"

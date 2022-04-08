@@ -3,8 +3,7 @@ name: Build and publish image
 on:
   push:
     branches: [master]
-  pull_request:
-    branches: [master]
+  workflow_dispatch:
 
 env:
   IMAGE_PREFIX: 'docker.pkg.github.com/ethersphere/fdp-contracts'

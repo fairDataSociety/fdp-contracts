@@ -1,36 +1,12 @@
-import { Transaction } from 'ethers'
+// TODO There is a eslint configuration error that needs to be fixed
+/* eslint-disable node/no-missing-import */
 import { namehash, keccak256, toUtf8Bytes, hexZeroPad } from 'ethers/lib/utils'
 import { ethers } from 'hardhat'
+import { waitForTransactionMined } from './utils'
 
 const ETH_DOMAIN = 'eth'
 const MAIN_SUBDOMAIN = process.env.ENS_DOMAIN || 'fds'
 const FULL_SUBDOMAIN = `${MAIN_SUBDOMAIN}.${ETH_DOMAIN}`
-
-const INTERVAL = 1000
-const MAX_INTERVAL = 15 * INTERVAL
-
-function waitForTransactionMined(tx: Transaction): Promise<void> {
-  return new Promise((resolve, reject) => {
-    let elapsedMs = 0
-    const intervalHandle = setInterval(async () => {
-      try {
-        const txResult = await ethers.provider.getTransaction(tx.hash as string)
-        if (txResult.blockNumber) {
-          clearInterval(intervalHandle)
-          return resolve()
-        }
-        elapsedMs += INTERVAL
-        if (elapsedMs >= MAX_INTERVAL) {
-          clearInterval(intervalHandle)
-          reject('Transaction mining timeout has expired')
-        }
-      } catch (error) {
-        clearInterval(intervalHandle)
-        reject(error)
-      }
-    }, INTERVAL)
-  })
-}
 
 async function deployENS() {
   const ENS = await ethers.getContractFactory('ENSRegistry')
