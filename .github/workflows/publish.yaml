@@ -11,6 +11,7 @@ env:
   IMAGE_PREFIX: 'docker.pkg.github.com/fairdatasociety/fdp-contracts'
   BEE_ENV_PREFIX: 'swarm-test'
   BLOCKCHAIN_VERSION: '1.2.0'
+  ENV_FILE: '.env'
 
 jobs:
   build:
@@ -38,5 +39,5 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: '${{env.IMAGE_PREFIX}}/${{env.BEE_ENV_PREFIX}}-blockchain-contracts:${{env.BLOCKCHAIN_VERSION}}.env'
-          path: dist/.env
+          name: '${{env.BEE_ENV_PREFIX}}-blockchain-contracts_${{env.BLOCKCHAIN_VERSION}}.env'
+          path: ${{env.ENV_FILE}}

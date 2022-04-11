@@ -9,7 +9,7 @@ BLOCKCHAIN_IMAGE_NAME="$BEE_ENV_PREFIX-blockchain"
 CONTRACTS_IMAGE_NAME="$BLOCKCHAIN_IMAGE_NAME-contracts"
 CONTRACTS_IMAGE_PREFIX="docker.pkg.github.com/fairdatasociety/fdp-contracts"
 CONTRACTS_IMAGE_URL="$CONTRACTS_IMAGE_PREFIX/$CONTRACTS_IMAGE_NAME:$BLOCKCHAIN_VERSION"
-ENV_FILE="$ROOT_PATH/dist/.env"
+ENV_FILE=".env"
 
 
 echo "Compiling contracts..."
