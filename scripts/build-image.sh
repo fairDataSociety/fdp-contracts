@@ -7,7 +7,7 @@ BEE_ENV_PREFIX=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.s
 BLOCKCHAIN_VERSION=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.sh BLOCKCHAIN_VERSION)
 BLOCKCHAIN_IMAGE_NAME="$BEE_ENV_PREFIX-blockchain"
 CONTRACTS_IMAGE_NAME="$BLOCKCHAIN_IMAGE_NAME-contracts"
-CONTRACTS_IMAGE_PREFIX="docker.pkg.github.com/ethersphere/fdp-contracts"
+CONTRACTS_IMAGE_PREFIX="docker.pkg.github.com/fairDataSociety/fdp-contracts"
 CONTRACTS_IMAGE_URL="$CONTRACTS_IMAGE_PREFIX/$CONTRACTS_IMAGE_NAME:$BLOCKCHAIN_VERSION"
 ENV_FILE="$ROOT_PATH/dist/.env"
 
