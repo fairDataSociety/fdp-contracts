@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_PREFIX: 'docker.pkg.github.com/fairDataSociety/fdp-contracts'
+  IMAGE_PREFIX: 'docker.pkg.github.com/fairdatasociety/fdp-contracts'
   BEE_ENV_PREFIX: 'swarm-test'
   BLOCKCHAIN_VERSION: '1.2.0'
 
