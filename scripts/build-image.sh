@@ -5,11 +5,13 @@ ROOT_PATH=$( cd "$ROOT_PATH/.." && pwd )
 # Getting env variables from bee-factory
 BEE_ENV_PREFIX=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.sh BEE_ENV_PREFIX)
 BLOCKCHAIN_VERSION=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.sh BLOCKCHAIN_VERSION)
-BLOCKCHAIN_IMAGE_NAME="$BEE_ENV_PREFIX-blockchain"
-CONTRACTS_IMAGE_NAME="$BLOCKCHAIN_IMAGE_NAME-contracts"
+BLOCKCHAIN_CONTAINER_NAME="$BEE_ENV_PREFIX-blockchain"
+CONTRACTS_IMAGE_NAME="$BLOCKCHAIN_CONTAINER_NAME-contracts"
 CONTRACTS_IMAGE_PREFIX="docker.pkg.github.com/fairdatasociety/fdp-contracts"
 CONTRACTS_IMAGE_URL="$CONTRACTS_IMAGE_PREFIX/$CONTRACTS_IMAGE_NAME:$BLOCKCHAIN_VERSION"
-ENV_FILE=".env"
+if [ -z "${ENV_FILE}" ]; then
+  ENV_FILE="dist/.env"
+fi
 
 
 echo "Compiling contracts..."
@@ -34,14 +36,17 @@ echo "SUBDOMAIN_REGISTRAR_ADDRESS=$SUBDOMAIN_REGISTRAR_ADDRESS" >> $ENV_FILE
 echo "PUBLIC_RESOLVER_ADDRESS=$PUBLIC_RESOLVER_ADDRESS" >> $ENV_FILE
 echo "Contract addresses saved to: $ENV_FILE"
 
+docker cp $ENV_FILE $BLOCKCHAIN_CONTAINER_NAME:/app/contracts.env
+docker cp artifacts/contracts/. $BLOCKCHAIN_CONTAINER_NAME:/app/contracts
+
 echo "Creating a new image..."
-docker commit $BLOCKCHAIN_IMAGE_NAME $CONTRACTS_IMAGE_URL
+docker commit $BLOCKCHAIN_CONTAINER_NAME $CONTRACTS_IMAGE_URL
 
 echo "Image generated: $CONTRACTS_IMAGE_URL"
 
 echo "Stop and remove running blockchain node that the image built on..."
-docker container stop $BLOCKCHAIN_IMAGE_NAME
-docker container rm $BLOCKCHAIN_IMAGE_NAME
+docker container stop $BLOCKCHAIN_CONTAINER_NAME
+docker container rm $BLOCKCHAIN_CONTAINER_NAME
 
 # publish
 echo "Publishing new image: $CONTRACTS_IMAGE_URL"

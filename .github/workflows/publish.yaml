@@ -36,8 +36,3 @@ jobs:
 
       - name: Build and publish image
         run: ./scripts/build-image.sh
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: '${{env.BEE_ENV_PREFIX}}-blockchain-contracts_${{env.BLOCKCHAIN_VERSION}}.env'
-          path: ${{env.ENV_FILE}}
