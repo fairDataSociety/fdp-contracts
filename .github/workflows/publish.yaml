@@ -3,15 +3,12 @@ name: Build and publish image
 on:
   push:
     branches: [master]
-  pull_request:
-    branches: [master]
   workflow_dispatch:
 
 env:
   IMAGE_PREFIX: 'docker.pkg.github.com/fairdatasociety/fdp-contracts'
   BEE_ENV_PREFIX: 'swarm-test'
   BLOCKCHAIN_VERSION: '1.2.0'
-  ENV_FILE: '.env'
 
 jobs:
   build:
@@ -20,9 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Github authentication
+      - name: Docker authentication
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login https://docker.pkg.github.com -u ${GITHUB_ACTOR} --password-stdin
+          echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
 
       - name: Install dependencies
         run: npm install

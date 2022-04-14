@@ -24,7 +24,7 @@ async function deployENS() {
 
   const ethDomainNamehash = namehash(ETH_DOMAIN)
   const subdomainHash = keccak256(toUtf8Bytes(MAIN_SUBDOMAIN))
-  const fullSubdomainNamahash = namehash(FULL_SUBDOMAIN)
+  const fullSubdomainNamehash = namehash(FULL_SUBDOMAIN)
 
   let tx = await ens.setSubnodeOwner(hexZeroPad('0x0', 32), keccak256(toUtf8Bytes(ETH_DOMAIN)), ownerAddress)
   await waitForTransactionMined(tx)
@@ -33,10 +33,10 @@ async function deployENS() {
   await waitForTransactionMined(tx)
 
   await resolver.deployed()
-  await ens.setResolver(fullSubdomainNamahash, resolver.address)
+  await ens.setResolver(fullSubdomainNamehash, resolver.address)
 
   const SubdomainRegistrar = await ethers.getContractFactory('SubdomainRegistrar')
-  const registrar = await SubdomainRegistrar.deploy(ens.address, fullSubdomainNamahash)
+  const registrar = await SubdomainRegistrar.deploy(ens.address, fullSubdomainNamehash)
 
   console.log(`SubdomainRegistrar deployed to: ${registrar.address}`)
 
