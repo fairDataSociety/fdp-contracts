@@ -9,10 +9,8 @@ BLOCKCHAIN_CONTAINER_NAME="$BEE_ENV_PREFIX-blockchain"
 CONTRACTS_IMAGE_NAME="$BLOCKCHAIN_CONTAINER_NAME-contracts"
 CONTRACTS_IMAGE_PREFIX="docker.pkg.github.com/fairdatasociety/fdp-contracts"
 CONTRACTS_IMAGE_URL="$CONTRACTS_IMAGE_PREFIX/$CONTRACTS_IMAGE_NAME:$BLOCKCHAIN_VERSION"
-if [ -z "${ENV_FILE}" ]; then
-  ENV_FILE="dist/.env"
-fi
-
+ENV_FILE="dist/contracts.env"
+JS_LIB_CONTRACTS_DIR=$ROOT_PATH/js-library/src/contracts
 
 echo "Compiling contracts..."
 npm run compile
@@ -48,6 +46,8 @@ echo "Stop and remove running blockchain node that the image built on..."
 docker container stop $BLOCKCHAIN_CONTAINER_NAME
 docker container rm $BLOCKCHAIN_CONTAINER_NAME
 
-# publish
-echo "Publishing new image: $CONTRACTS_IMAGE_URL"
-docker push "$CONTRACTS_IMAGE_URL"
+echo "Copying meta files to the JS library"
+cp -a $ROOT_PATH/artifacts/contracts/. $JS_LIB_CONTRACTS_DIR
+cp $ENV_FILE $JS_LIB_CONTRACTS_DIR
+
+

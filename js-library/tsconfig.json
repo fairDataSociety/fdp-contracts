@@ -1,0 +1,28 @@
+{
+  "include": ["./src", "./test"],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "target": "es5",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "Node",
+    "module": "ES2015",
+    "strict": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationDir": "./build/types",
+    "typeRoots": ["./src/types", "node_modules/@types"],
+    "rootDirs": ["./src"],
+    "outDir": "build",
+    "skipLibCheck": true,
+    "allowJs": true
+  },
+  "ts-node": {
+    // these options are overrides used only by ts-node
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  }
+}
