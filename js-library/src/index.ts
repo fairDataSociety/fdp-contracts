@@ -1,1 +1,1 @@
-export { ENS } from './services/ens'
+export * from './services/ens'

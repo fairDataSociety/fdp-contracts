@@ -10,10 +10,9 @@ const isProduction = process.env.mode === 'production'
 
 const config = {
   mode: process.env.mode || 'production',
-  devtool: 'source-map',
+  devtool: isProduction ? 'source-map' : 'cheap-module-source-map',
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
-    // modules: [path.resolve('./node_modules'), path.resolve('./src')],
   },
   entry: {
     index: path.resolve(srcDir, 'index.ts'),
@@ -21,24 +20,33 @@ const config = {
   output: {
     filename: '[name].js',
     path: buildDir,
-    library: 'fdp-contracts-js',
-    libraryExport: 'default',
-    libraryTarget: 'umd',
-    umdNamedDefine: true,
-    globalObject: `(typeof self !== 'undefined' ? self : this)`,
+    sourceMapFilename: '[name].map',
+    libraryTarget: 'commonjs2',
+    clean: true,
+  },
+  externals: {
+    ethers: 'ethers',
   },
   optimization: {
-    minimize: false,
+    minimize: isProduction,
     minimizer: [new TerserPlugin({ extractComments: false })],
   },
   module: {
     rules: [
       {
-        test: /\.(ts|tsx|js|jsx|json)$/,
+        test: /\.(ts|tsx|js|jsx)$/,
         exclude: /node_modules/,
         use: {
           loader: 'ts-loader',
         },
+      },
+      {
+        test: /\.json5$/i,
+        loader: 'json5-loader',
+        options: {
+          esModule: true,
+        },
+        type: 'javascript/auto',
       },
     ],
   },
