@@ -1,4 +1,6 @@
-import { hexStripZeros } from 'ethers/lib/utils'
+import { utils } from 'ethers'
+
+const { hexStripZeros } = utils
 
 export function isPublicKeyValid(publicKey: string): boolean {
   return hexStripZeros('0x' + publicKey.substring(4)) === '0x'
