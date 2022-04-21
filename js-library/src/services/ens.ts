@@ -3,11 +3,13 @@ import { NULL_ADDRESS } from '../constants/constants'
 import ENSRegistryContract from '../contracts/ENSRegistry.sol/ENSRegistry.json'
 import PublicResolverContract from '../contracts/PublicResolver.sol/PublicResolver.json'
 import SubdomainRegistrarContract from '../contracts/SubdomainRegistrar.sol/SubdomainRegistrar.json'
+import { waitTransaction } from '../utils/tx'
+import { joinPublicKey, isPublicKeyValid, splitPublicKey } from '../utils/keys'
 
 const { keccak256, toUtf8Bytes, namehash } = utils
 
 /**
- * Contract addreses
+ * Contract addresses
  */
 export const ENS_REGISTRY_ADDRESS = process.env.ENS_REGISTRY_ADDRESS
 export const PUBLIC_RESOLVER_ADDRESS = process.env.PUBLIC_RESOLVER_ADDRESS
@@ -103,14 +105,44 @@ export class ENS {
     }
 
     if (ownerAddress === NULL_ADDRESS) {
-      await this.subdomainRegistrarContract.register(keccak256(toUtf8Bytes(username)), address)
+      await waitTransaction(
+        this.subdomainRegistrarContract.register(keccak256(toUtf8Bytes(username)), address),
+      )
     }
 
     const usernameHash = this.hashUsername(username)
 
-    await this.ensRegistryContract.setResolver(usernameHash, this.publicResolverContract.address)
+    await waitTransaction(
+      this.ensRegistryContract.setResolver(usernameHash, this.publicResolverContract.address),
+    )
 
     await this.setUsernamePublicKey(usernameHash, address, publicKey)
+  }
+
+  /**
+   * Returns public key of registered username
+   * @param username
+   * @returns public key
+   */
+  public async getPublicKey(username: string): Promise<string> {
+    const [publicKeyX, publicKeyY] = await this.publicResolverContract.pubkey(this.hashUsername(username))
+
+    const publicKey = joinPublicKey(publicKeyX, publicKeyY)
+
+    if (isPublicKeyValid(publicKey)) {
+      throw new Error('Public key is not set')
+    }
+
+    return publicKey
+  }
+
+  /**
+   * Fetches all ENS data related to the provided username
+   * @param username ENS username
+   * @returns
+   */
+  public getUserData(username: string): Promise<unknown> {
+    return this.publicResolverContract.getAll(this.hashUsername(username))
   }
 
   /**
@@ -120,35 +152,24 @@ export class ENS {
    * @param publicKey Public key that will be added to ENS
    */
   private setUsernamePublicKey(usernameHash: string, address: string, publicKey: string): Promise<void> {
-    const [publicKeyX, publicKeyY] = this.splitPublicKey(publicKey)
+    const [publicKeyX, publicKeyY] = splitPublicKey(publicKey)
     const content = '0x0000000000000000000000000000000000000000000000000000000000000000'
     const name = 'subdomain-hidden'
-    return this.publicResolverContract.setAll(
-      usernameHash,
-      address,
-      content,
-      '0x00',
-      publicKeyX,
-      publicKeyY,
-      name,
+    return waitTransaction(
+      this.publicResolverContract.setAll(
+        usernameHash,
+        address,
+        content,
+        '0x00',
+        publicKeyX,
+        publicKeyY,
+        name,
+      ),
     )
   }
-  // /**
-  //  * Fetches all ENS data related to the provided username
-  //  * @param username ENS username
-  //  * @returns
-  //  */
-  // public getUserData(username: string): Promise<unknown> {
-  //   return this.publicResolverContract.getAll(this.hashSubdomain(username))
-  // }
+
   private hashUsername(subdomain: string): string {
     return namehash(`${subdomain}.${this.domain}`)
-  }
-
-  private splitPublicKey(publicKey: string): [string, string] {
-    const publicKeyX = publicKey.substring(0, 66)
-    const publicKeyY = '0x' + publicKey.substring(66, 130)
-    return [publicKeyX, publicKeyY]
   }
 }
 
