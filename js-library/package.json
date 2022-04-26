@@ -1,5 +1,5 @@
 {
-  "name": "fdp-contracts-js",
+  "name": "@fairdatasociety/fdp-contracts",
   "version": "1.0.0",
   "description": "Library for interaction with FDS contracts",
   "main": "build/index.js",
@@ -8,7 +8,7 @@
     "build": "webpack --config webpack.build.config.ts",
     "test": "jest",
     "test:unit": "jest ./test/unit",
-    "test:it": "jest ./test/it"
+    "test:integration": "jest ./test/it"
   },
   "keywords": [
     "contracts",

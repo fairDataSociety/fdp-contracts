@@ -1,10 +1,10 @@
 import { utils, Contract, Signer, providers } from 'ethers'
-import { NULL_ADDRESS } from '../constants/constants'
-import ENSRegistryContract from '../contracts/ENSRegistry.sol/ENSRegistry.json'
-import PublicResolverContract from '../contracts/PublicResolver.sol/PublicResolver.json'
-import SubdomainRegistrarContract from '../contracts/SubdomainRegistrar.sol/SubdomainRegistrar.json'
+import { ENS_DOMAIN, NULL_ADDRESS } from '../constants/constants'
+import { ENVIRONMENT_RPC_URLS, CONTRACTS_METADATA } from '../constants/environment'
 import { waitTransaction } from '../utils/tx'
 import { joinPublicKey, isPublicKeyValid, splitPublicKey } from '../utils/keys'
+import { Environment } from '../model/environment.enum'
+import { EnsUserData } from '../model/ens-user-data.model'
 
 const { keccak256, toUtf8Bytes, namehash } = utils
 
@@ -15,12 +15,7 @@ export const ENS_REGISTRY_ADDRESS = process.env.ENS_REGISTRY_ADDRESS
 export const PUBLIC_RESOLVER_ADDRESS = process.env.PUBLIC_RESOLVER_ADDRESS
 export const SUBDOMAIN_REGISTRAR_ADDRESS = process.env.SUBDOMAIN_REGISTRAR_ADDRESS
 
-/**
- * Contract metadata
- */
-export const ENSRegistryMeta = ENSRegistryContract
-export const PublicResolverMeta = PublicResolverContract
-export const SubdomainRegistrarMeta = SubdomainRegistrarContract
+type SignerOrProvider = string | providers.Provider | Signer
 
 /**
  * ENS Class
@@ -28,28 +23,39 @@ export const SubdomainRegistrarMeta = SubdomainRegistrarContract
  */
 export class ENS {
   private _provider: providers.JsonRpcProvider
-  private ensRegistryContract: Contract
-  private subdomainRegistrarContract: Contract
-  private publicResolverContract: Contract
+  private _ensRegistryContract: Contract
+  private _subdomainRegistrarContract: Contract
+  private _publicResolverContract: Contract
 
-  constructor(rpcUrl = 'http://127.0.0.1:9545/', private domain = 'fds.eth') {
-    this._provider = new providers.JsonRpcProvider(rpcUrl)
+  constructor(
+    environment: Environment = Environment.LOCALHOST,
+    private domain = ENS_DOMAIN,
+    signerOrProvider: SignerOrProvider | null = null,
+  ) {
+    this._provider = new providers.JsonRpcProvider(ENVIRONMENT_RPC_URLS[environment])
 
-    this.ensRegistryContract = new Contract(
+    const { ENSRegistryContract, PublicResolverContract, SubdomainRegistrarContract } =
+      CONTRACTS_METADATA[environment]
+
+    this._ensRegistryContract = new Contract(
       ENS_REGISTRY_ADDRESS as string,
       ENSRegistryContract.abi,
       this._provider,
     )
-    this.publicResolverContract = new Contract(
+    this._publicResolverContract = new Contract(
       PUBLIC_RESOLVER_ADDRESS as string,
       PublicResolverContract.abi,
       this._provider,
     )
-    this.subdomainRegistrarContract = new Contract(
+    this._subdomainRegistrarContract = new Contract(
       SUBDOMAIN_REGISTRAR_ADDRESS as string,
       SubdomainRegistrarContract.abi,
       this._provider,
     )
+
+    if (signerOrProvider) {
+      this.connect(signerOrProvider)
+    }
   }
 
   /**
@@ -63,10 +69,10 @@ export class ENS {
    * Connects signer to the smart contracts
    * @param signerOrProvider An instance of ethers.js Wallet or any other signer
    */
-  public connect(signerOrProvider: string | providers.Provider | Signer) {
-    this.publicResolverContract = this.publicResolverContract.connect(signerOrProvider)
-    this.subdomainRegistrarContract = this.subdomainRegistrarContract.connect(signerOrProvider)
-    this.ensRegistryContract = this.ensRegistryContract.connect(signerOrProvider)
+  public connect(signerOrProvider: SignerOrProvider) {
+    this._publicResolverContract = this._publicResolverContract.connect(signerOrProvider)
+    this._subdomainRegistrarContract = this._subdomainRegistrarContract.connect(signerOrProvider)
+    this._ensRegistryContract = this._ensRegistryContract.connect(signerOrProvider)
   }
 
   /**
@@ -77,9 +83,7 @@ export class ENS {
   public async getUsernameOwner(username: string): Promise<string> {
     const usernameHash = this.hashUsername(username)
 
-    const owner = await this.ensRegistryContract.owner(usernameHash)
-
-    return owner
+    return this._ensRegistryContract.owner(usernameHash)
   }
 
   /**
@@ -106,14 +110,14 @@ export class ENS {
 
     if (ownerAddress === NULL_ADDRESS) {
       await waitTransaction(
-        this.subdomainRegistrarContract.register(keccak256(toUtf8Bytes(username)), address),
+        this._subdomainRegistrarContract.register(keccak256(toUtf8Bytes(username)), address),
       )
     }
 
     const usernameHash = this.hashUsername(username)
 
     await waitTransaction(
-      this.ensRegistryContract.setResolver(usernameHash, this.publicResolverContract.address),
+      this._ensRegistryContract.setResolver(usernameHash, this._publicResolverContract.address),
     )
 
     await this.setUsernamePublicKey(usernameHash, address, publicKey)
@@ -125,12 +129,12 @@ export class ENS {
    * @returns public key
    */
   public async getPublicKey(username: string): Promise<string> {
-    const [publicKeyX, publicKeyY] = await this.publicResolverContract.pubkey(this.hashUsername(username))
+    const [publicKeyX, publicKeyY] = await this._publicResolverContract.pubkey(this.hashUsername(username))
 
     const publicKey = joinPublicKey(publicKeyX, publicKeyY)
 
     if (isPublicKeyValid(publicKey)) {
-      throw new Error('Public key is not set')
+      throw new Error('Public key is not set or is invalid')
     }
 
     return publicKey
@@ -141,22 +145,22 @@ export class ENS {
    * @param username ENS username
    * @returns
    */
-  public getUserData(username: string): Promise<unknown> {
-    return this.publicResolverContract.getAll(this.hashUsername(username))
+  public getUserData(username: string): Promise<EnsUserData> {
+    return this._publicResolverContract.getAll(this.hashUsername(username))
   }
 
   /**
    * Sets user's public key to the user's ENS entry
-   * @param username ENS username
+   * @param username ENS username namehash value
    * @param address Owner of the username
    * @param publicKey Public key that will be added to ENS
    */
   private setUsernamePublicKey(usernameHash: string, address: string, publicKey: string): Promise<void> {
     const [publicKeyX, publicKeyY] = splitPublicKey(publicKey)
-    const content = '0x0000000000000000000000000000000000000000000000000000000000000000'
+    const content = '0x00'
     const name = 'subdomain-hidden'
     return waitTransaction(
-      this.publicResolverContract.setAll(
+      this._publicResolverContract.setAll(
         usernameHash,
         address,
         content,

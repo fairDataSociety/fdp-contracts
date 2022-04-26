@@ -3,7 +3,7 @@
   "exclude": ["node_modules"],
   "compilerOptions": {
     "alwaysStrict": true,
-    "target": "es5",
+    "target": "es6",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "Node",
@@ -11,7 +11,6 @@
     "strict": true,
     "noImplicitAny": true,
     "resolveJsonModule": true,
-    "sourceMap": true,
     "declaration": true,
     "declarationDir": "./build/types",
     "typeRoots": ["src/types", "node_modules/@types"],

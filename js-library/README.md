@@ -29,30 +29,24 @@ development.
 
 ## Tests
 
-Tests are separated into unit and integration tests to the `test/unit` and `test/it` directorties,
-respectively.
-
-To run unit tests:
+To automatically start a fdp-contracts container, build the library and run tests:
 
 ```bash
-npm run test:unit
+./scripts/test.sh
 ```
+
+Tests are separated into unit and integration tests to the `test/unit` and `test/it` directorties,
+respectively.
 
 In order to run integration tests, a container with FDP contracts must be started first. Also the librarry
 should be built. Then, tests are executed using the command:
 
 ```bash
-npm run test:it
+npm run test:integration
 ```
 
 To run both tests at once:
 
 ```bash
 npm test
-```
-
-To automatically start a fdp-contracts container, build the librarry and run tests:
-
-```bash
-./scripts/test.sh
 ```
