@@ -1,8 +1,10 @@
+import { EthAddress, HexString, PublicKeyX, PublicKeyY } from './hex.types'
+
 export interface EnsUserData {
-  _addr: string
-  _content: string
-  _multihash: string
-  _x: string
-  _y: string
+  _addr: EthAddress
+  _content: HexString
+  _multihash: HexString
+  _x: PublicKeyX
+  _y: PublicKeyY
   _name: string
 }

@@ -1,5 +1,6 @@
 import { Wallet } from 'ethers'
 import { ENS } from '../..'
+import { EthAddress, PublicKey } from '../../src/model/hex.types'
 
 describe('ENS service tests', () => {
   const ens = new ENS()
@@ -20,20 +21,22 @@ describe('ENS service tests', () => {
   })
 
   test('Should register username and set public key', async () => {
-    const address = await wallet.getAddress()
+    const address = (await wallet.getAddress()) as EthAddress
 
-    await ens.registerUsername(username, address, wallet.publicKey)
+    const publicKey = String(wallet.publicKey) as PublicKey
+
+    await ens.registerUsername(username, address, publicKey)
 
     const owner = await ens.getUsernameOwner(username)
 
     expect(owner).toEqual(address)
 
-    const publicKey = await ens.getPublicKey(username)
+    const fetchedPublicKey = await ens.getPublicKey(username)
 
-    expect(publicKey).toEqual(wallet.publicKey)
+    expect(fetchedPublicKey).toEqual(publicKey)
   })
 
   test('Accessing public key of unexisting username should throw error', async () => {
-    expect(ens.getPublicKey(missingUsername)).rejects.toEqual('[Error: Public key is not set]')
+    expect(ens.getPublicKey(missingUsername)).rejects.toEqual('[Error: Public key is not set or is invalid]')
   })
 })

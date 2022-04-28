@@ -21,7 +21,9 @@ const config = {
     filename: '[name].js',
     path: buildDir,
     sourceMapFilename: '[name].map',
-    libraryTarget: 'commonjs2',
+    libraryTarget: 'umd',
+    library: 'fdp-contracts',
+    globalObject: 'this',
     clean: true,
   },
   externals: {

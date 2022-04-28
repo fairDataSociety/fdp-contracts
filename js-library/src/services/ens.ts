@@ -5,6 +5,7 @@ import { waitTransaction } from '../utils/tx'
 import { joinPublicKey, isPublicKeyValid, splitPublicKey } from '../utils/keys'
 import { Environment } from '../model/environment.enum'
 import { EnsUserData } from '../model/ens-user-data.model'
+import { EthAddress, PublicKey } from '../model/hex.types'
 
 const { keccak256, toUtf8Bytes, namehash } = utils
 
@@ -29,8 +30,8 @@ export class ENS {
 
   constructor(
     environment: Environment = Environment.LOCALHOST,
-    private domain = ENS_DOMAIN,
     signerOrProvider: SignerOrProvider | null = null,
+    private domain = ENS_DOMAIN,
   ) {
     this._provider = new providers.JsonRpcProvider(ENVIRONMENT_RPC_URLS[environment])
 
@@ -80,7 +81,7 @@ export class ENS {
    * @param username ENS username
    * @returns owner's address
    */
-  public async getUsernameOwner(username: string): Promise<string> {
+  public async getUsernameOwner(username: string): Promise<EthAddress> {
     const usernameHash = this.hashUsername(username)
 
     return this._ensRegistryContract.owner(usernameHash)
@@ -101,7 +102,7 @@ export class ENS {
    * @param username ENS username
    * @param address Owner address of the username
    */
-  public async registerUsername(username: string, address: string, publicKey: string): Promise<void> {
+  public async registerUsername(username: string, address: EthAddress, publicKey: PublicKey): Promise<void> {
     const ownerAddress = await this.getUsernameOwner(username)
 
     if (ownerAddress !== NULL_ADDRESS && ownerAddress !== address) {
@@ -114,13 +115,14 @@ export class ENS {
       )
     }
 
-    const usernameHash = this.hashUsername(username)
-
     await waitTransaction(
-      this._ensRegistryContract.setResolver(usernameHash, this._publicResolverContract.address),
+      this._ensRegistryContract.setResolver(
+        this.hashUsername(username),
+        this._publicResolverContract.address,
+      ),
     )
 
-    await this.setUsernamePublicKey(usernameHash, address, publicKey)
+    await this.setUsernamePublicKey(username, publicKey)
   }
 
   /**
@@ -128,12 +130,12 @@ export class ENS {
    * @param username
    * @returns public key
    */
-  public async getPublicKey(username: string): Promise<string> {
+  public async getPublicKey(username: string): Promise<PublicKey> {
     const [publicKeyX, publicKeyY] = await this._publicResolverContract.pubkey(this.hashUsername(username))
 
     const publicKey = joinPublicKey(publicKeyX, publicKeyY)
 
-    if (isPublicKeyValid(publicKey)) {
+    if (!isPublicKeyValid(publicKey)) {
       throw new Error('Public key is not set or is invalid')
     }
 
@@ -143,7 +145,7 @@ export class ENS {
   /**
    * Fetches all ENS data related to the provided username
    * @param username ENS username
-   * @returns
+   * @returns All user's data stored on ENS
    */
   public getUserData(username: string): Promise<EnsUserData> {
     return this._publicResolverContract.getAll(this.hashUsername(username))
@@ -151,24 +153,13 @@ export class ENS {
 
   /**
    * Sets user's public key to the user's ENS entry
-   * @param username ENS username namehash value
-   * @param address Owner of the username
+   * @param username ENS username
    * @param publicKey Public key that will be added to ENS
    */
-  private setUsernamePublicKey(usernameHash: string, address: string, publicKey: string): Promise<void> {
+  public setUsernamePublicKey(username: string, publicKey: PublicKey): Promise<void> {
     const [publicKeyX, publicKeyY] = splitPublicKey(publicKey)
-    const content = '0x00'
-    const name = 'subdomain-hidden'
     return waitTransaction(
-      this._publicResolverContract.setAll(
-        usernameHash,
-        address,
-        content,
-        '0x00',
-        publicKeyX,
-        publicKeyY,
-        name,
-      ),
+      this._publicResolverContract.setPubkey(this.hashUsername(username), publicKeyX, publicKeyY),
     )
   }
 
