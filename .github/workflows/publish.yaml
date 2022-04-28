@@ -3,6 +3,8 @@ name: Build and publish image
 on:
   push:
     branches: [master]
+    paths-ignore:
+      - 'js-library/**'
   workflow_dispatch:
 
 env:
@@ -33,3 +35,9 @@ jobs:
 
       - name: Build and publish image
         run: ./scripts/build-image.sh
+
+      - name: Commit new contract metadata
+        run: |
+          git add js-library/src/contracts/
+          git commit -m "release: update contract metadata"
+          git push origin master

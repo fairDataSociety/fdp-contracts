@@ -49,5 +49,6 @@ docker container rm $BLOCKCHAIN_CONTAINER_NAME
 echo "Copying meta files to the JS library"
 cp -a $ROOT_PATH/artifacts/contracts/. $JS_LIB_CONTRACTS_DIR
 cp $ENV_FILE $JS_LIB_CONTRACTS_DIR
+rename 's/(\w+).sol$/$1/' $JS_LIB_CONTRACTS_DIR/*.sol
 
 
