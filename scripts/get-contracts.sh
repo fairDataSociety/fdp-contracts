@@ -13,6 +13,7 @@ docker pull $FDP_CONTRACTS_IMAGE
 CONTAINER_ID=$(docker run --rm -d $FDP_CONTRACTS_IMAGE)
 
 # execute commands to fetch contracts.env and contracts folder
+rm -rfv $JS_LIB_CONTRACTS_DIR/*
 docker cp $CONTAINER_ID:/app/contracts/. $JS_LIB_CONTRACTS_DIR
 docker cp $CONTAINER_ID:/app/contracts.env $JS_LIB_CONTRACTS_DIR/contracts.env
 rename 's/(\w+).sol$/$1/' $JS_LIB_CONTRACTS_DIR/*.sol
