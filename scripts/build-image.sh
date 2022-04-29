@@ -10,7 +10,7 @@ CONTRACTS_IMAGE_NAME="$BLOCKCHAIN_CONTAINER_NAME-contracts"
 CONTRACTS_IMAGE_PREFIX="hub.docker.com/orgs/fairdatasociety/repositories/fdp-contracts"
 CONTRACTS_IMAGE_URL="$CONTRACTS_IMAGE_PREFIX/$CONTRACTS_IMAGE_NAME:$BLOCKCHAIN_VERSION"
 ENV_FILE="dist/contracts.env"
-JS_LIB_CONTRACTS_DIR=$ROOT_PATH/js-library/src/contracts
+JS_LIB_CONTRACTS_DIR="$ROOT_PATH/js-library/src/contracts"
 
 echo "Compiling contracts..."
 npm run compile
@@ -50,6 +50,6 @@ echo "Copying meta files to the JS library"
 rm -rfv $JS_LIB_CONTRACTS_DIR/*
 cp -a $ROOT_PATH/artifacts/contracts/. $JS_LIB_CONTRACTS_DIR
 cp $ENV_FILE $JS_LIB_CONTRACTS_DIR
-rename 's/(\w+).sol$/$1/' $JS_LIB_CONTRACTS_DIR/*.sol
+rename 's/(\w+).sol$/$1/' "$JS_LIB_CONTRACTS_DIR/*.sol"
 
 

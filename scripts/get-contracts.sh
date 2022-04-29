@@ -2,7 +2,7 @@
 ROOT_PATH=$(dirname "$0")
 ROOT_PATH=$( cd "$ROOT_PATH/.." && pwd )
 
-JS_LIB_CONTRACTS_DIR=$ROOT_PATH/js-library/src/contracts
+JS_LIB_CONTRACTS_DIR="$ROOT_PATH/js-library/src/contracts"
 
 FDP_CONTRACTS_IMAGE="hub.docker.com/orgs/fairdatasociety/repositories/fdp-contracts/swarm-test-blockchain-contracts:1.2.0"
 
@@ -16,7 +16,7 @@ CONTAINER_ID=$(docker run --rm -d $FDP_CONTRACTS_IMAGE)
 rm -rfv $JS_LIB_CONTRACTS_DIR/*
 docker cp $CONTAINER_ID:/app/contracts/. $JS_LIB_CONTRACTS_DIR
 docker cp $CONTAINER_ID:/app/contracts.env $JS_LIB_CONTRACTS_DIR/contracts.env
-rename 's/(\w+).sol$/$1/' $JS_LIB_CONTRACTS_DIR/*.sol
+rename 's/(\w+).sol$/$1/' "$JS_LIB_CONTRACTS_DIR/*.sol"
 
 # stop and delete the container
 docker container stop $CONTAINER_ID

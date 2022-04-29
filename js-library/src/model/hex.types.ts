@@ -7,7 +7,7 @@ import { FlavoredType } from './flavored.type'
  */
 export type HexString<Length extends number = number> = FlavoredType<
   string & {
-    readonly length: Length
+    readonly length?: Length
   },
   'HexString'
 >

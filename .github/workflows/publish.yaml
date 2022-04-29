@@ -44,7 +44,7 @@ jobs:
       - name: Commit new contract metadata
         run: |
           git add js-library/src/contracts/
-          git commit -m "release: update contract metadata"
+          git commit -m "build: update contract metadata"
           git push origin master
 
       # - name: Publish library
