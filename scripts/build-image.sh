@@ -9,7 +9,7 @@ BLOCKCHAIN_CONTAINER_NAME="$BEE_ENV_PREFIX-blockchain"
 CONTRACTS_IMAGE_NAME="$BLOCKCHAIN_CONTAINER_NAME-contracts"
 CONTRACTS_IMAGE_PREFIX="hub.docker.com/orgs/fairdatasociety/repositories/fdp-contracts"
 CONTRACTS_IMAGE_URL="$CONTRACTS_IMAGE_PREFIX/$CONTRACTS_IMAGE_NAME:$BLOCKCHAIN_VERSION"
-ENV_FILE="dist/contracts.env"
+ENV_FILE="$ROOT_PATH/dist/contracts.env"
 JS_LIB_CONTRACTS_DIR="$ROOT_PATH/js-library/src/contracts"
 
 echo "Compiling contracts..."
@@ -47,6 +47,7 @@ docker container stop $BLOCKCHAIN_CONTAINER_NAME
 docker container rm $BLOCKCHAIN_CONTAINER_NAME
 
 echo "Copying meta files to the JS library"
+sudo apt-get install rename
 rm -rfv $JS_LIB_CONTRACTS_DIR/*
 cp -a $ROOT_PATH/artifacts/contracts/. $JS_LIB_CONTRACTS_DIR
 cp $ENV_FILE $JS_LIB_CONTRACTS_DIR
