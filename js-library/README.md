@@ -4,28 +4,101 @@ This library provides simple interface to interact with FDS contracts.
 
 ## Installation
 
+The library depends on the [ethers.js](https://github.com/ethers-io/ethers.js/) library. So in order to use
+the library, `ethers` must be installed.
+
+To install the both libraries:
+
+```bash
+npm install --save @fairdatasociety/fdp-contracts ethers
+```
+
+## Usage
+
+To work with local `fdp-contracts` docker image, execute the following command:
+
+```bash
+docker run -p 9545:9545
+hub.docker.com/orgs/fairdatasociety/repositories/fdp-contracts/fdp-contracts/swarm-test-blockchain-contracts:1.2.0
+```
+
+> **_NOTE_:** You can add the `--rm` flag to automatically remove the container after execution.
+
+### ENS
+
+To interact with Ethereum Name Service (ENS), import and instantiate the ENS class. The ENS class currently
+only supports localhost envirnoment, which means it will use local `fdp-contracts` image on address
+`http://localhost:9545`.
+
+Here is an example how to interact with ENS:
+
+```typescript
+import { ENS } from '@fairdatasociety/fdp-contracts'
+
+async function example() {
+  const ens = new ENS(Environment.LOCALHOST)
+  const username = 'example'
+
+  const isUsernameAvailable = await ens.isUsernameAvailable(username)
+
+  console.log(`Username ${username} is available: ${isUsernameAvailable}`)
+}
+
+example()
+```
+
+For methods that require transactions, a signer must be provided. Signer can be specified when creating an
+object of the ENS class, or later by calling the `connect` method. Signer can be a hex string of a private
+key, or an `ethers.js` signer.
+
+```typescript
+import { Wallet } from 'ethers'
+import { ENS, Environment } from '@fairdatasociety/fdp-contracts'
+
+async function example() {
+  const ens = new ENS() // By default the LOCALHOST environment is used
+  const wallet = new Wallet('0x...', ens.provider)
+
+  ens.connect(wallet)
+
+  const address = await wallet.getAddress()
+
+  await ens.registerUsername('example', address, wallet.publicKey)
+
+  console.log('New username successfully registered.')
+}
+
+example()
+```
+
 ## Development
 
-The library requires compiled FDP contracts to work along with their addresses on blockchain. For development,
-a local Docker image can be built, by running the following command in the root directory:
+To compile the library in watch mode:
 
 ```bash
-./scripts/build-image.sh
+npm start
 ```
 
-This command will copy contract JSON files into the `js-library/src/contracts` directory with additional
-`contracts.env` file which will contain addresses of deployed contracts inside the image.
-
-To work with an existing FDP contracts image, run:
+To build the library:
 
 ```bash
-./scripts/get-contracts.sh
+npm run build
 ```
 
-This script will just extract contract JSON files and addresses from the published image.
+### Local installation
 
-Either image is chosen, a container must be started with the chosen image in order to use the library for
-development.
+The library can be linked, so it can be imported as a node module from another local project. First, inside
+this directory run:
+
+```bash
+npm link
+```
+
+Then in root directory of another project, the library can be installed with:
+
+```bash
+npm link @fairdatasociety/fdp-contracts
+```
 
 ## Tests
 
