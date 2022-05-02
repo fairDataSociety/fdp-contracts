@@ -41,7 +41,7 @@ jobs:
         run: ./scripts/build-image.sh
 
       - name: Publish image
-        run: docker push "$CONTRACTS_IMAGE_URL"
+        run: ./scripts/release-image.sh
 
       - name: Commit new contract metadata
         run: |
