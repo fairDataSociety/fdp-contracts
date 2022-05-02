@@ -16,7 +16,7 @@ export const ENS_REGISTRY_ADDRESS = process.env.ENS_REGISTRY_ADDRESS
 export const PUBLIC_RESOLVER_ADDRESS = process.env.PUBLIC_RESOLVER_ADDRESS
 export const SUBDOMAIN_REGISTRAR_ADDRESS = process.env.SUBDOMAIN_REGISTRAR_ADDRESS
 
-type SignerOrProvider = string | providers.Provider | Signer
+export type SignerOrProvider = string | providers.Provider | Signer
 
 /**
  * ENS Class
@@ -122,7 +122,7 @@ export class ENS {
       ),
     )
 
-    await this.setUsernamePublicKey(username, publicKey)
+    await this.setPublicKey(username, publicKey)
   }
 
   /**
@@ -156,7 +156,7 @@ export class ENS {
    * @param username ENS username
    * @param publicKey Public key that will be added to ENS
    */
-  public setUsernamePublicKey(username: string, publicKey: PublicKey): Promise<void> {
+  public setPublicKey(username: string, publicKey: PublicKey): Promise<void> {
     const [publicKeyX, publicKeyY] = splitPublicKey(publicKey)
     return waitTransaction(
       this._publicResolverContract.setPubkey(this.hashUsername(username), publicKeyX, publicKeyY),
