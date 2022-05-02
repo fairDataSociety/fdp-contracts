@@ -6,9 +6,10 @@ import { FlavoredType } from './flavored.type'
  * TODO: Make Length mandatory: https://github.com/ethersphere/bee-js/issues/208
  */
 export type HexString<Length extends number = number> = FlavoredType<
-  string & {
-    readonly length?: Length
-  },
+  | string
+  | {
+      readonly length?: Length
+    },
   'HexString'
 >
 

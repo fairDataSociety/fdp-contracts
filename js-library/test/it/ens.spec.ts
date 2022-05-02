@@ -21,19 +21,17 @@ describe('ENS service tests', () => {
   })
 
   test('Should register username and set public key', async () => {
-    const address = (await wallet.getAddress()) as EthAddress
+    const address = await wallet.getAddress()
 
-    const publicKey = String(wallet.publicKey) as PublicKey
-
-    await ens.registerUsername(username, address, publicKey)
+    await ens.registerUsername(username, address, wallet.publicKey)
 
     const owner = await ens.getUsernameOwner(username)
 
     expect(owner).toEqual(address)
 
-    const fetchedPublicKey = await ens.getPublicKey(username)
+    const publicKey = await ens.getPublicKey(username)
 
-    expect(fetchedPublicKey).toEqual(publicKey)
+    expect(publicKey).toEqual(wallet.publicKey)
   })
 
   test('Accessing public key of unexisting username should throw error', async () => {
