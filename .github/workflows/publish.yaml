@@ -9,10 +9,6 @@ on:
     branches: [master]
   workflow_dispatch:
 
-env:
-  BEE_ENV_PREFIX: 'swarm-test'
-  BLOCKCHAIN_VERSION: '1.2.0'
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,13 +26,6 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-
-      - name: Set environment variables
-        run: |
-          BEE_ENV_PREFIX=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.sh BEE_ENV_PREFIX)
-          BLOCKCHAIN_VERSION=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.sh BLOCKCHAIN_VERSION)
-          echo "BLOCKCHAIN_VERSION=$BLOCKCHAIN_VERSION" >> $GITHUB_ENV
-          echo "BEE_ENV_PREFIX=$BEE_ENV_PREFIX" >> $GITHUB_ENV
 
       - name: Build image
         run: ./scripts/build-image.sh
