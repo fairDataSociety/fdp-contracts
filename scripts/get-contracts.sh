@@ -4,7 +4,7 @@ ROOT_PATH=$( cd "$ROOT_PATH/.." && pwd )
 
 JS_LIB_CONTRACTS_DIR="$ROOT_PATH/js-library/src/contracts"
 
-FDP_CONTRACTS_IMAGE="hub.docker.com/orgs/fairdatasociety/repositories/fdp-contracts/swarm-test-blockchain-contracts:1.2.0"
+FDP_CONTRACTS_IMAGE="hub.docker.com/orgs/fairdatasociety/repositories/swarm-test-blockchain:1.2.0"
 
 # pull the latest fdp-contracts docker image
 docker pull $FDP_CONTRACTS_IMAGE

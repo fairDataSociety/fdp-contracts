@@ -1,6 +1,5 @@
 import { Wallet } from 'ethers'
 import { ENS } from '../..'
-import { EthAddress, PublicKey } from '../../src/model/hex.types'
 
 describe('ENS service tests', () => {
   const ens = new ENS()
