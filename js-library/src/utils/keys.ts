@@ -38,7 +38,7 @@ export function splitPublicKey(publicKey: PublicKey): [PublicKeyX, PublicKeyY] {
 
 export function joinPublicKey(publicKeyX: PublicKeyX, publicKeyY: PublicKeyY): PublicKey {
   assert(
-    !isHexStringPublicKeyPart(publicKeyX) || !isHexStringPublicKeyPart(publicKeyY),
+    isHexStringPublicKeyPart(publicKeyX) && isHexStringPublicKeyPart(publicKeyY),
     'One or both public key parts are not hex strings.',
   )
   return ('0x04' + publicKeyX.substring(2) + publicKeyY.substring(2)) as PublicKey

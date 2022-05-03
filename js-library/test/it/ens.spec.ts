@@ -35,6 +35,8 @@ describe('ENS service tests', () => {
   })
 
   test('Accessing public key of unexisting username should throw error', async () => {
-    expect(ens.getPublicKey(missingUsername)).rejects.toEqual('[Error: Public key is not set or is invalid]')
+    expect(ens.getPublicKey(missingUsername)).rejects.toEqual(
+      new Error('Public key is not set or is invalid'),
+    )
   })
 })
