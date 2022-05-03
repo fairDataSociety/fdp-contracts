@@ -43,10 +43,12 @@ jobs:
         run: ./scripts/release-image.sh
 
       - name: Commit new contract metadata
-        run: |
-          git add js-library/src/contracts/
-          git commit -m "build: update contract metadata"
-          git push origin master
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: CI
+          author_email: actions@github.com
+          message: 'build: update contract metadata'
+          add: 'js-library/src/contracts/'
 
       # - name: Publish library
       #   run: npm run build --prefix js-library
