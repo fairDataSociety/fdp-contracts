@@ -7,7 +7,7 @@ BEE_ENV_PREFIX=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.s
 BLOCKCHAIN_VERSION=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.sh BLOCKCHAIN_VERSION)
 BLOCKCHAIN_CONTAINER_NAME="$BEE_ENV_PREFIX-blockchain"
 CONTRACTS_IMAGE_NAME="swarm-test-blockchain"
-CONTRACTS_IMAGE_PREFIX="hub.docker.com/orgs/fairdatasociety/repositories"
+CONTRACTS_IMAGE_PREFIX="fairdatasociety"
 CONTRACTS_IMAGE_URL="$CONTRACTS_IMAGE_PREFIX/$CONTRACTS_IMAGE_NAME:$BLOCKCHAIN_VERSION"
 
 docker push "$CONTRACTS_IMAGE_URL"

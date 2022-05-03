@@ -10,7 +10,6 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_PREFIX: 'hub.docker.com/orgs/fairdatasociety/repositories/fdp-contracts'
   BEE_ENV_PREFIX: 'swarm-test'
   BLOCKCHAIN_VERSION: '1.2.0'
 
