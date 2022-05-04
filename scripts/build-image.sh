@@ -9,7 +9,8 @@ BLOCKCHAIN_CONTAINER_NAME="$BEE_ENV_PREFIX-blockchain"
 CONTRACTS_IMAGE_NAME="swarm-test-blockchain"
 CONTRACTS_IMAGE_PREFIX="fairdatasociety"
 CONTRACTS_IMAGE_URL="$CONTRACTS_IMAGE_PREFIX/$CONTRACTS_IMAGE_NAME:$BLOCKCHAIN_VERSION"
-ENV_FILE="$ROOT_PATH/dist/contracts.env"
+DIST_FOLDER="$ROOT_PATH/dist"
+ENV_FILE="$DIST_FOLDER/contracts.env"
 JS_LIB_CONTRACTS_DIR="$ROOT_PATH/js-library/src/contracts"
 
 echo "Compiling contracts..."
@@ -29,6 +30,7 @@ SUBDOMAIN_REGISTRAR_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'SubdomainRegis
 PUBLIC_RESOLVER_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'PublicResolver deployed to: \K[^\s]*')
 
 # Saving contract addresses to an .env file
+mkdir $DIST_FOLDER
 echo "ENS_REGISTRY_ADDRESS=$ENS_REGISTRY_ADDRESS" > $ENV_FILE
 echo "SUBDOMAIN_REGISTRAR_ADDRESS=$SUBDOMAIN_REGISTRAR_ADDRESS" >> $ENV_FILE
 echo "PUBLIC_RESOLVER_ADDRESS=$PUBLIC_RESOLVER_ADDRESS" >> $ENV_FILE
@@ -47,10 +49,10 @@ docker container stop $BLOCKCHAIN_CONTAINER_NAME
 docker container rm $BLOCKCHAIN_CONTAINER_NAME
 
 echo "Copying meta files to the JS library"
-sudo apt-get install rename
 rm -rfv $JS_LIB_CONTRACTS_DIR/*
 cp -a $ROOT_PATH/artifacts/contracts/. $JS_LIB_CONTRACTS_DIR
 cp $ENV_FILE $JS_LIB_CONTRACTS_DIR
-rename 's/(\w+).sol$/$1/' "$JS_LIB_CONTRACTS_DIR/*.sol"
+for file in "$JS_LIB_CONTRACTS_DIR"*;
+  do mv "$file" "$(echo $file | sed -r 's/^(.*).sol$/\1/')"; done
 
 
