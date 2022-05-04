@@ -52,7 +52,7 @@ echo "Copying meta files to the JS library"
 rm -rfv $JS_LIB_CONTRACTS_DIR/*
 cp -a $ROOT_PATH/artifacts/contracts/. $JS_LIB_CONTRACTS_DIR
 cp $ENV_FILE $JS_LIB_CONTRACTS_DIR
-for file in "$JS_LIB_CONTRACTS_DIR"*;
+for file in "$JS_LIB_CONTRACTS_DIR"*".sol";
   do mv "$file" "$(echo $file | sed -r 's/^(.*).sol$/\1/')"; done
 
 
