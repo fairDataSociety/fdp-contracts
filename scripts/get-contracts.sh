@@ -1,4 +1,9 @@
 #!/bin/bash
+
+# This script is used to extract contract JSON metadata files from an existing fdp-contracts image
+# It will update contract files inside the 'js-library/src/contracts' directory along with
+# addresses of the contracts
+
 ROOT_PATH=$(dirname "$0")
 ROOT_PATH=$( cd "$ROOT_PATH/.." && pwd )
 
@@ -16,7 +21,7 @@ CONTAINER_ID=$(docker run --rm -d $FDP_CONTRACTS_IMAGE)
 rm -rfv $JS_LIB_CONTRACTS_DIR/*
 docker cp $CONTAINER_ID:/app/contracts/. $JS_LIB_CONTRACTS_DIR
 docker cp $CONTAINER_ID:/app/contracts.env $JS_LIB_CONTRACTS_DIR/contracts.env
-rename 's/(\w+).sol$/$1/' "$JS_LIB_CONTRACTS_DIR/*.sol"
+node "$ROOT_PATH/scripts/rename-contracts.js" "$JS_LIB_CONTRACTS_DIR"
 
 # stop and delete the container
 docker container stop $CONTAINER_ID

@@ -18,7 +18,7 @@ npm install --save @fairdatasociety/fdp-contracts ethers
 To work with local `fdp-contracts` docker image, execute the following command:
 
 ```bash
-docker run -p 9545:9545 hub.docker.com/orgs/fairdatasociety/repositories/swarm-test-blockchain:1.2.0
+docker run -p 9545:9545 fairdatasociety/swarm-test-blockchain:1.2.0
 ```
 
 > **_NOTE_:** You can add the `--rm` flag to automatically remove the container after execution.
@@ -42,8 +42,6 @@ async function example() {
 
   console.log(`Username ${username} is available: ${isUsernameAvailable}`)
 }
-
-example()
 ```
 
 For methods that require transactions, a signer must be provided. Signer can be specified when creating an
@@ -66,8 +64,6 @@ async function example() {
 
   console.log('New username successfully registered.')
 }
-
-example()
 ```
 
 ## Development

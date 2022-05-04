@@ -30,14 +30,14 @@ SUBDOMAIN_REGISTRAR_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'SubdomainRegis
 PUBLIC_RESOLVER_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'PublicResolver deployed to: \K[^\s]*')
 
 # Saving contract addresses to an .env file
-mkdir $DIST_FOLDER
+mkdir "$DIST_FOLDER"
 echo "ENS_REGISTRY_ADDRESS=$ENS_REGISTRY_ADDRESS" > $ENV_FILE
 echo "SUBDOMAIN_REGISTRAR_ADDRESS=$SUBDOMAIN_REGISTRAR_ADDRESS" >> $ENV_FILE
 echo "PUBLIC_RESOLVER_ADDRESS=$PUBLIC_RESOLVER_ADDRESS" >> $ENV_FILE
 echo "Contract addresses saved to: $ENV_FILE"
 
-docker cp $ENV_FILE $BLOCKCHAIN_CONTAINER_NAME:/app/contracts.env
-docker cp artifacts/contracts/. $BLOCKCHAIN_CONTAINER_NAME:/app/contracts
+docker cp "$ENV_FILE" "$BLOCKCHAIN_CONTAINER_NAME":/app/contracts.env
+docker cp artifacts/contracts/. "$BLOCKCHAIN_CONTAINER_NAME":/app/contracts
 
 echo "Creating a new image..."
 docker commit $BLOCKCHAIN_CONTAINER_NAME $CONTRACTS_IMAGE_URL
@@ -49,7 +49,7 @@ docker container stop $BLOCKCHAIN_CONTAINER_NAME
 docker container rm $BLOCKCHAIN_CONTAINER_NAME
 
 echo "Copying meta files to the JS library"
-rm -rfv $JS_LIB_CONTRACTS_DIR/*
-cp -a $ROOT_PATH/artifacts/contracts/. $JS_LIB_CONTRACTS_DIR
-cp $ENV_FILE $JS_LIB_CONTRACTS_DIR
-node scripts/rename-contracts.js $JS_LIB_CONTRACTS_DIR
+rm -rfv "$JS_LIB_CONTRACTS_DIR"/*
+cp -a "$ROOT_PATH/artifacts/contracts/." "$JS_LIB_CONTRACTS_DIR"
+cp "$ENV_FILE" "$JS_LIB_CONTRACTS_DIR"
+node scripts/rename-contracts.js "$JS_LIB_CONTRACTS_DIR"
