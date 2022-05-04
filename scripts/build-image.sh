@@ -55,7 +55,7 @@ cp $ENV_FILE $JS_LIB_CONTRACTS_DIR
 for file in "$JS_LIB_CONTRACTS_DIR"*.sol;
   do
     [ -f "$file" ] || break;
-    mv "$file" "$(echo $file | sed -r 's/^(.*).sol$/\1/')";
+    mv "$file"/* "$(echo $file | sed -r 's/^(.*).sol$/\1/')";
   done
 
 
