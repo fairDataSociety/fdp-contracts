@@ -1,16 +1,16 @@
-import { Environment } from '../model/environment.enum'
-import ENSRegistryContractLocal from '../contracts/ENSRegistry/ENSRegistry.json'
-import PublicResolverContractLocal from '../contracts/PublicResolver/PublicResolver.json'
-import SubdomainRegistrarContractLocal from '../contracts/SubdomainRegistrar/SubdomainRegistrar.json'
+import { Environments } from '../model/environments.enum'
+import { Environment } from '../model/environment.model'
+import { EthAddress } from '../model'
 
-export const ENVIRONMENT_RPC_URLS = {
-  [Environment.LOCALHOST]: 'http://127.0.0.1:9545/',
-}
+export type EnvironmentConfigs = { [environment in Environments]: Environment }
 
-export const CONTRACTS_METADATA = {
-  [Environment.LOCALHOST]: {
-    ENSRegistryContract: ENSRegistryContractLocal,
-    PublicResolverContract: PublicResolverContractLocal,
-    SubdomainRegistrarContract: SubdomainRegistrarContractLocal,
+export const ENVIRONMENT_CONFIGS: EnvironmentConfigs = {
+  [Environments.LOCALHOST]: {
+    rpcUrl: 'http://127.0.0.1:9545/',
+    contractAddresses: {
+      ensRegistry: process.env.ENS_REGISTRY_ADDRESS as EthAddress,
+      subdomainRegistrar: process.env.SUBDOMAIN_REGISTRAR_ADDRESS as EthAddress,
+      publicResolver: process.env.PUBLIC_RESOLVER_ADDRESS as EthAddress,
+    },
   },
 }

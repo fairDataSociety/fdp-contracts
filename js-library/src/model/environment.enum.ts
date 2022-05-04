@@ -1,3 +1,0 @@
-export enum Environment {
-  LOCALHOST,
-}

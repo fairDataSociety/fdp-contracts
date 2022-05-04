@@ -1,5 +1,5 @@
-interface Flavored<Type> {
-  _type?: Type
+interface Flavored<Name> {
+  _type?: Name
 }
 
 export type FlavoredType<Type, Name> = Type & Flavored<Name>

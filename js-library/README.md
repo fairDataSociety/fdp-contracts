@@ -25,9 +25,24 @@ docker run -p 9545:9545 fairdatasociety/swarm-test-blockchain:1.2.0
 
 ### ENS
 
-To interact with Ethereum Name Service (ENS), import and instantiate the ENS class. The ENS class currently
-only supports localhost envirnoment, which means it will use local `fdp-contracts` image on address
-`http://localhost:9545`.
+To interact with Ethereum Name Service (ENS), import and instantiate the ENS class. The ENS class can be
+configured with predefined configurations or with custom one. Currently, the only predefined configuration is
+for the localhost envirnoment, which means it will use the `swarm-test-blockchain` image running locally on
+`http://localhost:9545` address.
+
+To use custom configuration, provide an instance of `Environment` type, or modify some of the predefined
+configurations:
+
+```typescript
+import { ENS, Environments, ENVIRONMENT_CONFIGS, Environment } from '@fairdatasociety/fdp-contracts'
+
+const customConfig: Environment = {
+  ...ENVIRONMENT_CONFIGS[Environments.LOCALHOST],
+  rpcUrl: 'www.example.com',
+}
+
+const ens = new ENS(customConfig)
+```
 
 Here is an example how to interact with ENS:
 
@@ -35,7 +50,7 @@ Here is an example how to interact with ENS:
 import { ENS } from '@fairdatasociety/fdp-contracts'
 
 async function example() {
-  const ens = new ENS(Environment.LOCALHOST)
+  const ens = new ENS()
   const username = 'example'
 
   const isUsernameAvailable = await ens.isUsernameAvailable(username)
@@ -50,10 +65,10 @@ key, or an `ethers.js` signer.
 
 ```typescript
 import { Wallet } from 'ethers'
-import { ENS, Environment } from '@fairdatasociety/fdp-contracts'
+import { ENS } from '@fairdatasociety/fdp-contracts'
 
 async function example() {
-  const ens = new ENS() // By default the LOCALHOST environment is used
+  const ens = new ENS()
   const wallet = new Wallet('0x...', ens.provider)
 
   ens.connect(wallet)

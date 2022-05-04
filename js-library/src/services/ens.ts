@@ -1,23 +1,23 @@
 import { utils, Contract, Signer, providers } from 'ethers'
 import { ENS_DOMAIN, NULL_ADDRESS } from '../constants/constants'
-import { ENVIRONMENT_RPC_URLS, CONTRACTS_METADATA } from '../constants/environment'
+import { ENVIRONMENT_CONFIGS } from '../constants/environment'
 import { waitTransaction } from '../utils/tx'
 import { joinPublicKey, isPublicKeyValid, splitPublicKey } from '../utils/keys'
-import { Environment } from '../model/environment.enum'
+import { Environments } from '../model/environments.enum'
 import { EnsUserData } from '../model/ens-user-data.model'
 import { EthAddress, PublicKey } from '../model/hex.types'
+import { Environment } from '../model/environment.model'
+import ENSRegistryContractLocal from '../contracts/ENSRegistry/ENSRegistry.json'
+import PublicResolverContractLocal from '../contracts/PublicResolver/PublicResolver.json'
+import SubdomainRegistrarContractLocal from '../contracts/SubdomainRegistrar/SubdomainRegistrar.json'
 
 const { keccak256, toUtf8Bytes, namehash } = utils
 
-/**
- * Contract addresses
- */
-export const ENS_REGISTRY_ADDRESS = process.env.ENS_REGISTRY_ADDRESS
-export const PUBLIC_RESOLVER_ADDRESS = process.env.PUBLIC_RESOLVER_ADDRESS
-export const SUBDOMAIN_REGISTRAR_ADDRESS = process.env.SUBDOMAIN_REGISTRAR_ADDRESS
-
 export type SignerOrProvider = string | providers.Provider | Signer
 
+export const ENSRegistryContract = ENSRegistryContractLocal
+export const PublicResolverContract = PublicResolverContractLocal
+export const SubdomainRegistrarContract = SubdomainRegistrarContractLocal
 /**
  * ENS Class
  * Provides interface for interaction with the ENS smart contracts
@@ -29,27 +29,22 @@ export class ENS {
   private _publicResolverContract: Contract
 
   constructor(
-    environment: Environment = Environment.LOCALHOST,
+    config: Environment = ENVIRONMENT_CONFIGS[Environments.LOCALHOST],
     signerOrProvider: SignerOrProvider | null = null,
     private domain = ENS_DOMAIN,
   ) {
-    this._provider = new providers.JsonRpcProvider(ENVIRONMENT_RPC_URLS[environment])
+    this._provider = new providers.JsonRpcProvider(config.rpcUrl)
 
-    const { ENSRegistryContract, PublicResolverContract, SubdomainRegistrarContract } =
-      CONTRACTS_METADATA[environment]
+    const { ensRegistry, subdomainRegistrar, publicResolver } = config.contractAddresses
 
-    this._ensRegistryContract = new Contract(
-      ENS_REGISTRY_ADDRESS as string,
-      ENSRegistryContract.abi,
-      this._provider,
-    )
+    this._ensRegistryContract = new Contract(ensRegistry as string, ENSRegistryContract.abi, this._provider)
     this._publicResolverContract = new Contract(
-      PUBLIC_RESOLVER_ADDRESS as string,
+      publicResolver as string,
       PublicResolverContract.abi,
       this._provider,
     )
     this._subdomainRegistrarContract = new Contract(
-      SUBDOMAIN_REGISTRAR_ADDRESS as string,
+      subdomainRegistrar as string,
       SubdomainRegistrarContract.abi,
       this._provider,
     )
