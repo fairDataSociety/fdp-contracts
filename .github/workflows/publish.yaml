@@ -37,5 +37,6 @@ jobs:
           message: 'build: update contract metadata'
           add: 'js-library/src/contracts/'
 
-      # - name: Publish library
-      #   run: npm run build --prefix js-library
+      - name: Publish library
+        # npm login
+        run: npm publish --access public --prefix js-library
