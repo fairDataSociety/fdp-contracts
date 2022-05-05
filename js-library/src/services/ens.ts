@@ -37,14 +37,10 @@ export class ENS {
 
     const { ensRegistry, subdomainRegistrar, publicResolver } = config.contractAddresses
 
-    this._ensRegistryContract = new Contract(ensRegistry as string, ENSRegistryContract.abi, this._provider)
-    this._publicResolverContract = new Contract(
-      publicResolver as string,
-      PublicResolverContract.abi,
-      this._provider,
-    )
+    this._ensRegistryContract = new Contract(ensRegistry, ENSRegistryContract.abi, this._provider)
+    this._publicResolverContract = new Contract(publicResolver, PublicResolverContract.abi, this._provider)
     this._subdomainRegistrarContract = new Contract(
-      subdomainRegistrar as string,
+      subdomainRegistrar,
       SubdomainRegistrarContract.abi,
       this._provider,
     )
