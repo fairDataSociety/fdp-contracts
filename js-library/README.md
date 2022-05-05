@@ -26,9 +26,17 @@ docker run -p 9545:9545 fairdatasociety/swarm-test-blockchain:1.2.0
 ### ENS
 
 To interact with Ethereum Name Service (ENS), import and instantiate the ENS class. The ENS class can be
-configured with predefined configurations or with custom one. Currently, the only predefined configuration is
-for the localhost envirnoment, which means it will use the `swarm-test-blockchain` image running locally on
+configured with predefined configurations or with a custom one. Currently, the only predefined configuration
+is for the localhost envirnoment, which means it will use the `swarm-test-blockchain` image running locally on
 `http://localhost:9545` address.
+
+Predefined configurations can be imported and provided to ENS.
+
+```typescript
+import { ENS, Environments, ENVIRONMENT_CONFIGS } from '@fairdatasociety/fdp-contracts'
+
+const ens = new ENS(ENVIRONMENT_CONFIGS[Environments.LOCALHOST])
+```
 
 To use custom configuration, provide an instance of `Environment` type, or modify some of the predefined
 configurations:
@@ -50,7 +58,7 @@ Here is an example how to interact with ENS:
 import { ENS } from '@fairdatasociety/fdp-contracts'
 
 async function example() {
-  const ens = new ENS()
+  const ens = new ENS() // Default configuration is for localhost
   const username = 'example'
 
   const isUsernameAvailable = await ens.isUsernameAvailable(username)
@@ -74,10 +82,11 @@ async function example() {
   ens.connect(wallet)
 
   const address = await wallet.getAddress()
+  const username = 'example'
 
-  await ens.registerUsername('example', address, wallet.publicKey)
+  await ens.registerUsername(username, address, wallet.publicKey)
 
-  console.log('New username successfully registered.')
+  console.log(`Username ${username} successfully registered.`)
 }
 ```
 
