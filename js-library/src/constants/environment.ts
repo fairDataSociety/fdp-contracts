@@ -14,3 +14,7 @@ export const ENVIRONMENT_CONFIGS: EnvironmentConfigs = {
     },
   },
 }
+
+export function getEnvironmentConfig(environment: Environments): Environment {
+  return ENVIRONMENT_CONFIGS[environment]
+}

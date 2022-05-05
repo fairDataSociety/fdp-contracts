@@ -30,22 +30,22 @@ configured with predefined configurations or with a custom one. Currently, the o
 is for the localhost envirnoment, which means it will use the `swarm-test-blockchain` image running locally on
 `http://localhost:9545` address.
 
-Predefined configurations can be imported and provided to ENS.
+Predefined configurations can be fetched using the `getEnvironmentConfig` function.
 
 ```typescript
-import { ENS, Environments, ENVIRONMENT_CONFIGS } from '@fairdatasociety/fdp-contracts'
+import { ENS, Environments, getEnvironmentConfig } from '@fairdatasociety/fdp-contracts'
 
-const ens = new ENS(ENVIRONMENT_CONFIGS[Environments.LOCALHOST])
+const ens = new ENS(getEnvironmentConfig(Environments.LOCALHOST))
 ```
 
 To use custom configuration, provide an instance of `Environment` type, or modify some of the predefined
 configurations:
 
 ```typescript
-import { ENS, Environments, ENVIRONMENT_CONFIGS, Environment } from '@fairdatasociety/fdp-contracts'
+import { ENS, Environments, getEnvironmentConfig, Environment } from '@fairdatasociety/fdp-contracts'
 
 const customConfig: Environment = {
-  ...ENVIRONMENT_CONFIGS[Environments.LOCALHOST],
+  ...getEnvironmentConfig(Environments.LOCALHOST),
   rpcUrl: 'www.example.com',
 }
 

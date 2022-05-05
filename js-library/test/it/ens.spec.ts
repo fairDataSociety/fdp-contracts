@@ -1,8 +1,8 @@
 import { Wallet } from 'ethers'
-import { ENS } from '../..'
+import { ENS, Environments, getEnvironmentConfig } from '../..'
 
 describe('ENS service tests', () => {
-  const ens = new ENS()
+  const ens = new ENS(getEnvironmentConfig(Environments.LOCALHOST))
   const username = 'test_user'
   const missingUsername = 'nouser'
   const privateKey = '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d'
