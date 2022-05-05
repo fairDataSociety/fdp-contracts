@@ -1,4 +1,4 @@
-import { utils, Contract, Signer, providers } from 'ethers'
+import { utils, Contract, Signer, providers, BigNumber } from 'ethers'
 import { ENS_DOMAIN, NULL_ADDRESS } from '../constants/constants'
 import { ENVIRONMENT_CONFIGS } from '../constants/environment'
 import { waitTransaction } from '../utils/tx'
@@ -10,6 +10,9 @@ import { Environment } from '../model/environment.model'
 import ENSRegistryContractLocal from '../contracts/ENSRegistry/ENSRegistry.json'
 import PublicResolverContractLocal from '../contracts/PublicResolver/PublicResolver.json'
 import SubdomainRegistrarContractLocal from '../contracts/SubdomainRegistrar/SubdomainRegistrar.json'
+import { EnsUsername } from '../model/domain.type'
+import { assertUsername } from '../utils/domains'
+import { assertMinBalance } from '../utils/blockchain'
 
 const { keccak256, toUtf8Bytes, namehash } = utils
 
@@ -18,6 +21,9 @@ export type SignerOrProvider = string | providers.Provider | Signer
 export const ENSRegistryContract = ENSRegistryContractLocal
 export const PublicResolverContract = PublicResolverContractLocal
 export const SubdomainRegistrarContract = SubdomainRegistrarContractLocal
+
+const MIN_BALANCE = BigNumber.from('10000000000000000')
+
 /**
  * ENS Class
  * Provides interface for interaction with the ENS smart contracts
@@ -72,7 +78,9 @@ export class ENS {
    * @param username ENS username
    * @returns owner's address
    */
-  public async getUsernameOwner(username: string): Promise<EthAddress> {
+  public async getUsernameOwner(username: EnsUsername): Promise<EthAddress> {
+    assertUsername(username)
+
     const usernameHash = this.hashUsername(username)
 
     return this._ensRegistryContract.owner(usernameHash)
@@ -83,7 +91,8 @@ export class ENS {
    * @param username ENS username
    * @returns True if the username is available
    */
-  public async isUsernameAvailable(username: string): Promise<boolean> {
+  public async isUsernameAvailable(username: EnsUsername): Promise<boolean> {
+    assertUsername(username)
     const owner = await this.getUsernameOwner(username)
     return owner === NULL_ADDRESS
   }
@@ -93,7 +102,14 @@ export class ENS {
    * @param username ENS username
    * @param address Owner address of the username
    */
-  public async registerUsername(username: string, address: EthAddress, publicKey: PublicKey): Promise<void> {
+  public async registerUsername(
+    username: EnsUsername,
+    address: EthAddress,
+    publicKey: PublicKey,
+  ): Promise<void> {
+    assertUsername(username)
+    assertMinBalance(this.provider, address, MIN_BALANCE)
+
     const ownerAddress = await this.getUsernameOwner(username)
 
     if (ownerAddress !== NULL_ADDRESS && ownerAddress !== address) {
@@ -121,7 +137,9 @@ export class ENS {
    * @param username
    * @returns public key
    */
-  public async getPublicKey(username: string): Promise<PublicKey> {
+  public async getPublicKey(username: EnsUsername): Promise<PublicKey> {
+    assertUsername(username)
+
     const [publicKeyX, publicKeyY] = await this._publicResolverContract.pubkey(this.hashUsername(username))
 
     const publicKey = joinPublicKey(publicKeyX, publicKeyY)
@@ -138,7 +156,8 @@ export class ENS {
    * @param username ENS username
    * @returns All user's data stored on ENS
    */
-  public getUserData(username: string): Promise<EnsUserData> {
+  public getUserData(username: EnsUsername): Promise<EnsUserData> {
+    assertUsername(username)
     return this._publicResolverContract.getAll(this.hashUsername(username))
   }
 
@@ -147,15 +166,16 @@ export class ENS {
    * @param username ENS username
    * @param publicKey Public key that will be added to ENS
    */
-  public setPublicKey(username: string, publicKey: PublicKey): Promise<void> {
+  public setPublicKey(username: EnsUsername, publicKey: PublicKey): Promise<void> {
+    assertUsername(username)
     const [publicKeyX, publicKeyY] = splitPublicKey(publicKey)
     return waitTransaction(
       this._publicResolverContract.setPubkey(this.hashUsername(username), publicKeyX, publicKeyY),
     )
   }
 
-  private hashUsername(subdomain: string): string {
-    return namehash(`${subdomain}.${this.domain}`)
+  private hashUsername(username: EnsUsername): string {
+    return namehash(`${username}.${this.domain}`)
   }
 }
 
