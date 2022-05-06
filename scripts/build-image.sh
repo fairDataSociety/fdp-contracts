@@ -10,7 +10,7 @@ CONTRACTS_IMAGE_NAME="swarm-test-blockchain"
 CONTRACTS_IMAGE_PREFIX="fairdatasociety"
 CONTRACTS_IMAGE_URL="$CONTRACTS_IMAGE_PREFIX/$CONTRACTS_IMAGE_NAME:$BLOCKCHAIN_VERSION"
 DIST_FOLDER="$ROOT_PATH/dist"
-ENV_FILE="$DIST_FOLDER/contracts.env"
+ENV_FILE="$DIST_FOLDER/contracts-ganache.env"
 JS_LIB_CONTRACTS_DIR="$ROOT_PATH/js-library/src/contracts"
 
 echo "Compiling contracts..."
@@ -36,7 +36,7 @@ echo "SUBDOMAIN_REGISTRAR_ADDRESS=$SUBDOMAIN_REGISTRAR_ADDRESS" >> $ENV_FILE
 echo "PUBLIC_RESOLVER_ADDRESS=$PUBLIC_RESOLVER_ADDRESS" >> $ENV_FILE
 echo "Contract addresses saved to: $ENV_FILE"
 
-docker cp "$ENV_FILE" "$BLOCKCHAIN_CONTAINER_NAME":/app/contracts.env
+docker cp "$ENV_FILE" "$BLOCKCHAIN_CONTAINER_NAME":/app/contracts-ganache.env
 docker cp artifacts/contracts/. "$BLOCKCHAIN_CONTAINER_NAME":/app/contracts
 
 echo "Creating a new image..."

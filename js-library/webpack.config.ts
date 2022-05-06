@@ -52,7 +52,7 @@ const config = {
       },
     ],
   },
-  plugins: [new Dotenv({ path: path.resolve(srcDir, 'contracts', 'contracts.env') })],
+  plugins: [new Dotenv({ path: path.resolve(srcDir, 'contracts', 'contracts-ganache.env') })],
 }
 
 export default config

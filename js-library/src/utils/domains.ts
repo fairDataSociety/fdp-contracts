@@ -1,7 +1,7 @@
-import { EnsUsername } from '../model/domain.type'
+import { Username } from '../model/domain.type'
 import { assert } from './assert'
 
-export function isUsernameValid(username: unknown): username is EnsUsername {
+export function isUsername(username: unknown): username is Username {
   if (!username || typeof username !== 'string') return false
   const pattern = /^[a-z0-9_-]*$/
   const matches = username.match(pattern)
@@ -12,6 +12,6 @@ export function isUsernameValid(username: unknown): username is EnsUsername {
   )
 }
 
-export function assertUsername(username: EnsUsername) {
-  assert(isUsernameValid(username), 'Username is not valid.')
+export function assertUsername(username: Username): asserts username is Username {
+  assert(isUsername(username), 'Username is not valid.')
 }

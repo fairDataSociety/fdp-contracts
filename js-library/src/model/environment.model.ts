@@ -1,4 +1,3 @@
-import { Environments } from './environments.enum'
 import { EthAddress } from './hex.types'
 
 export interface Environment {

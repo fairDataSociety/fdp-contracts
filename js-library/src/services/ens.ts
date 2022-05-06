@@ -10,9 +10,9 @@ import { Environment } from '../model/environment.model'
 import ENSRegistryContractLocal from '../contracts/ENSRegistry/ENSRegistry.json'
 import PublicResolverContractLocal from '../contracts/PublicResolver/PublicResolver.json'
 import SubdomainRegistrarContractLocal from '../contracts/SubdomainRegistrar/SubdomainRegistrar.json'
-import { EnsUsername } from '../model/domain.type'
+import { Username } from '../model/domain.type'
 import { assertUsername } from '../utils/domains'
-import { assertMinBalance } from '../utils/blockchain'
+import { checkMinBalance } from '../utils/blockchain'
 
 const { keccak256, toUtf8Bytes, namehash } = utils
 
@@ -78,7 +78,7 @@ export class ENS {
    * @param username ENS username
    * @returns owner's address
    */
-  public async getUsernameOwner(username: EnsUsername): Promise<EthAddress> {
+  public async getUsernameOwner(username: Username): Promise<EthAddress> {
     assertUsername(username)
 
     const usernameHash = this.hashUsername(username)
@@ -91,7 +91,7 @@ export class ENS {
    * @param username ENS username
    * @returns True if the username is available
    */
-  public async isUsernameAvailable(username: EnsUsername): Promise<boolean> {
+  public async isUsernameAvailable(username: Username): Promise<boolean> {
     assertUsername(username)
     const owner = await this.getUsernameOwner(username)
     return owner === NULL_ADDRESS
@@ -101,14 +101,15 @@ export class ENS {
    * Sets owner of the provided username on ENS
    * @param username ENS username
    * @param address Owner address of the username
+   * @param publicKey Hex string of a public key
    */
   public async registerUsername(
-    username: EnsUsername,
+    username: Username,
     address: EthAddress,
     publicKey: PublicKey,
   ): Promise<void> {
     assertUsername(username)
-    assertMinBalance(this.provider, address, MIN_BALANCE)
+    checkMinBalance(this.provider, address, MIN_BALANCE)
 
     const ownerAddress = await this.getUsernameOwner(username)
 
@@ -137,7 +138,7 @@ export class ENS {
    * @param username
    * @returns public key
    */
-  public async getPublicKey(username: EnsUsername): Promise<PublicKey> {
+  public async getPublicKey(username: Username): Promise<PublicKey> {
     assertUsername(username)
 
     const [publicKeyX, publicKeyY] = await this._publicResolverContract.pubkey(this.hashUsername(username))
@@ -156,7 +157,7 @@ export class ENS {
    * @param username ENS username
    * @returns All user's data stored on ENS
    */
-  public getUserData(username: EnsUsername): Promise<EnsUserData> {
+  public getUserData(username: Username): Promise<EnsUserData> {
     assertUsername(username)
     return this._publicResolverContract.getAll(this.hashUsername(username))
   }
@@ -166,7 +167,7 @@ export class ENS {
    * @param username ENS username
    * @param publicKey Public key that will be added to ENS
    */
-  public setPublicKey(username: EnsUsername, publicKey: PublicKey): Promise<void> {
+  public setPublicKey(username: Username, publicKey: PublicKey): Promise<void> {
     assertUsername(username)
     const [publicKeyX, publicKeyY] = splitPublicKey(publicKey)
     return waitTransaction(
@@ -174,7 +175,7 @@ export class ENS {
     )
   }
 
-  private hashUsername(username: EnsUsername): string {
+  private hashUsername(username: Username): string {
     return namehash(`${username}.${this.domain}`)
   }
 }

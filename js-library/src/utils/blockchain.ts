@@ -1,7 +1,7 @@
 import { BigNumber, providers } from 'ethers'
 import { EthAddress } from '../model'
 
-export async function assertMinBalance(
+export async function checkMinBalance(
   provider: providers.Provider,
   address: EthAddress,
   minBalance: BigNumber,
