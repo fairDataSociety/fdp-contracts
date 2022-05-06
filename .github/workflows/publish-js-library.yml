@@ -20,7 +20,10 @@ jobs:
         run: npm install --prefix js-library
 
       - name: Test
-        run: npm test --prefix js-library
+        run: |
+          cd js-library
+          ./scripts/test.sh
+          cd ..
 
       - name: Build
         run: npm run build --prefix js-library
