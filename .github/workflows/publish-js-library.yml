@@ -1,0 +1,29 @@
+name: Build and publish JS library
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'js-library/**'
+    paths-ignore:
+      - 'js-library/src/contracts/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm install --prefix js-library
+
+      - name: Test
+        run: npm test --prefix js-library
+
+      - name: Build
+        run: npm run build --prefix js-library
+
+      - name: Publish
+        run: npm publish --access public --prefix js-library

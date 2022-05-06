@@ -36,7 +36,3 @@ jobs:
           author_email: actions@github.com
           message: 'build: update contract metadata'
           add: 'js-library/src/contracts/'
-
-      - name: Publish library
-        # npm login
-        run: npm publish --access public --prefix js-library
