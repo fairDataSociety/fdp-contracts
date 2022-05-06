@@ -12,6 +12,7 @@ export const ENVIRONMENT_CONFIGS: EnvironmentConfigs = {
       subdomainRegistrar: process.env.SUBDOMAIN_REGISTRAR_ADDRESS as EthAddress,
       publicResolver: process.env.PUBLIC_RESOLVER_ADDRESS as EthAddress,
     },
+    performChecks: false,
   },
 }
 

@@ -35,7 +35,7 @@ export class ENS {
   private _publicResolverContract: Contract
 
   constructor(
-    config: Environment = ENVIRONMENT_CONFIGS[Environments.LOCALHOST],
+    private config: Environment = ENVIRONMENT_CONFIGS[Environments.LOCALHOST],
     signerOrProvider: SignerOrProvider | null = null,
     private domain = ENS_DOMAIN,
   ) {
@@ -111,12 +111,16 @@ export class ENS {
     try {
       assertUsername(username)
 
-      await checkMinBalance(this.provider, address, MIN_BALANCE)
+      let ownerAddress: EthAddress = NULL_ADDRESS
 
-      const ownerAddress = await this.getUsernameOwner(username)
+      if (this.config.performChecks) {
+        await checkMinBalance(this.provider, address, MIN_BALANCE)
 
-      if (ownerAddress !== NULL_ADDRESS && ownerAddress !== address) {
-        throw new Error(`ENS: Username ${username} is not available`)
+        ownerAddress = await this.getUsernameOwner(username)
+
+        if (ownerAddress !== NULL_ADDRESS && ownerAddress !== address) {
+          throw new Error(`ENS: Username ${username} is not available`)
+        }
       }
 
       if (ownerAddress === NULL_ADDRESS) {

@@ -7,4 +7,5 @@ export interface Environment {
     subdomainRegistrar: EthAddress
     publicResolver: EthAddress
   }
+  performChecks: boolean
 }
