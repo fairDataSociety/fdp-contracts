@@ -12,7 +12,7 @@ import PublicResolverContractLocal from '../contracts/PublicResolver/PublicResol
 import SubdomainRegistrarContractLocal from '../contracts/SubdomainRegistrar/SubdomainRegistrar.json'
 import { Username } from '../model/domain.type'
 import { assertUsername } from '../utils/domains'
-import { checkMinBalance } from '../utils/blockchain'
+import { checkMinBalance, extractMessageFromFailedTx, isTxError } from '../utils/blockchain'
 
 const { keccak256, toUtf8Bytes, namehash } = utils
 
@@ -108,29 +108,37 @@ export class ENS {
     address: EthAddress,
     publicKey: PublicKey,
   ): Promise<void> {
-    assertUsername(username)
-    checkMinBalance(this.provider, address, MIN_BALANCE)
+    try {
+      assertUsername(username)
 
-    const ownerAddress = await this.getUsernameOwner(username)
+      await checkMinBalance(this.provider, address, MIN_BALANCE)
 
-    if (ownerAddress !== NULL_ADDRESS && ownerAddress !== address) {
-      throw new Error(`ENS: Username ${username} is not available`)
-    }
+      const ownerAddress = await this.getUsernameOwner(username)
 
-    if (ownerAddress === NULL_ADDRESS) {
+      if (ownerAddress !== NULL_ADDRESS && ownerAddress !== address) {
+        throw new Error(`ENS: Username ${username} is not available`)
+      }
+
+      if (ownerAddress === NULL_ADDRESS) {
+        await waitTransaction(
+          this._subdomainRegistrarContract.register(keccak256(toUtf8Bytes(username)), address),
+        )
+      }
+
       await waitTransaction(
-        this._subdomainRegistrarContract.register(keccak256(toUtf8Bytes(username)), address),
+        this._ensRegistryContract.setResolver(
+          this.hashUsername(username),
+          this._publicResolverContract.address,
+        ),
       )
+
+      await this.setPublicKey(username, publicKey)
+    } catch (error) {
+      if (isTxError(error)) {
+        throw new Error(extractMessageFromFailedTx(error))
+      }
+      throw error
     }
-
-    await waitTransaction(
-      this._ensRegistryContract.setResolver(
-        this.hashUsername(username),
-        this._publicResolverContract.address,
-      ),
-    )
-
-    await this.setPublicKey(username, publicKey)
   }
 
   /**
