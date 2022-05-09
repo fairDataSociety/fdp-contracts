@@ -16,7 +16,7 @@ jobs:
         id: release
         with:
           release-type: node
-          package-name: @fairdatasociety/fdp-contracts
+          package-name: "@fairdatasociety/fdp-contracts"
 
       - uses: actions/checkout@v3
         # these if statements ensure that a publication only occurs when
@@ -24,7 +24,7 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
 
       - name: Install dependencies
-        run: npm install --prefix js-library
+        run: npm ci --prefix js-library
         if: ${{ steps.release.outputs.release_created }}
       
       - name: Test
@@ -33,6 +33,9 @@ jobs:
           ./scripts/test.sh
           cd ..
         if: ${{ steps.release.outputs.release_created }}
+      
+      - name: Build
+        run: npm run build --prefix js-library
 
       - name: Publish
         run: npm publish --access public --prefix js-library
