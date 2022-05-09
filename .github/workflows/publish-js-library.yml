@@ -1,0 +1,45 @@
+name: Build and publish JS library
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'js-library/**'
+name: release-please
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          release-type: node
+          package-name: "@fairdatasociety/fdp-contracts"
+
+      - uses: actions/checkout@v3
+        # these if statements ensure that a publication only occurs when
+        # a new release is created:
+        if: ${{ steps.release.outputs.release_created }}
+
+      - name: Install dependencies
+        run: npm ci --prefix js-library
+        if: ${{ steps.release.outputs.release_created }}
+      
+      - name: Test
+        run: |
+          cd js-library
+          ./scripts/test.sh
+          cd ..
+        if: ${{ steps.release.outputs.release_created }}
+      
+      - name: Build
+        run: npm run build --prefix js-library
+
+      - name: Publish
+        run: npm publish --access public --prefix js-library
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+        if: ${{ steps.release.outputs.release_created }}
+  
