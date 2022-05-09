@@ -5,8 +5,6 @@ on:
     branches: [master]
     paths:
       - 'js-library/**'
-    paths-ignore:
-      - 'js-library/src/contracts/**'
   workflow_dispatch:
 
 jobs:
