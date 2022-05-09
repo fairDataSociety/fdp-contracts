@@ -4,8 +4,8 @@
   "description": "Library for interaction with FDS contracts",
   "main": "build/index.js",
   "scripts": {
-    "start": "webpack --watch --config webpack.build.config.ts",
-    "build": "webpack --config webpack.build.config.ts",
+    "start": "webpack --watch --config webpack.build.config.ts --env mode=development",
+    "build": "webpack --config webpack.build.config.ts --env mode=production",
     "test": "jest",
     "test:unit": "jest ./test/unit",
     "test:integration": "jest ./test/it"
