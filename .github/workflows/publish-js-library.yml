@@ -28,6 +28,11 @@ jobs:
         # a new release is created:
         if: ${{ steps.release.outputs.release_created || github.event.inputs.release == 'true' }}
 
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
+          registry-url: 'https://registry.npmjs.org'
+
       - run: npm ci --prefix js-library
         if: ${{ steps.release.outputs.release_created || github.event.inputs.release == 'true' }}
 
