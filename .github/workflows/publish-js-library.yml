@@ -7,6 +7,10 @@ on:
     paths:
       - 'js-library/**'
   workflow_dispatch:
+    inputs:
+      release:
+        description: 'Release new NPM package'
+        default: 'false'
 
 jobs:
   release-please:
@@ -22,18 +26,18 @@ jobs:
       - uses: actions/checkout@v3
         # these if statements ensure that a publication only occurs when
         # a new release is created:
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.release_created || github.event.inputs.release }}
 
       - run: npm ci --prefix js-library
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.release_created || github.event.inputs.release }}
 
       - run: cd js-library && ./scripts/test.sh && cd ..
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.release_created || github.event.inputs.release }}
 
       - run: npm run build --prefix js-library
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.release_created || github.event.inputs.release }}
 
       - run: npm publish --access public --prefix js-library
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.release_created || github.event.inputs.release }}
