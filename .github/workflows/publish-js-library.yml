@@ -42,7 +42,7 @@ jobs:
       - run: npm run build --prefix js-library
         if: ${{ steps.release.outputs.release_created || github.event.inputs.release == 'true' }}
 
-      - run: npm publish --access public --prefix js-library
+      - run: cd js-library && npm publish --access public && cd ..
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         if: ${{ steps.release.outputs.release_created || github.event.inputs.release == 'true' }}
