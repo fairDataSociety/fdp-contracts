@@ -10,10 +10,17 @@ contract BMTChunk {
   // segment byte size
   uint256 public constant SEGMENT_SIZE = 32;
 
-struct ChunkInclusionProof{
-  bytes span;
-  bytes32[] sisterSegments;
-}
+  // max segment count
+  uint256 public constant MAX_SEGMENT_COUNT = 128;
+
+  // chunk bmt levels
+  uint256 public constant CHUNK_BMT_LEVELS = 7;
+
+  struct ChunkInclusionProof{
+    uint256 span;
+    bytes8 spanBytes;
+    bytes32[] sisterSegments;
+  }
 
 /** Calculates the BMT root hash from the provided inclusion proof segments and its corresponding segment index  
    * @param _proofSegments Proof segments.
