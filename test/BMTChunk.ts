@@ -1,6 +1,6 @@
 import { makeChunk, makeSpan, Utils } from '@fairdatasociety/bmt-js'
 import { expect } from 'chai'
-import { arrayify, keccak256 } from 'ethers/lib/utils'
+import { arrayify, BytesLike, keccak256 } from 'ethers/lib/utils'
 import { ethers } from 'hardhat'
 import { BMTChunk } from '../typechain'
 
@@ -20,20 +20,20 @@ describe('chunk', () => {
     const bmtHashOfPayload = chunk.address()
     expect(tree.length).equals(8)
     /** Gives back the bmt root hash calculated from the inclusion proof method */
-    const testGetRootHash = async (segmentIndex: number) => {
+    const testGetRootHash = (segmentIndex: number): Promise<String> => {
       const inclusionProofSegments = chunk.inclusionProof(segmentIndex)
       const proofSegment = chunk.data().slice(segmentIndex * SEGMENT_SIZE, segmentIndex * SEGMENT_SIZE + SEGMENT_SIZE)
-      const rootHash = await bmtlib.rootHashFromInclusionProof(inclusionProofSegments, proofSegment, segmentIndex)
-      return arrayify(rootHash)
+      return bmtlib.rootHashFromInclusionProof(inclusionProofSegments, proofSegment, segmentIndex)
     }
     const rootHash1 = await testGetRootHash(0)
+    
 
-    const merged = Buffer.concat([makeSpan(payload.length), rootHash1])
+    const merged = Buffer.concat([makeSpan(payload.length), arrayify(rootHash1 as BytesLike)])
     expect(keccak256(merged).replace('0x', '')).equals(Utils.bytesToHex(bmtHashOfPayload, 64))
     const rootHash2 = await testGetRootHash(101)
-    expect(Utils.bytesToHex(rootHash2, 64)).equals(Utils.bytesToHex(rootHash1, 64))
+    expect(rootHash2).equals(rootHash1)
     const rootHash3 = await testGetRootHash(127)
-    expect(Utils.bytesToHex(rootHash3, 64)).equals(Utils.bytesToHex(rootHash1, 64))
+    expect(rootHash3).equals(rootHash1)
 
     try {
       await testGetRootHash(128)
