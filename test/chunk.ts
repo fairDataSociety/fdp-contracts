@@ -1,15 +1,15 @@
 import { makeChunk, makeSpan, Utils } from '@fairdatasociety/bmt-js'
 import { expect } from 'chai'
-import { arrayify, concat, keccak256 } from 'ethers/lib/utils'
+import { arrayify, keccak256 } from 'ethers/lib/utils'
 import { ethers } from 'hardhat'
+import { BMTChunk } from '../typechain'
 
 describe('chunk', () => {
   const payload = new Uint8Array([1, 2, 3])
-  let BMT
-  let bmtlib: any
+  let bmtlib: BMTChunk
   const SEGMENT_SIZE = 32
   before(async () => {
-    BMT = await ethers.getContractFactory('BMTChunk')
+    let BMT = await ethers.getContractFactory('BMTChunk')
     bmtlib = await BMT.deploy()
     await bmtlib.deployed()
   })
