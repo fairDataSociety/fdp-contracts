@@ -2,9 +2,7 @@ import {
   Chunk,
   fileInclusionProofBottomUp,
   getSpanValue,
-  makeChunk,
   makeChunkedFile,
-  makeSpan,
   Utils,
 } from '@fairdatasociety/bmt-js'
 import { expect } from 'chai'
@@ -13,8 +11,8 @@ import { BMTFile } from '../typechain'
 import { BMTChunkInclusionProof } from '../js-library/src/model/bmt.model'
 import FS from 'fs'
 import path from 'path'
-import { arrayify, BytesLike, hexlify } from 'ethers/lib/utils'
-import { doesNotReject } from 'assert'
+import {  BytesLike, hexlify } from 'ethers/lib/utils'
+
 
 describe('file', () => {
   let bosBytes: Uint8Array
