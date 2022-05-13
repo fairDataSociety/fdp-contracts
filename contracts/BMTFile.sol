@@ -6,17 +6,15 @@ import "./BMTChunk.sol";
 
 contract BMTFile is BMTChunk {
 
-
-
-/* 
- * Gives back the file address that is calculated with only the inclusion proof segments
- * and the corresponding proved segment and its position.
- *
-   * @param _proveChunks Proof segments.
-   * @param _proveSegment Segment to prove.
-   * @param _proveSegmentIndex Prove segment index
-   * @return _calculatedHash root hash
-   */
+  /* 
+  * Gives back the file address that is calculated with only the inclusion proof segments
+  * and the corresponding proved segment and its position.
+  * @param _proveChunks Sister segments that will be hashed together with the calculated hashes
+  * @param _proveSegment the segment that is wanted to be validated it is subsumed under the file address
+  * @param _proveSegmentIndex the `proveSegment`'s segment index on its BMT level
+  * @param _lastChunkIndex File length in bytes or last chunk span value
+  * @return _calculatedHash the calculated file address
+  */
 function fileAddressFromInclusionProof(
   BMTChunk.ChunkInclusionProof[] memory _proveChunks,
   bytes32 _proveSegment,
@@ -36,7 +34,7 @@ function fileAddressFromInclusionProof(
         _proveSegmentIndex = (_proveSegmentIndex / 2);
     }
     _calculatedHash = keccak256(abi.encodePacked(
-      (_proveChunks[i].spanBytes),
+      (_proveChunks[i].span),
       _calculatedHash
     ));  
     // this line is necessary if the _proveSegmentIndex
@@ -48,9 +46,21 @@ function fileAddressFromInclusionProof(
   return _calculatedHash;
 }
 
+  /**
+  * Get the chunk's position of a given payload segment index in the BMT tree
+  *
+  * The BMT buils up in an optimalized way, where an orphan/carrier chunk
+  * can be inserted into a higher level of the tree. It may cause that
+  * the segment index of a payload cannot be found in the lowest level where the splitter
+  * originally created its corresponding chunk.
+  *
+  * @param _segmentIndex the segment index of the payload
+  * @param _lastChunkIndex last chunk index on the BMT level of the segment
+  * @return level and position of the chunk that contains segment index of the payload
+  */
   function getBmtIndexOfSegment(
-      uint256  segmentIndex,
-      uint256 lastChunkIndex   
+      uint256  _segmentIndex,
+      uint256 _lastChunkIndex   
     )
     public
     pure 
@@ -59,20 +69,20 @@ function fileAddressFromInclusionProof(
     uint256 level = 0;
     uint levels = BMTChunk.CHUNK_BMT_LEVELS;
     if (
-      (segmentIndex / BMTChunk.MAX_SEGMENT_COUNT) == lastChunkIndex && // the segment is subsumed under the last chunk
-      lastChunkIndex % BMTChunk.MAX_SEGMENT_COUNT == 0 && // the last chunk is a carrier chunk
-      lastChunkIndex != 0 // there is only the root chunk
+      (_segmentIndex / BMTChunk.MAX_SEGMENT_COUNT) == _lastChunkIndex && // the segment is subsumed under the last chunk
+      _lastChunkIndex % BMTChunk.MAX_SEGMENT_COUNT == 0 && // the last chunk is a carrier chunk
+      _lastChunkIndex != 0 // there is only the root chunk
     ) {
-      // segmentIndex in carrier chunk
-      segmentIndex >>= levels;
-      while (segmentIndex % BMTChunk.SEGMENT_SIZE == 0) {
+      // _segmentIndex in carrier chunk
+      _segmentIndex >>= levels;
+      while (_segmentIndex % BMTChunk.SEGMENT_SIZE == 0) {
         level++;
-        segmentIndex >>= levels;
+        _segmentIndex >>= levels;
       }
     } else {
-      segmentIndex >>= levels;
+      _segmentIndex >>= levels;
     }
     
-    return (segmentIndex, level);
+    return (_segmentIndex, level);
   }
 }

@@ -1,7 +1,6 @@
 import { BigNumberish, BytesLike } from "ethers";
 
 export interface BMTChunkInclusionProof{
-    span: BigNumberish;
-    spanBytes: BytesLike;
+    span: BytesLike;    
     sisterSegments: BytesLike[]
 }

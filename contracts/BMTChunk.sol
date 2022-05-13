@@ -17,8 +17,7 @@ contract BMTChunk {
   uint256 public constant CHUNK_BMT_LEVELS = 7;
 
   struct ChunkInclusionProof{
-    uint256 span;
-    bytes8 spanBytes;
+    bytes span;
     bytes32[] sisterSegments;
   }
 

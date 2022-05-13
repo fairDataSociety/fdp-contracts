@@ -13,7 +13,7 @@ import { BMTFile } from '../typechain'
 import { BMTChunkInclusionProof } from '../js-library/src/model/bmt.model'
 import FS from 'fs'
 import path from 'path'
-import { BytesLike, hexlify } from 'ethers/lib/utils'
+import { arrayify, BytesLike, hexlify } from 'ethers/lib/utils'
 import { doesNotReject } from 'assert'
 
 describe('file', () => {
@@ -73,8 +73,7 @@ describe('file', () => {
 
       const chunks = proofChunks.map(chunk => {
         return {
-          span: getSpanValue(chunk.span),
-          spanBytes: chunk.span,
+          span: chunk.span,
           sisterSegments: chunk.sisterSegments.map(i => i as BytesLike),
         } as BMTChunkInclusionProof
       })
@@ -109,8 +108,7 @@ describe('file', () => {
 
       const chunks = proofChunks.map(chunk => {
         return {
-          span: getSpanValue(chunk.span),
-          spanBytes: chunk.span,
+          span: chunk.span,
           sisterSegments: chunk.sisterSegments.map(i => i as BytesLike),
         } as BMTChunkInclusionProof
       })
@@ -123,10 +121,16 @@ describe('file', () => {
     const hash2 = await testGetFileHash(1000)
     expect(hash2.replace('0x', '')).eq(Utils.bytesToHex(fileHash, 64))
 
-    // expect(() => await testGetFileHash(lastSegmentIndex + 1)).toThrowError(/^The given segment index/)
+    try {
+      await testGetFileHash(lastSegmentIndex + 1)
+    } catch (err) {
+      expect(() => {
+        throw err
+      }).throws(/^The given segment index/)
+    }
   })
 
-  it('should collect the required segments for inclusion proof 3', async done => {
+  it('should collect the required segments for inclusion proof 3', async () => {
     // the file's byte counts will cause carrier chunk in the intermediate BMT level
     // 128 * 4096 * 128 = 67108864 <- left tree is saturated on bmt level 1
     // 67108864 + 2 * 4096 = 67117056 <- add two full chunks at the end thereby
@@ -154,8 +158,8 @@ describe('file', () => {
 
       const chunks = proofChunks.map(chunk => {
         return {
-          span: getSpanValue(chunk.span),
-          spanBytes: chunk.span,
+          // span: getSpanValue(chunk.span),
+          span: chunk.span,
           sisterSegments: chunk.sisterSegments.map(i => i as BytesLike),
         } as BMTChunkInclusionProof
       })
@@ -167,7 +171,13 @@ describe('file', () => {
     expect(hash1.replace('0x', '')).eq(Utils.bytesToHex(fileHash, 64))
     const hash2 = await testGetFileHash(1000)
     expect(hash2.replace('0x', '')).eq(Utils.bytesToHex(fileHash, 64))
-    await done()
-    // expect(() => await testGetFileHash(lastSegmentIndex + 1)).toThrowError(/^The given segment index/)
+
+    try {
+      await testGetFileHash(lastSegmentIndex + 1)
+    } catch (err) {
+      expect(() => {
+        throw err
+      }).throws(/^The given segment index/)
+    }
   })
 })
