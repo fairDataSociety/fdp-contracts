@@ -44,3 +44,75 @@ npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
 # Performance optimizations
 
 For faster runs of your tests and scripts, consider skipping ts-node's type checking by setting the environment variable `TS_NODE_TRANSPILE_ONLY` to `1` in hardhat's environment. For more details see [the documentation](https://hardhat.org/guides/typescript.html#performance-optimizations).
+
+
+# Verifying chunks with BMTChunk solidity library
+
+ The function `rootHashFromInclusionProof` in BMTChunk is similar to the function found in BMT.js and allows you to verify chunks for inclusion proofs.
+
+```c++
+/** Calculates the BMT root hash from the provided inclusion proof segments and its corresponding segment index  
+   * @param _proofSegments Proof segments.
+   * @param _proveSegment Segment to prove.
+   * @param _proveSegmentIndex Prove segment index
+   * @return _calculatedHash root hash
+   */
+function rootHashFromInclusionProof(
+  bytes32[] memory _proofSegments,
+  bytes32  _proveSegment,
+  uint256 _proveSegmentIndex
+) public pure returns (bytes32 _calculatedHash) {
+}
+```
+
+## Arguments 
+
+- `_proofSegments`: The proof segments as a bytes32 array
+- `_proveSegment`: The segment to verify proof
+- `_proveSegmentIndex`: The segment index to verify proof
+
+## Returns
+
+Returns a BMT root hash as bytes32
+
+## Example using BMTChunk and BMT.js
+
+```typescript
+let bmtlib: BMTChunk
+const SEGMENT_SIZE = 32
+
+// Instantiate BMTChunk contract
+let BMT = await ethers.getContractFactory('BMTChunk')
+bmtlib = await BMT.deploy()
+await bmtlib.deployed()
+
+// Make chunk
+const chunk = makeChunk(payload)
+const tree = chunk.bmt()
+
+
+// Get segment data
+const inclusionProofSegments = chunk.inclusionProof(segmentIndex)
+const proofSegment = chunk.data().slice(
+    segmentIndex * SEGMENT_SIZE, 
+    segmentIndex * SEGMENT_SIZE + SEGMENT_SIZE
+)
+
+// Calculate hash onchain
+const rootHash1 = await bmtlib.rootHashFromInclusionProof(
+    inclusionProofSegments,
+    proofSegment,
+    segmentIndex,
+)
+
+// Verify that hash matches chunk address
+const merged = Buffer.concat(
+    [
+        makeSpan(payload.length), 
+        arrayify(rootHash1 as BytesLike),
+    ]
+)
+const hash = keccak256(merged).replace('0x', '')
+expect(hast).equals(Utils.bytesToHex(chunk.address(), 64))
+
+```
