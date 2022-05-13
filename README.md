@@ -48,7 +48,7 @@ For faster runs of your tests and scripts, consider skipping ts-node's type chec
 
 # Verifying chunks with BMTChunk solidity library
 
- The functions `rootHashFromInclusionProof` and `chunkHashFromInclusionProof` in BMTChunk are similar to functions found in [bmt-js](https://github.com/fairDataSociety/bmt-js) library and allows you to verify chunks for inclusion proofs.
+ The functions `rootHashFromInclusionProof` and `chunkAddressFromInclusionProof` in BMTChunk are similar to functions found in [bmt-js](https://github.com/fairDataSociety/bmt-js) library and allows you to verify chunks for inclusion proofs.
 
 ## rootHashFromInclusionProof
 
@@ -107,7 +107,7 @@ expect(hash).equals(Utils.bytesToHex(chunk.address(), 64))
 
 ```
 
-## chunkHashFromInclusionProof
+## chunkAddressFromInclusionProof
 
 ## Arguments 
 
@@ -150,7 +150,7 @@ const proofSegment = chunk.data().slice(
 
 // Calculate chunk hash onchain
 const span = makeSpan(payload.length, DEFAULT_SPAN_SIZE)
-const chunkHash1 = await bmtlib.chunkHashFromInclusionProof(
+const chunkHash1 = await bmtlib.chunkAddressFromInclusionProof(
     inclusionProofSegments,
     proofSegment,
     segmentIndex,

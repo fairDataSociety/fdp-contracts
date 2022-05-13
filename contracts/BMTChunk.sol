@@ -44,7 +44,7 @@ function rootHashFromInclusionProof(
    * @param _chunkSpan chunk bytes length
    * @return _chunkHash chunk hash
    */
-function chunkHashFromInclusionProof(
+function chunkAddressFromInclusionProof(
   bytes32[] memory _proofSegments,
   bytes32  _proveSegment,
   uint256 _proveSegmentIndex,

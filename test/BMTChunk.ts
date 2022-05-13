@@ -52,7 +52,7 @@ describe('chunk', () => {
     const testGetChunkHash = (segmentIndex: number, span: Uint8Array): Promise<String> => {
       const inclusionProofSegments = chunk.inclusionProof(segmentIndex)
       const proofSegment = chunk.data().slice(segmentIndex * SEGMENT_SIZE, segmentIndex * SEGMENT_SIZE + SEGMENT_SIZE)
-      return bmtlib.chunkHashFromInclusionProof(inclusionProofSegments, proofSegment, segmentIndex, span)
+      return bmtlib.chunkAddressFromInclusionProof(inclusionProofSegments, proofSegment, segmentIndex, span)
     }
     const span = makeSpan(payload.length, DEFAULT_SPAN_SIZE)
     const chunkHash1 = await testGetChunkHash(0, span)
