@@ -82,7 +82,6 @@ const bmtlib = await BMT.at(`<contract_address>`)
 
 // Make chunk
 const chunk = makeChunk(payload)
-const tree = chunk.bmt()
 
 // Get segment data
 const inclusionProofSegments = chunk.inclusionProof(segmentIndex)
@@ -145,7 +144,6 @@ const bmtlib = await BMT.at(`<contract_address>`)
 
 // Make chunk
 const chunk = makeChunk(payload)
-const tree = chunk.bmt()
 
 // Get segment data
 const inclusionProofSegments = chunk.inclusionProof(segmentIndex)
