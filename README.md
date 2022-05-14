@@ -46,23 +46,27 @@ npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
 For faster runs of your tests and scripts, consider skipping ts-node's type checking by setting the environment variable `TS_NODE_TRANSPILE_ONLY` to `1` in hardhat's environment. For more details see [the documentation](https://hardhat.org/guides/typescript.html#performance-optimizations).
 
 
+# API
 # Verifying chunks with BMTChunk solidity library
 
  The functions `rootHashFromInclusionProof` and `chunkAddressFromInclusionProof` in BMTChunk are similar to functions found in [bmt-js](https://github.com/fairDataSociety/bmt-js) library and allows you to verify chunks for inclusion proofs.
 
+## BMTChunk
 ## rootHashFromInclusionProof
 
-## Arguments 
+### Arguments 
 
-- `_proofSegments`: The proof segments as a bytes32 array
-- `_proveSegment`: The segment to verify proof
-- `_proveSegmentIndex`: The segment index to verify proof
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| `_proofSegments` | `bytes32[]` |  The proof segments |
+| `_proofSegment` | `bytes32` | The segment to verify proof |
+| `_proofSegmentIndex` | `uint256` | The segment index to verify proof |
 
-## Returns
+### Returns
 
 Returns a BMT root hash as bytes32
 
-## Example
+### Example
 
 ```typescript
 import { makeChunk, makeSpan, Utils } from '@fairdatasociety/bmt-js'
@@ -70,7 +74,6 @@ import { expect } from 'chai'
 import { arrayify, BytesLike, keccak256 } from 'ethers/lib/utils'
 import { ethers } from 'hardhat'
 import { BMTChunk } from '../typechain'
-
 
 const SEGMENT_SIZE = 32
 // Instantiate BMTChunk contract
@@ -109,29 +112,33 @@ expect(hash).equals(Utils.bytesToHex(chunk.address(), 64))
 
 ## chunkAddressFromInclusionProof
 
-## Arguments 
+### Arguments 
 
-- `_proofSegments`: The proof segments as a bytes32 array
-- `_proveSegment`: The segment to verify proof
-- `_proveSegmentIndex`: The segment index to verify proof
-- `_span`: The chunk bytes length 
 
-## Returns
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| `_proofSegments` | `bytes32[]` |  The proof segments |
+| `_proofSegment` | `bytes32` | The segment to verify proof |
+| `_proofSegmentIndex` | `uint256` | The segment index to verify proof |
+| `_span` | `bytes` | The chunk bytes length as bytes
 
-Returns a BMT root hash as bytes32
 
-## Example
+### Returns
+
+Returns a chunk address
+
+### Example
 
 ```typescript
-import { makeChunk, makeSpan, Utils } from '@fairdatasociety/bmt-js'
+import { makeChunk, makeSpan } from '@fairdatasociety/bmt-js'
 import { expect } from 'chai'
 import { arrayify, BytesLike, keccak256 } from 'ethers/lib/utils'
 import { ethers } from 'hardhat'
 import { BMTChunk } from '../typechain'
 
-
 const SEGMENT_SIZE = 32
 const DEFAULT_SPAN_SIZE = 8
+
 // Instantiate BMTChunk contract
 const BMT = await ethers.getContractFactory('BMTChunk')
 const bmtlib = await BMT.at(`<contract_address>`)
@@ -140,7 +147,6 @@ const bmtlib = await BMT.at(`<contract_address>`)
 const chunk = makeChunk(payload)
 const tree = chunk.bmt()
 
-
 // Get segment data
 const inclusionProofSegments = chunk.inclusionProof(segmentIndex)
 const proofSegment = chunk.data().slice(
@@ -148,15 +154,16 @@ const proofSegment = chunk.data().slice(
     segmentIndex * SEGMENT_SIZE + SEGMENT_SIZE
 )
 
-// Calculate chunk hash onchain
+// Calculate chunk address onchain
 const span = makeSpan(payload.length, DEFAULT_SPAN_SIZE)
-const chunkHash1 = await bmtlib.chunkAddressFromInclusionProof(
+const chunkAddress = await bmtlib.chunkAddressFromInclusionProof(
     inclusionProofSegments,
     proofSegment,
     segmentIndex,
     span,
 )
 
-// Verify that hash matches chunk address
-expect(chunkHash1.replace('0x', '')).equals(Utils.bytesToHex(chunk.address(), 64))
+// Verify that address matches chunk address
+expect(chunkAddress).equals(ethers.utils.hexlify(chunk.address())
 ```
+

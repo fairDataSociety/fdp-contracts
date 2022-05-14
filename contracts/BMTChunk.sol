@@ -59,7 +59,7 @@ function mergeSegment(
     bytes32 _proofSegment,
     bool mergeFromRight
 )
-    public
+    internal
     pure
     returns (bytes32 res)
   {    
