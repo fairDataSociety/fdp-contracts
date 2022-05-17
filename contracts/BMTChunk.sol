@@ -48,7 +48,7 @@ function chunkAddressFromInclusionProof(
   bytes32[] memory _proofSegments,
   bytes32  _proveSegment,
   uint256 _proveSegmentIndex,
-  bytes memory _chunkSpan
+  uint64 _chunkSpan
 ) public pure returns (bytes32) {
   bytes32 rootHash = rootHashFromInclusionProof(_proofSegments, _proveSegment, _proveSegmentIndex);
   return keccak256(abi.encodePacked(_chunkSpan, rootHash));

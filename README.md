@@ -119,7 +119,7 @@ expect(hash).equals(Utils.bytesToHex(chunk.address(), 64))
 | `_proofSegments` | `bytes32[]` |  The proof segments |
 | `_proofSegment` | `bytes32` | The segment to verify proof |
 | `_proofSegmentIndex` | `uint256` | The segment index to verify proof |
-| `_span` | `bytes` | The chunk bytes length as bytes
+| `_span` | `uint64` | The chunk bytes length as bytes
 
 
 ### Returns
