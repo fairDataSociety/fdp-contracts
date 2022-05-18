@@ -167,7 +167,7 @@ expect(chunkAddress).equals(ethers.utils.hexlify(chunk.address())
 
 # Verifying files with BMTFiles solidity library
 
- The functions `fileAddressFromInclusionProof` and `getBmtIndexOfSegment` in BMTFile are similar to functions found in [bmt-js](https://github.com/fairDataSociety/bmt-js) library and allows you to verify files for inclusion proofs.
+ The function `fileAddressFromInclusionProof` in BMTFile is similar to functions found in [bmt-js](https://github.com/fairDataSociety/bmt-js) library and allows you to verify files for inclusion proofs.
 
 ## BMTFile
 ## fileAddressFromInclusionProof
