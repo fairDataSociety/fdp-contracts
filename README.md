@@ -165,3 +165,88 @@ const chunkAddress = await bmtlib.chunkAddressFromInclusionProof(
 expect(chunkAddress).equals(ethers.utils.hexlify(chunk.address())
 ```
 
+# Verifying files with BMTFiles solidity library
+
+ The functions `fileAddressFromInclusionProof` and `getBmtIndexOfSegment` in BMTFile are similar to functions found in [bmt-js](https://github.com/fairDataSociety/bmt-js) library and allows you to verify files for inclusion proofs.
+
+## BMTFile
+## fileAddressFromInclusionProof
+
+Gives back the file address that is calculated with only the inclusion proof segments and the corresponding proved segment and its position.
+
+### Arguments 
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| ` _proveChunks` | `ChunkInclusionProof[] memory` |  Sister segments that will be hashed together with the calculated hashes |
+| `_proveSegment` | `bytes32` | the segment that is wanted to be validated it is subsumed under the file address |
+| `_proveSegmentIndex` | `uint256` | the `proveSegment`'s segment index on its BMT level |
+| `_lastChunkIndex` | `uint256` |  File length in bytes or last chunk span value |
+
+### Returns
+
+Returns the calculated file address
+
+### Example
+
+```typescript
+import {
+  Chunk,
+  fileInclusionProofBottomUp,
+  getSpanValue,
+  makeChunkedFile,
+  Utils,
+} from '@fairdatasociety/bmt-js'
+import { expect } from 'chai'
+import { ethers } from 'hardhat'
+import { BMTFile } from '../typechain'
+import { BMTChunkInclusionProof } from '../js-library/src/model/bmt.model'
+import FS from 'fs'
+import path from 'path'
+import {  BytesLike, hexlify } from 'ethers/lib/utils'
+
+const SEGMENT_SIZE = 32
+const MAX_CHUNK_PAYLOAD_SIZE = 4096
+
+// Instantiate BMTFile contract
+const BMT = await ethers.getContractFactory('BMTFile')
+const bmtlib = await BMT.at(`<contract_address>`)
+
+// Test file
+const fileBytes = Uint8Array.from(FS.readFileSync(path.join(__dirname, 'test-files', 'The-Book-of-Swarm.pdf')))
+
+// Test chunk file
+const carrierChunkFileBytes = Uint8Array.from(FS.readFileSync(path.join(__dirname, 'test-files', 'carrier-chunk-blob')))
+
+const chunkedFile = makeChunkedFile(fileBytes)
+const fileHash = chunkedFile.address()
+
+// Segment to prove
+const segmentIndex = Math.floor((fileBytes.length - 1) / 32)
+
+// Proof chunks
+const proofChunks = fileInclusionProofBottomUp(chunkedFile, segmentIndex)
+
+// Prove segment
+let proveSegment = fileBytes.slice(segmentIndex * SEGMENT_SIZE, segmentIndex * SEGMENT_SIZE + SEGMENT_SIZE)
+
+// Padding
+proveSegment = new Uint8Array([...proveSegment, ...new Uint8Array(SEGMENT_SIZE - proveSegment.length)])
+
+// Get last chunk index
+const fileSizeFromProof = getSpanValue(proofChunks[proofChunks.length - 1].span)
+const lastChunkIndex = Math.floor((fileSizeFromProof - 1) / MAX_CHUNK_PAYLOAD_SIZE)
+    
+// Map chunks to work with ABI types
+const chunks = proofChunks.map(chunk => {
+return {
+    span: chunk.span,
+    sisterSegments: chunk.sisterSegments.map(i => i as BytesLike),
+    } as BMTChunkInclusionProof
+})
+
+// Call fileAddressFromInclusionProof, return an hex value representing the file address
+const fileAddressProof = await bmtlib.fileAddressFromInclusionProof(chunks, proveSegment, segmentIndex, lastChunkIndex)
+expect(fileAddressProof).equals(ethers.utils.hexlify(chunk.address()))
+```
+
