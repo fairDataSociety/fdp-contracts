@@ -6,6 +6,17 @@ import "./BMTChunk.sol";
 
 contract BMTFile is BMTChunk {
 
+// max segment count
+  uint256 public constant MAX_SEGMENT_COUNT = 128;
+
+  // chunk bmt levels
+  uint256 public constant CHUNK_BMT_LEVELS = 7;
+
+  struct ChunkInclusionProof{
+    bytes span;
+    bytes32[] sisterSegments;
+  }
+
   /* 
   * Gives back the file address that is calculated with only the inclusion proof segments
   * and the corresponding proved segment and its position.
@@ -16,7 +27,7 @@ contract BMTFile is BMTChunk {
   * @return _calculatedHash the calculated file address
   */
 function fileAddressFromInclusionProof(
-  BMTChunk.ChunkInclusionProof[] memory _proveChunks,
+  ChunkInclusionProof[] memory _proveChunks,
   bytes32 _proveSegment,
   uint256 _proveSegmentIndex,
   uint256 _lastChunkIndex
@@ -40,7 +51,7 @@ function fileAddressFromInclusionProof(
     // this line is necessary if the _proveSegmentIndex
     // was in a carrierChunk
     _proveSegmentIndex = parentChunkIndex;
-    _lastChunkIndex >>= BMTChunk.CHUNK_BMT_LEVELS + (level * BMTChunk.CHUNK_BMT_LEVELS);
+    _lastChunkIndex >>= CHUNK_BMT_LEVELS + (level * CHUNK_BMT_LEVELS);
   }
 
   return _calculatedHash;
@@ -67,10 +78,10 @@ function fileAddressFromInclusionProof(
     returns (uint256,uint256) {
     
     uint256 level = 0;
-    uint levels = BMTChunk.CHUNK_BMT_LEVELS;
+    uint levels = CHUNK_BMT_LEVELS;
     if (
-      (_segmentIndex / BMTChunk.MAX_SEGMENT_COUNT) == _lastChunkIndex && // the segment is subsumed under the last chunk
-      _lastChunkIndex % BMTChunk.MAX_SEGMENT_COUNT == 0 && // the last chunk is a carrier chunk
+      (_segmentIndex / MAX_SEGMENT_COUNT) == _lastChunkIndex && // the segment is subsumed under the last chunk
+      _lastChunkIndex % MAX_SEGMENT_COUNT == 0 && // the last chunk is a carrier chunk
       _lastChunkIndex != 0 // there is only the root chunk
     ) {
       // _segmentIndex in carrier chunk

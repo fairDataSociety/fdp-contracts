@@ -10,22 +10,12 @@ contract BMTChunk {
   // segment byte size
   uint256 public constant SEGMENT_SIZE = 32;
 
-  // max segment count
-  uint256 public constant MAX_SEGMENT_COUNT = 128;
 
-  // chunk bmt levels
-  uint256 public constant CHUNK_BMT_LEVELS = 7;
-
-  struct ChunkInclusionProof{
-    bytes span;
-    bytes32[] sisterSegments;
-  }
-
-/** Calculates the BMT root hash from the provided inclusion proof segments and its corresponding segment index  
+/** Calculates the root hash from the provided inclusion proof segments and its corresponding segment index  
    * @param _proofSegments Proof segments.
    * @param _proveSegment Segment to prove.
    * @param _proveSegmentIndex Prove segment index
-   * @return _calculatedHash root hash
+   * @return _calculatedHash chunk hash
    */
 function rootHashFromInclusionProof(
   bytes32[] memory _proofSegments,
@@ -42,12 +32,34 @@ function rootHashFromInclusionProof(
   return _calculatedHash;
 }
 
+/**
+ * Calculate the chunk address from the Binary Merkle Tree of the chunk data
+ *
+ * The BMT chunk address is the hash of the 8 byte span and the root
+ * hash of a binary Merkle tree (BMT) built on the 32-byte segments
+ * of the underlying data.
+   * @param _proofSegments Proof segments.
+   * @param _proveSegment Segment to prove.
+   * @param _proveSegmentIndex Prove segment index
+   * @param _chunkSpan chunk bytes length
+   * @return _chunkHash chunk hash
+   */
+function chunkAddressFromInclusionProof(
+  bytes32[] memory _proofSegments,
+  bytes32  _proveSegment,
+  uint256 _proveSegmentIndex,
+  uint64 _chunkSpan
+) public pure returns (bytes32) {
+  bytes32 rootHash = rootHashFromInclusionProof(_proofSegments, _proveSegment, _proveSegmentIndex);
+  return keccak256(abi.encodePacked(_chunkSpan, rootHash));
+}
+
 function mergeSegment(
     bytes32 _calculatedHash,
     bytes32 _proofSegment,
     bool mergeFromRight
 )
-    public
+    internal
     pure
     returns (bytes32 res)
   {    

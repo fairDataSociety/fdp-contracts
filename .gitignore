@@ -10,3 +10,4 @@ dist
 cache
 artifacts
 .vscode/
+bin/contracts
