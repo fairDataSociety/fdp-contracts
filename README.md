@@ -181,7 +181,7 @@ Gives back the file address that is calculated with only the inclusion proof seg
 | ` _proveChunks` | `ChunkInclusionProof[] memory` |  Sister segments that will be hashed together with the calculated hashes |
 | `_proveSegment` | `bytes32` | the segment that is wanted to be validated it is subsumed under the file address |
 | `_proveSegmentIndex` | `uint256` | the `proveSegment`'s segment index on its BMT level |
-| `_lastChunkIndex` | `uint256` |  File length in bytes or last chunk span value |
+| `_fileLength` | `uint256` |  File length |
 
 ### Returns
 
@@ -233,20 +233,15 @@ let proveSegment = fileBytes.slice(segmentIndex * SEGMENT_SIZE, segmentIndex * S
 // Padding
 proveSegment = new Uint8Array([...proveSegment, ...new Uint8Array(SEGMENT_SIZE - proveSegment.length)])
 
-// Get last chunk index
+// Get file size
 const fileSizeFromProof = getSpanValue(proofChunks[proofChunks.length - 1].span)
-const lastChunkIndex = Math.floor((fileSizeFromProof - 1) / MAX_CHUNK_PAYLOAD_SIZE)
+const fileSize = Math.floor((fileSizeFromProof - 1) / MAX_CHUNK_PAYLOAD_SIZE)
     
 // Map chunks to work with ABI types
-const chunks = proofChunks.map(chunk => {
-return {
-    span: chunk.span,
-    sisterSegments: chunk.sisterSegments.map(i => i as BytesLike),
-    } as BMTChunkInclusionProof
-})
+const chunks = proofChunks as BMTChunkInclusionProof[]
 
-// Call fileAddressFromInclusionProof, return an hex value representing the file address
-const fileAddressProof = await bmtlib.fileAddressFromInclusionProof(chunks, proveSegment, segmentIndex, lastChunkIndex)
+// Call fileAddressFromInclusionProof, which returns an hex value representing the file address
+const fileAddressProof = await bmtlib.fileAddressFromInclusionProof(chunks, proveSegment, segmentIndex, fileSize)
 expect(fileAddressProof).equals(ethers.utils.hexlify(chunk.address()))
 ```
 

@@ -13,7 +13,7 @@ contract BMTFile is BMTChunk {
   uint256 public constant CHUNK_BMT_LEVELS = 7;
 
   struct ChunkInclusionProof{
-    bytes span;
+    uint64 span;
     bytes32[] sisterSegments;
   }
 
@@ -21,23 +21,23 @@ contract BMTFile is BMTChunk {
   * Gives back the file address that is calculated with only the inclusion proof segments
   * and the corresponding proved segment and its position.
   * @param _proveChunks Sister segments that will be hashed together with the calculated hashes
-  * @param _proveSegment the segment that is wanted to be validated it is subsumed under the file address
+  * @param _proveSegment The segment that is wanted to be validated it is subsumed under the file address
   * @param _proveSegmentIndex the `proveSegment`'s segment index on its BMT level
-  * @param _lastChunkIndex File length in bytes or last chunk span value
-  * @return _calculatedHash the calculated file address
+  * @param _fileLength File length
+  * @return _calculatedHash File address
   */
 function fileAddressFromInclusionProof(
   ChunkInclusionProof[] memory _proveChunks,
   bytes32 _proveSegment,
   uint256 _proveSegmentIndex,
-  uint256 _lastChunkIndex
+  uint256 _fileLength
 ) public pure returns (bytes32 _calculatedHash) {
    _calculatedHash = _proveSegment;
 
   for (uint256 i = 0; i < _proveChunks.length; i++) {
     (uint256 parentChunkIndex, uint256 level) = getBmtIndexOfSegment(
       _proveSegmentIndex,
-      _lastChunkIndex
+      _fileLength
     );
     for (uint256 j = 0; j < _proveChunks[i].sisterSegments.length; j++) {
         bool mergeFromRight = _proveSegmentIndex % 2 == 0 ? true : false;
@@ -51,7 +51,7 @@ function fileAddressFromInclusionProof(
     // this line is necessary if the _proveSegmentIndex
     // was in a carrierChunk
     _proveSegmentIndex = parentChunkIndex;
-    _lastChunkIndex >>= CHUNK_BMT_LEVELS + (level * CHUNK_BMT_LEVELS);
+    _fileLength >>= CHUNK_BMT_LEVELS + (level * CHUNK_BMT_LEVELS);
   }
 
   return _calculatedHash;

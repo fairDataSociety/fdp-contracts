@@ -1,18 +1,11 @@
-import {
-  Chunk,
-  fileInclusionProofBottomUp,
-  getSpanValue,
-  makeChunkedFile,
-  Utils,
-} from '@fairdatasociety/bmt-js'
+import { Chunk, fileInclusionProofBottomUp, getSpanValue, makeChunkedFile, Utils } from '@fairdatasociety/bmt-js'
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
 import { BMTFile } from '../typechain'
 import { BMTChunkInclusionProof } from '../js-library/src/model/bmt.model'
 import FS from 'fs'
 import path from 'path'
-import {  BytesLike, hexlify } from 'ethers/lib/utils'
-
+import { hexlify } from 'ethers/lib/utils'
 
 describe('file', () => {
   let bosBytes: Uint8Array
@@ -21,7 +14,7 @@ describe('file', () => {
   const SEGMENT_SIZE = 32
   const MAX_CHUNK_PAYLOAD_SIZE = 4096
   before(async () => {
-    let BMT = await ethers.getContractFactory('BMTFile')
+    const BMT = await ethers.getContractFactory('BMTFile')
     bmtlib = await BMT.deploy()
     await bmtlib.deployed()
 
@@ -30,7 +23,7 @@ describe('file', () => {
   })
 
   it('should find BMT position of the payload segment index', async () => {
-    //edge case - carrier chunk
+    // edge case - carrier chunk
     const fileBytes = carrierChunkFileBytes
     const chunkedFile = makeChunkedFile(fileBytes)
     const tree = chunkedFile.bmt()
@@ -62,20 +55,14 @@ describe('file', () => {
     const testGetFileHash = (segmentIndex: number): Promise<string> => {
       const proofChunks = fileInclusionProofBottomUp(chunkedFile, segmentIndex)
       let proveSegment = fileBytes.slice(segmentIndex * SEGMENT_SIZE, segmentIndex * SEGMENT_SIZE + SEGMENT_SIZE)
-      //padding
+      // padding
       proveSegment = new Uint8Array([...proveSegment, ...new Uint8Array(SEGMENT_SIZE - proveSegment.length)])
 
       // check the last segment has the correct span value.
       const fileSizeFromProof = getSpanValue(proofChunks[proofChunks.length - 1].span)
       expect(fileSizeFromProof).eq(fileBytes.length)
 
-      const chunks = proofChunks.map(chunk => {
-        return {
-          span: chunk.span,
-          sisterSegments: chunk.sisterSegments.map(i => i as BytesLike),
-        } as BMTChunkInclusionProof
-      })
-
+      const chunks = proofChunks as BMTChunkInclusionProof[]
       const lastChunkIndex = Math.floor((fileSizeFromProof - 1) / MAX_CHUNK_PAYLOAD_SIZE)
       return bmtlib.fileAddressFromInclusionProof(chunks, proveSegment, segmentIndex, lastChunkIndex)
     }
@@ -97,19 +84,14 @@ describe('file', () => {
     const testGetFileHash = (segmentIndex: number): Promise<string> => {
       const proofChunks = fileInclusionProofBottomUp(chunkedFile, segmentIndex)
       let proveSegment = fileBytes.slice(segmentIndex * SEGMENT_SIZE, segmentIndex * SEGMENT_SIZE + SEGMENT_SIZE)
-      //padding
+      // padding
       proveSegment = new Uint8Array([...proveSegment, ...new Uint8Array(SEGMENT_SIZE - proveSegment.length)])
 
       // check the last segment has the correct span value.
       const fileSizeFromProof = getSpanValue(proofChunks[proofChunks.length - 1].span)
       expect(fileSizeFromProof).eq(fileBytes.length)
 
-      const chunks = proofChunks.map(chunk => {
-        return {
-          span: chunk.span,
-          sisterSegments: chunk.sisterSegments.map(i => i as BytesLike),
-        } as BMTChunkInclusionProof
-      })
+      const chunks = proofChunks as BMTChunkInclusionProof[]
       const lastChunkIndex = Math.floor((fileSizeFromProof - 1) / MAX_CHUNK_PAYLOAD_SIZE)
       return bmtlib.fileAddressFromInclusionProof(chunks, proveSegment, segmentIndex, lastChunkIndex)
     }
@@ -147,20 +129,14 @@ describe('file', () => {
     const testGetFileHash = (segmentIndex: number): Promise<string> => {
       const proofChunks = fileInclusionProofBottomUp(chunkedFile, segmentIndex)
       let proveSegment = fileBytes.slice(segmentIndex * SEGMENT_SIZE, segmentIndex * SEGMENT_SIZE + SEGMENT_SIZE)
-      //padding
+      // padding
       proveSegment = new Uint8Array([...proveSegment, ...new Uint8Array(SEGMENT_SIZE - proveSegment.length)])
 
       // check the last segment has the correct span value.
       const fileSizeFromProof = getSpanValue(proofChunks[proofChunks.length - 1].span)
       expect(fileSizeFromProof).eq(fileBytes.length)
 
-      const chunks = proofChunks.map(chunk => {
-        return {
-          // span: getSpanValue(chunk.span),
-          span: chunk.span,
-          sisterSegments: chunk.sisterSegments.map(i => i as BytesLike),
-        } as BMTChunkInclusionProof
-      })
+      const chunks = proofChunks as BMTChunkInclusionProof[]
       const lastChunkIndex = Math.floor((fileSizeFromProof - 1) / MAX_CHUNK_PAYLOAD_SIZE)
       return bmtlib.fileAddressFromInclusionProof(chunks, proveSegment, segmentIndex, lastChunkIndex)
     }
