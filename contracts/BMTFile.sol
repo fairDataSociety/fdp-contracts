@@ -16,23 +16,38 @@ contract BMTFile is BMTChunk {
     uint64 span;
     bytes32[] sisterSegments;
   }
+  function getChunkSpanLength(
+    ChunkInclusionProof[] memory _proveChunks
+  ) internal pure returns (uint16) {
+     return toUint16(abi.encodePacked(_proveChunks[_proveChunks.length - 1].span >> 2), 0);
+  } 
 
+  function toUint16(bytes memory _bytes, uint256 _start) internal pure returns (uint16) {
+      require(_bytes.length >= _start + 2, "toUint16_outOfBounds");
+      uint16 tempUint;
+
+      assembly {
+          tempUint := mload(add(add(_bytes, 0x2), _start))
+      }
+
+      return tempUint;
+  }
   /* 
   * Gives back the file address that is calculated with only the inclusion proof segments
   * and the corresponding proved segment and its position.
   * @param _proveChunks Sister segments that will be hashed together with the calculated hashes
   * @param _proveSegment The segment that is wanted to be validated it is subsumed under the file address
   * @param _proveSegmentIndex the `proveSegment`'s segment index on its BMT level
-  * @param _fileLength File length
   * @return _calculatedHash File address
   */
 function fileAddressFromInclusionProof(
   ChunkInclusionProof[] memory _proveChunks,
   bytes32 _proveSegment,
-  uint256 _proveSegmentIndex,
-  uint256 _fileLength
+  uint256 _proveSegmentIndex
 ) public pure returns (bytes32 _calculatedHash) {
    _calculatedHash = _proveSegment;
+   uint256 lastIndex =  _proveChunks.length - 1;
+   uint64 _fileLength = getChunkSpanLength(_proveChunks);
 
   for (uint256 i = 0; i < _proveChunks.length; i++) {
     (uint256 parentChunkIndex, uint256 level) = getBmtIndexOfSegment(
@@ -46,7 +61,7 @@ function fileAddressFromInclusionProof(
     }
     _calculatedHash = keccak256(abi.encodePacked(
       (_proveChunks[i].span),
-      _calculatedHash
+      (_calculatedHash)
     ));  
     // this line is necessary if the _proveSegmentIndex
     // was in a carrierChunk

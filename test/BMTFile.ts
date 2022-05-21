@@ -2,7 +2,6 @@ import { Chunk, fileInclusionProofBottomUp, getSpanValue, makeChunkedFile, Utils
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
 import { BMTFile } from '../typechain'
-import { BMTChunkInclusionProof } from '../js-library/src/model/bmt.model'
 import FS from 'fs'
 import path from 'path'
 import { hexlify } from 'ethers/lib/utils'
@@ -12,7 +11,6 @@ describe('file', () => {
   let carrierChunkFileBytes: Uint8Array
   let bmtlib: BMTFile
   const SEGMENT_SIZE = 32
-  const MAX_CHUNK_PAYLOAD_SIZE = 4096
   before(async () => {
     const BMT = await ethers.getContractFactory('BMTFile')
     bmtlib = await BMT.deploy()
@@ -46,9 +44,9 @@ describe('file', () => {
     const chunkedFile = makeChunkedFile(fileBytes)
     const fileHash = chunkedFile.address()
     // segment to prove
-    const segmentIndex = Math.floor((fileBytes.length - 1) / 32)
+    const lastSegmentIndex = Math.floor((fileBytes.length - 1) / 32)
     // check segment array length for carrierChunk inclusion proof
-    const proofChunks = fileInclusionProofBottomUp(chunkedFile, segmentIndex)
+    const proofChunks = fileInclusionProofBottomUp(chunkedFile, lastSegmentIndex)
     expect(proofChunks.length).eq(2) // 1 level is skipped because the segment was in a carrierChunk
 
     /** Gives back the file hash calculated from the inclusion proof method */
@@ -62,12 +60,11 @@ describe('file', () => {
       const fileSizeFromProof = getSpanValue(proofChunks[proofChunks.length - 1].span)
       expect(fileSizeFromProof).eq(fileBytes.length)
 
-      const chunks = proofChunks as BMTChunkInclusionProof[]
-      const lastChunkIndex = Math.floor((fileSizeFromProof - 1) / MAX_CHUNK_PAYLOAD_SIZE)
-      return bmtlib.fileAddressFromInclusionProof(chunks, proveSegment, segmentIndex, lastChunkIndex)
+      return bmtlib.fileAddressFromInclusionProof(proofChunks, proveSegment, segmentIndex)
     }
+
     // edge case
-    const hash1 = await testGetFileHash(segmentIndex)
+    const hash1 = await testGetFileHash(lastSegmentIndex)
     expect(hash1.replace('0x', '')).eq(Utils.bytesToHex(fileHash, 64))
     const hash2 = await testGetFileHash(1000)
     expect(hash2.replace('0x', '')).eq(Utils.bytesToHex(fileHash, 64))
@@ -90,11 +87,10 @@ describe('file', () => {
       // check the last segment has the correct span value.
       const fileSizeFromProof = getSpanValue(proofChunks[proofChunks.length - 1].span)
       expect(fileSizeFromProof).eq(fileBytes.length)
-
-      const chunks = proofChunks as BMTChunkInclusionProof[]
-      const lastChunkIndex = Math.floor((fileSizeFromProof - 1) / MAX_CHUNK_PAYLOAD_SIZE)
-      return bmtlib.fileAddressFromInclusionProof(chunks, proveSegment, segmentIndex, lastChunkIndex)
+      const chunks = proofChunks
+      return bmtlib.fileAddressFromInclusionProof(chunks, proveSegment, segmentIndex)
     }
+
     // edge case
     const hash1 = await testGetFileHash(lastSegmentIndex)
     expect(hash1.replace('0x', '')).eq(Utils.bytesToHex(fileHash, 64))
@@ -135,11 +131,9 @@ describe('file', () => {
       // check the last segment has the correct span value.
       const fileSizeFromProof = getSpanValue(proofChunks[proofChunks.length - 1].span)
       expect(fileSizeFromProof).eq(fileBytes.length)
-
-      const chunks = proofChunks as BMTChunkInclusionProof[]
-      const lastChunkIndex = Math.floor((fileSizeFromProof - 1) / MAX_CHUNK_PAYLOAD_SIZE)
-      return bmtlib.fileAddressFromInclusionProof(chunks, proveSegment, segmentIndex, lastChunkIndex)
+      return bmtlib.fileAddressFromInclusionProof(proofChunks, proveSegment, segmentIndex)
     }
+
     // edge case
     const hash1 = await testGetFileHash(lastSegmentIndex)
     expect(hash1.replace('0x', '')).eq(Utils.bytesToHex(fileHash, 64))
