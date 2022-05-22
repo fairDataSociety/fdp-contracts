@@ -44,7 +44,6 @@ function fileAddressFromInclusionProof(
   uint256 _proveSegmentIndex
 ) public pure returns (bytes32 _calculatedHash) {
    _calculatedHash = _proveSegment;
-   uint256 lastIndex =  _proveChunks.length - 1;
    uint256 _fileLength = getChunkSpanLength(_proveChunks) >> 12;
 
   for (uint256 i = 0; i < _proveChunks.length; i++) {
