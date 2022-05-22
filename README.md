@@ -181,7 +181,7 @@ Gives back the file address that is calculated with only the inclusion proof seg
 | ` _proveChunks` | `ChunkInclusionProof[] memory` |  Sister segments that will be hashed together with the calculated hashes |
 | `_proveSegment` | `bytes32` | the segment that is wanted to be validated it is subsumed under the file address |
 | `_proveSegmentIndex` | `uint256` | the `proveSegment`'s segment index on its BMT level |
-| `_fileLength` | `uint256` |  File length |
+
 
 ### Returns
 
@@ -219,7 +219,6 @@ const fileBytes = Uint8Array.from(FS.readFileSync(path.join(__dirname, 'test-fil
 const carrierChunkFileBytes = Uint8Array.from(FS.readFileSync(path.join(__dirname, 'test-files', 'carrier-chunk-blob')))
 
 const chunkedFile = makeChunkedFile(fileBytes)
-const fileHash = chunkedFile.address()
 
 // Segment to prove
 const segmentIndex = Math.floor((fileBytes.length - 1) / 32)
@@ -233,15 +232,8 @@ let proveSegment = fileBytes.slice(segmentIndex * SEGMENT_SIZE, segmentIndex * S
 // Padding
 proveSegment = new Uint8Array([...proveSegment, ...new Uint8Array(SEGMENT_SIZE - proveSegment.length)])
 
-// Get file size
-const fileSizeFromProof = getSpanValue(proofChunks[proofChunks.length - 1].span)
-const fileSize = Math.floor((fileSizeFromProof - 1) / MAX_CHUNK_PAYLOAD_SIZE)
-    
-// Map chunks to work with ABI types
-const chunks = proofChunks as BMTChunkInclusionProof[]
-
 // Call fileAddressFromInclusionProof, which returns an hex value representing the file address
-const fileAddressProof = await bmtlib.fileAddressFromInclusionProof(chunks, proveSegment, segmentIndex, fileSize)
+const fileAddressProof = await bmtlib.fileAddressFromInclusionProof(proofChunks, proveSegment, segmentIndex)
 expect(fileAddressProof).equals(ethers.utils.hexlify(chunk.address()))
 ```
 

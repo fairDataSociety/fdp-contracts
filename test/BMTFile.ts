@@ -50,7 +50,7 @@ describe('file', () => {
     expect(proofChunks.length).eq(2) // 1 level is skipped because the segment was in a carrierChunk
 
     /** Gives back the file hash calculated from the inclusion proof method */
-    const testGetFileHash = (segmentIndex: number): Promise<string> => {
+    const testGetFileHash = async (segmentIndex: number): Promise<string> => {
       const proofChunks = fileInclusionProofBottomUp(chunkedFile, segmentIndex)
       let proveSegment = fileBytes.slice(segmentIndex * SEGMENT_SIZE, segmentIndex * SEGMENT_SIZE + SEGMENT_SIZE)
       // padding
@@ -59,7 +59,6 @@ describe('file', () => {
       // check the last segment has the correct span value.
       const fileSizeFromProof = getSpanValue(proofChunks[proofChunks.length - 1].span)
       expect(fileSizeFromProof).eq(fileBytes.length)
-
       return bmtlib.fileAddressFromInclusionProof(proofChunks, proveSegment, segmentIndex)
     }
 
