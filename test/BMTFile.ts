@@ -5,6 +5,7 @@ import { BMTFile } from '../typechain'
 import FS from 'fs'
 import path from 'path'
 import { hexlify } from 'ethers/lib/utils'
+import { BN } from 'bn.js'
 
 describe('file', () => {
   let bosBytes: Uint8Array
@@ -59,14 +60,24 @@ describe('file', () => {
       // check the last segment has the correct span value.
       const fileSizeFromProof = getSpanValue(proofChunks[proofChunks.length - 1].span)
       expect(fileSizeFromProof).eq(fileBytes.length)
-      return bmtlib.fileAddressFromInclusionProof(proofChunks, proveSegment, segmentIndex)
+
+      // TODO: Move this logic to bmt.js
+      const proofChunksBigNumber = proofChunks.map((i: { span: Uint8Array; sisterSegments: Uint8Array[] }) => {
+        return {
+          // eslint-disable-next-line node/no-unsupported-features/es-syntax
+          ...i,
+          // Note: It has to be exactly little endian with length of 8 bytes
+          spanValue: new BN(i.span).toBuffer('le', 8),
+        }
+      })
+      return bmtlib.fileAddressFromInclusionProof(proofChunksBigNumber, proveSegment, segmentIndex)
     }
 
     // edge case
     const hash1 = await testGetFileHash(lastSegmentIndex)
-    expect(hash1.replace('0x', '')).eq(Utils.bytesToHex(fileHash, 64))
+    expect(hash1).eq(hexlify(fileHash))
     const hash2 = await testGetFileHash(1000)
-    expect(hash2.replace('0x', '')).eq(Utils.bytesToHex(fileHash, 64))
+    expect(hash2).eq(hexlify(fileHash))
   })
 
   it('should collect the required segments for inclusion proof 2', async () => {
@@ -77,7 +88,7 @@ describe('file', () => {
     const lastSegmentIndex = Math.floor((fileBytes.length - 1) / 32)
 
     /** Gives back the file hash calculated from the inclusion proof method */
-    const testGetFileHash = (segmentIndex: number): Promise<string> => {
+    const testGetFileHash = async (segmentIndex: number): Promise<string> => {
       const proofChunks = fileInclusionProofBottomUp(chunkedFile, segmentIndex)
       let proveSegment = fileBytes.slice(segmentIndex * SEGMENT_SIZE, segmentIndex * SEGMENT_SIZE + SEGMENT_SIZE)
       // padding
@@ -86,8 +97,18 @@ describe('file', () => {
       // check the last segment has the correct span value.
       const fileSizeFromProof = getSpanValue(proofChunks[proofChunks.length - 1].span)
       expect(fileSizeFromProof).eq(fileBytes.length)
-      const chunks = proofChunks
-      return bmtlib.fileAddressFromInclusionProof(chunks, proveSegment, segmentIndex)
+
+      // TODO: Move this logic to bmt.js
+      const proofChunksBigNumber = proofChunks.map((i: { span: Uint8Array; sisterSegments: Uint8Array[] }) => {
+        return {
+          // eslint-disable-next-line node/no-unsupported-features/es-syntax
+          ...i,
+          // Note: It has to be exactly little endian with length of 8 bytes
+          spanValue: new BN(i.span).toBuffer('le', 8),
+        }
+      })
+
+      return bmtlib.fileAddressFromInclusionProof(proofChunksBigNumber, proveSegment, segmentIndex)
     }
 
     // edge case
@@ -121,7 +142,7 @@ describe('file', () => {
     const lastSegmentIndex = Math.floor((fileBytes.length - 1) / 32)
 
     /** Gives back the file hash calculated from the inclusion proof method */
-    const testGetFileHash = (segmentIndex: number): Promise<string> => {
+    const testGetFileHash = async (segmentIndex: number): Promise<string> => {
       const proofChunks = fileInclusionProofBottomUp(chunkedFile, segmentIndex)
       let proveSegment = fileBytes.slice(segmentIndex * SEGMENT_SIZE, segmentIndex * SEGMENT_SIZE + SEGMENT_SIZE)
       // padding
@@ -130,7 +151,18 @@ describe('file', () => {
       // check the last segment has the correct span value.
       const fileSizeFromProof = getSpanValue(proofChunks[proofChunks.length - 1].span)
       expect(fileSizeFromProof).eq(fileBytes.length)
-      return bmtlib.fileAddressFromInclusionProof(proofChunks, proveSegment, segmentIndex)
+
+      // TODO: Move this logic to bmt.js
+      const proofChunksBigNumber = proofChunks.map((i: { span: Uint8Array; sisterSegments: Uint8Array[] }) => {
+        return {
+          // eslint-disable-next-line node/no-unsupported-features/es-syntax
+          ...i,
+          // Note: It has to be exactly little endian with length of 8 bytes
+          spanValue: new BN(i.span).toBuffer('le', 8),
+        }
+      })
+
+      return bmtlib.fileAddressFromInclusionProof(proofChunksBigNumber, proveSegment, segmentIndex)
     }
 
     // edge case
