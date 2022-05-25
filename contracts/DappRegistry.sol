@@ -188,10 +188,7 @@ contract DappRegistry {
 	function getListingDetails(bytes32 _listingHash)
 		public
 		view
-		returns (
-		Listing memory,
-    Registry memory
-		)
+		returns (Listing memory, Registry memory)
 	{
 		Listing memory listingIns = listings[_listingHash];
 
@@ -201,10 +198,7 @@ contract DappRegistry {
 			"Listing does not exist."
 		);
 
-		return (
-			listingIns,
-			registry[listingIns.appName]
-		);
+		return (listingIns, registry[listingIns.appName]);
 	}
 
 	// proposes a listing to be whitelisted
@@ -226,8 +220,8 @@ contract DappRegistry {
 		// Sets owner
 		Listing storage listing = listings[_listingHash];
 		listing.owner = msg.sender;
-	//	listing.data = _data;
-	//	listingNames.push(listing.data);
+		//	listing.data = _data;
+		//	listingNames.push(listing.data);
 		listing.arrIndex = listingNames.length - 1;
 
 		// Sets apply stage end time
