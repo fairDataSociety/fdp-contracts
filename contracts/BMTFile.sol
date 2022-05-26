@@ -11,12 +11,32 @@ contract BMTFile is BMTChunk {
   uint64 public constant CHUNK_BMT_LEVELS = 7;
 
   struct ChunkInclusionProof{
-    // big endian value
     uint64 span;
-    // little endian value
-    uint64 spanValue;
     bytes32[] sisterSegments;
   }
+
+    /**
+     * @notice          Changes the endianness of a uint64.
+     * @dev             https://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel
+     * @param _b        The unsigned integer to reverse
+     * @return          v - The reversed value
+     */
+    function reverseUint64(uint64 _b) internal pure returns (uint64) {
+        uint256 v = _b;
+
+        // swap bytes
+        v = ((v >> 8) & 0x00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF) |
+            ((v & 0x00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF) << 8);
+        // swap 2-byte long pairs
+        v = ((v >> 16) & 0x0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF) |
+            ((v & 0x0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF) << 16);
+        // swap 4-byte long pairs
+        v = ((v >> 32) & 0x00000000FFFFFFFF00000000FFFFFFFF00000000FFFFFFFF00000000FFFFFFFF) |
+            ((v & 0x00000000FFFFFFFF00000000FFFFFFFF00000000FFFFFFFF00000000FFFFFFFF) << 32);
+          
+
+        return uint64(v);
+    }
 
 /* 
   * Gives back the file address that is calculated with only the inclusion proof segments
@@ -32,7 +52,7 @@ function fileAddressFromInclusionProof(
   uint64 _proveSegmentIndex
 ) public pure returns (bytes32 _calculatedHash) {
    _calculatedHash = _proveSegment;
-   uint64 lastChunkIndex = _proveChunks[_proveChunks.length - 1].spanValue >> 12;
+   uint64 lastChunkIndex = reverseUint64(_proveChunks[_proveChunks.length - 1].span) >> 12;
 
   for (uint8 i = 0; i < _proveChunks.length; i++) {
     (uint64 parentChunkIndex, uint64 level) = getBmtIndexOfSegment(
