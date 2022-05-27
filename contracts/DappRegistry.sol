@@ -12,7 +12,7 @@ contract DappRegistry {
 		// Indicates records status
 		bool whitelisted;
 		// Owner of Listing
-		address owner;
+		address minter;
 		// Number of tokens in the listing
 		uint256 deposit;
 		// the challenge id of the current challenge
@@ -26,6 +26,8 @@ contract DappRegistry {
 	struct Record {
 		// ENS app name
 		bytes32 appName;
+		// owner
+		address owner;
 		// DApp description
 		string description;
 		// app version
@@ -38,7 +40,6 @@ contract DappRegistry {
 		bytes32 blobRef;
 		// Creation date
 		uint256 timestamp;
-		bytes32[] tags;
 	}
 
 	// Simple TCR
@@ -93,6 +94,11 @@ contract DappRegistry {
 		uint256 reward,
 		address indexed voter
 	);
+	event TransferRecord(
+		address from,
+		address to,
+		bytes32 appName
+	);
 
 	// revealed by default; no partial locking
 	mapping(uint256 => mapping(address => Vote)) private votes;
@@ -124,7 +130,7 @@ contract DappRegistry {
 		string memory _name,
 		address _token,
 		uint256[] memory _parameters
-	) public {
+	)  {
 		require(_token != address(0), "Token address should not be 0 address.");
 
 		token = IERC20(_token);
@@ -141,6 +147,19 @@ contract DappRegistry {
 
 		// Initialize the poll nonce
 		pollNonce = INITIAL_POLL_NONCE;
+	}
+
+	function transferOwnership(
+		address _to,
+		bytes32 _appName
+	) public {
+
+	}
+
+	function burn(
+		bytes32 _appName
+	) public {
+
 	}
 
 	// returns whether a listing is already whitelisted
