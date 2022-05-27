@@ -9,7 +9,7 @@ contract DappRegistry {
 	struct Listing {
 		// Expiration date of apply stage
 		uint256 applicationExpiry;
-		// Indicates registry status
+		// Indicates records status
 		bool whitelisted;
 		// Owner of Listing
 		address owner;
@@ -17,13 +17,13 @@ contract DappRegistry {
 		uint256 deposit;
 		// the challenge id of the current challenge
 		uint256 challengeId;
-		// registry id
+		// records id
 		bytes32 appName;
 		// arrayIndex of listing in listingNames array (for deletion)
 		uint256 arrIndex;
 	}
 
-	struct Registry {
+	struct Record {
 		// ENS app name
 		bytes32 appName;
 		// DApp description
@@ -71,7 +71,6 @@ contract DappRegistry {
 	event OnApplication(
 		bytes32 indexed appName,
 		uint256 deposit,
-		string data,
 		address indexed applicant
 	);
 	event ChallengeCompleted(
@@ -103,8 +102,8 @@ contract DappRegistry {
 
 	// Maps listingHashes to associated appName data
 	mapping(bytes32 => Listing) private listings;
-	mapping(bytes32 => Registry) private registry;
-	string[] public listingNames;
+	mapping(bytes32 => Record) private records;
+	bytes32[] public listingNames;
 
 	// Maps polls to associated challenge
 	mapping(uint256 => Poll) private polls;
@@ -154,7 +153,7 @@ contract DappRegistry {
 	}
 
 	// returns if a listing is in apply stage
-	function appWasMade(bytes32 _listingHash)
+	function isPending(bytes32 _listingHash)
 		public
 		view
 		returns (bool exists)
@@ -162,7 +161,7 @@ contract DappRegistry {
 		return listings[_listingHash].applicationExpiry > 0;
 	}
 
-	// get details of this registry (for UI)
+	// get details of this records (for UI)
 	function getDetails()
 		public
 		view
@@ -188,31 +187,31 @@ contract DappRegistry {
 	function getListingDetails(bytes32 _listingHash)
 		public
 		view
-		returns (Listing memory, Registry memory)
+		returns (Listing memory, Record memory)
 	{
 		Listing memory listingIns = listings[_listingHash];
 
 		// Listing must be in apply stage or already on the whitelist
 		require(
-			appWasMade(_listingHash) || listingIns.whitelisted,
+			isPending(_listingHash) || listingIns.whitelisted,
 			"Listing does not exist."
 		);
 
-		return (listingIns, registry[listingIns.appName]);
+		return (listingIns, records[listingIns.appName]);
 	}
 
 	// proposes a listing to be whitelisted
 	function propose(
 		bytes32 _listingHash,
 		uint256 _amount,
-		string calldata _data
+		Record calldata _data
 	) external {
 		require(
 			!isWhitelisted(_listingHash),
 			"Listing is already whitelisted."
 		);
 		require(
-			!appWasMade(_listingHash),
+			!isPending(_listingHash),
 			"Listing is already in apply stage."
 		);
 		require(_amount >= minDeposit, "Not enough stake for application.");
@@ -220,8 +219,9 @@ contract DappRegistry {
 		// Sets owner
 		Listing storage listing = listings[_listingHash];
 		listing.owner = msg.sender;
-		//	listing.data = _data;
-		//	listingNames.push(listing.data);
+		listing.appName = _data.appName;
+		records[listing.appName]  = _data;
+		listingNames.push(listing.appName);
 		listing.arrIndex = listingNames.length - 1;
 
 		// Sets apply stage end time
@@ -236,7 +236,7 @@ contract DappRegistry {
 			"Token transfer failed."
 		);
 
-		emit OnApplication(_listingHash, _amount, _data, msg.sender);
+		emit OnApplication(_listingHash, _amount, msg.sender);
 	}
 
 	// challenges a listing from being whitelisted
@@ -246,7 +246,7 @@ contract DappRegistry {
 	{
 		// Listing must be in apply stage or already on the whitelist
 		require(
-			appWasMade(_listingHash) || listings[_listingHash].whitelisted,
+			isPending(_listingHash) || listings[_listingHash].whitelisted,
 			"Listing does not exist."
 		);
 
@@ -313,7 +313,7 @@ contract DappRegistry {
 
 		// Listing must be in apply stage or already on the whitelist
 		require(
-			appWasMade(_listingHash) || listing.whitelisted,
+			isPending(_listingHash) || listing.whitelisted,
 			"Listing does not exist."
 		);
 
@@ -364,7 +364,7 @@ contract DappRegistry {
 		// and either: the challengeId == 0, or the challenge has been resolved.
 		/* solium-disable */
 		if (
-			appWasMade(_listingHash) &&
+			isPending(_listingHash) &&
 			listings[_listingHash].applicationExpiry < block.timestamp &&
 			!isWhitelisted(_listingHash) &&
 			(challengeId == 0 || challenges[challengeId].resolved == true)
