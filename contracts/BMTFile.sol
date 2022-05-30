@@ -5,10 +5,10 @@ import "./BMTChunk.sol";
 
 contract BMTFile is BMTChunk {
   // max segment count
-  uint64 public constant MAX_SEGMENT_COUNT = 128;
+  uint16 public constant MAX_SEGMENT_COUNT = 128;
 
   // chunk bmt levels
-  uint64 public constant CHUNK_BMT_LEVELS = 7;
+  uint16 public constant CHUNK_BMT_LEVELS = 7;
 
   struct ChunkInclusionProof{
     uint64 span;
@@ -21,7 +21,7 @@ contract BMTFile is BMTChunk {
      * @param _b        The unsigned integer to reverse
      * @return          v - The reversed value
      */
-    function reverseUint64(uint64 _b) internal pure returns (uint64) {
+    function reverseUint64(uint64 _b) public pure returns (uint64) {
         uint256 v = _b;
 
         // swap bytes

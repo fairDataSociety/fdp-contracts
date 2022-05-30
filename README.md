@@ -46,8 +46,14 @@ npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
 For faster runs of your tests and scripts, consider skipping ts-node's type checking by setting the environment variable `TS_NODE_TRANSPILE_ONLY` to `1` in hardhat's environment. For more details see [the documentation](https://hardhat.org/guides/typescript.html#performance-optimizations).
 
 
-# API
-# Verifying chunks with BMTChunk solidity library
+# BMT Inclusion Proofs
+
+- [Verifying chunks](#verifying-chunks-with-bmtchunk-solidity-library)
+    - [rootHashFromInclusionProof](#roothashfrominclusionproof)
+    - [chunkAddressFromInclusionProof](#chunkaddressfrominclusionproof)
+- [Verifying files](#verifying-files-with-bmtfile)
+    - [fileAddressFromInclusionProof](#fileaddressfrominclusionproof)
+# Verifying chunks with BMTChunk
 
  The functions `rootHashFromInclusionProof` and `chunkAddressFromInclusionProof` in BMTChunk are similar to functions found in [bmt-js](https://github.com/fairDataSociety/bmt-js) library and allows you to verify chunks for inclusion proofs.
 
@@ -165,7 +171,7 @@ const chunkAddress = await bmtlib.chunkAddressFromInclusionProof(
 expect(chunkAddress).equals(ethers.utils.hexlify(chunk.address())
 ```
 
-# Verifying files with BMTFiles solidity library
+# Verifying files with BMTFile
 
  The function `fileAddressFromInclusionProof` in BMTFile is similar to functions found in [bmt-js](https://github.com/fairDataSociety/bmt-js) library and allows you to verify files for inclusion proofs.
 
@@ -215,9 +221,7 @@ const bmtlib = await BMT.at(`<contract_address>`)
 // Test file
 const fileBytes = Uint8Array.from(FS.readFileSync(path.join(__dirname, 'test-files', 'The-Book-of-Swarm.pdf')))
 
-// Test chunk file
-const carrierChunkFileBytes = Uint8Array.from(FS.readFileSync(path.join(__dirname, 'test-files', 'carrier-chunk-blob')))
-
+// Chunk file
 const chunkedFile = makeChunkedFile(fileBytes)
 
 // Segment to prove

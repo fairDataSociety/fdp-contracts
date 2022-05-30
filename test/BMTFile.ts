@@ -123,9 +123,7 @@ describe('file', () => {
     /** Gives back the file hash calculated from the inclusion proof method */
     const testGetFileHash = async (segmentIndex: number): Promise<string> => {
       const proofChunks = fileInclusionProofBottomUp(chunkedFile, segmentIndex)
-      let proveSegment = fileBytes.slice(segmentIndex * SEGMENT_SIZE, segmentIndex * SEGMENT_SIZE + SEGMENT_SIZE)
-      // padding
-      proveSegment = new Uint8Array([...proveSegment, ...new Uint8Array(SEGMENT_SIZE - proveSegment.length)])
+      const proveSegment = fileBytes.slice(segmentIndex * SEGMENT_SIZE, segmentIndex * SEGMENT_SIZE + SEGMENT_SIZE)
 
       // check the last segment has the correct span value.
       const fileSizeFromProof = getSpanValue(proofChunks[proofChunks.length - 1].span)
