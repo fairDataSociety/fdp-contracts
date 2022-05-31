@@ -1,17 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./IERC20.sol";
+import "./ERC20/IERC20.sol";
 import "./ENS.sol";
 
 
 contract DappRegistry {
 
 	struct Record {
-		// amount deposited
-		uint256 amountDeposited;
 		// ENS app name
-		bytes32 appName;
+		bytes32 node;
 		// owner
 		address owner;
 		// DApp description
@@ -29,17 +27,17 @@ contract DappRegistry {
 	}
 
 	event DappRecordAdded(
-		bytes32 indexed appName,
+		bytes32 indexed node,
 		uint256 deposit,
 		address indexed applicant
 	);
 	event TransferRecord(
 		address from,
 		address to,
-		bytes32 appName
+		bytes32 node
 	);
 
-	// Maps listingHashes to associated appName data
+	// Maps listingHashes to associated node data
 	mapping(bytes32 => Record) private records;
 
 	modifier only_owner(bytes32 _node) {
@@ -80,11 +78,11 @@ contract DappRegistry {
      */
 	function setOwner(
 		address _to,
-		bytes32 _appName
-	) external only_owner(_appName) 
+		bytes32 _nodehash
+	) external only_owner(_nodehash) 
 	returns (bool){
-		records[_appName].owner = _to;
-		emit TransferRecord(msg.sender, _to, _appName);
+		records[_nodehash].owner = _to;
+		emit TransferRecord(msg.sender, _to, _nodehash);
 		return true;
 	}
 
@@ -95,11 +93,11 @@ contract DappRegistry {
      * Returns true if it passed
      */
 	function burn(
-		bytes32 _appName
-	) external only_owner(_appName)
+		bytes32 _nodehash
+	) external only_owner(_nodehash)
 	returns (bool) {
-		records[_appName].owner = address(0);
-		emit TransferRecord(msg.sender, address(0), _appName);
+		records[_nodehash].owner = address(0);
+		emit TransferRecord(msg.sender, address(0), _nodehash);
 		return true;
 	}
 
@@ -109,7 +107,7 @@ contract DappRegistry {
      *
      * Returns a tuple.
      */
-	function getDetails()
+	function getRegistryDetails()
 		public
 		view
 		returns (
@@ -132,18 +130,18 @@ contract DappRegistry {
      *
      * Returns a Record object.
      */
-	function get(bytes32 _appName)
+	function get(bytes32 _nodehash)
 		public
 		view
 		returns (Record memory)
 	{
 
 		require(
-			records[_appName].appName == _appName,
+			records[_nodehash].node == _nodehash,
 			"Dapp does not exist."
 		);
 
-		return (records[_appName]);
+		return (records[_nodehash]);
 	}
 
 	
@@ -155,27 +153,30 @@ contract DappRegistry {
      * Emits an {DappRecordAdded} event.
      */
 	function add(
-		bytes32 _appName,
+		bytes32 _nodehash,
 		uint256 _amount,
 		Record calldata _record
 	) external {
 		require(
-			records[_appName].appName == _appName,
+			records[_nodehash].node != _nodehash,
 			"Dapp name already exists"
+		);		
+		require(
+			token.allowance(msg.sender, address(this))  >=  minDeposit,
+			"Insufficient allowance"
 		);
-		require(_amount >= minDeposit, "Not enough stake for dapp registration.");
-
+		require(
+			token.balanceOf(msg.sender)  >=  minDeposit,
+			"Insufficient balance"
+		);
 		// Sets record
-		records[_appName]  = _record;		
-
-
+		records[_nodehash]  = _record;
 		// Transfer tokens from user
 		require(
 			token.transferFrom(msg.sender, address(this), _amount),
 			"Token transfer failed."
 		);
-
-		emit DappRecordAdded(_appName, _amount, msg.sender);
+		emit DappRecordAdded(_nodehash, _amount, msg.sender);
 	}
 
 
