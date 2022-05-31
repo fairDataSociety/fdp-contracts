@@ -160,13 +160,17 @@ contract DappRegistry {
 		require(
 			records[_nodehash].node != _nodehash,
 			"Dapp name already exists"
-		);		
+		);
 		require(
-			token.allowance(msg.sender, address(this))  >=  minDeposit,
+			_amount >= minDeposit,
+			"Amount is less than minimum deposit"
+		);
+		require(
+			token.allowance(msg.sender, address(this))  >=  _amount,
 			"Insufficient allowance"
 		);
 		require(
-			token.balanceOf(msg.sender)  >=  minDeposit,
+			token.balanceOf(msg.sender)  >=  _amount,
 			"Insufficient balance"
 		);
 		// Sets record
