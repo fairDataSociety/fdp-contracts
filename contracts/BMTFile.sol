@@ -15,31 +15,31 @@ contract BMTFile is BMTChunk {
     bytes32[] sisterSegments;
   }
 
-    /**
-     * @notice          Changes the endianness of a uint64.
-     * @dev             https://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel
-     * @param _b        The unsigned integer to reverse
-     * @return          v - The reversed value
-     */
-    function reverseUint64(uint64 _b) public pure returns (uint64) {
-        uint256 v = _b;
+  /**
+    * @notice          Changes the endianness of a uint64.
+    * @dev             https://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel
+    * @param _b        The unsigned integer to reverse
+    * @return          v - The reversed value
+    */
+  function reverseUint64(uint64 _b) public pure returns (uint64) {
+      uint256 v = _b;
 
-        // swap bytes
-        v = ((v >> 8) & 0x00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF) |
-            ((v & 0x00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF) << 8);
-        // swap 2-byte long pairs
-        v = ((v >> 16) & 0x0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF) |
-            ((v & 0x0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF) << 16);
-        // swap 4-byte long pairs
-        v = ((v >> 32) & 0x00000000FFFFFFFF00000000FFFFFFFF00000000FFFFFFFF00000000FFFFFFFF) |
-            ((v & 0x00000000FFFFFFFF00000000FFFFFFFF00000000FFFFFFFF00000000FFFFFFFF) << 32);
-          
+      // swap bytes
+      v = ((v >> 8) & 0x00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF) |
+          ((v & 0x00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF) << 8);
+      // swap 2-byte long pairs
+      v = ((v >> 16) & 0x0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF) |
+          ((v & 0x0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF) << 16);
+      // swap 4-byte long pairs
+      v = ((v >> 32) & 0x00000000FFFFFFFF00000000FFFFFFFF00000000FFFFFFFF00000000FFFFFFFF) |
+          ((v & 0x00000000FFFFFFFF00000000FFFFFFFF00000000FFFFFFFF00000000FFFFFFFF) << 32);
+        
 
-        return uint64(v);
-    }
+      return uint64(v);
+  }
 
-/* 
-  * Gives back the file address that is calculated with only the inclusion proof segments
+/** 
+  * @dev Gives back the file address that is calculated with only the inclusion proof segments
   * and the corresponding proved segment and its position.
   * @param _proveChunks Sister segments that will be hashed together with the calculated hashes
   * @param _proveSegment The segment that is wanted to be validated it is subsumed under the file address
@@ -78,7 +78,7 @@ function fileAddressFromInclusionProof(
 }
 
   /**
-  * Get the chunk's position of a given payload segment index in the BMT tree
+  * @dev Get the chunk's position of a given payload segment index in the BMT tree
   *
   * The BMT buils up in an optimalized way, where an orphan/carrier chunk
   * can be inserted into a higher level of the tree. It may cause that
