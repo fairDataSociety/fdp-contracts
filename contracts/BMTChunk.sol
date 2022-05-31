@@ -1,15 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-
 contract BMTChunk {
-
   // max chunk payload size
   uint256 public constant MAX_CHUNK_PAYLOAD_SIZE = 4096;
-
   // segment byte size
   uint256 public constant SEGMENT_SIZE = 32;
-
 
 /** Calculates the root hash from the provided inclusion proof segments and its corresponding segment index  
    * @param _proofSegments Proof segments.
