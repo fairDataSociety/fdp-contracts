@@ -14,11 +14,19 @@ interface ENS {
   // Logged when the TTL of a node changes
   event NewTTL(bytes32 indexed node, uint64 ttl);
 
+  function setSubnodeRecord(
+      bytes32 node,
+      bytes32 label,
+      address owner,
+      address resolver,
+      uint64 ttl
+  ) external;
+
   function setSubnodeOwner(
     bytes32 _node,
     bytes32 _label,
     address _owner
-  ) external;
+  ) external returns (bytes32);
 
   function setResolver(bytes32 _node, address _resolver) external;
 

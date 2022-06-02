@@ -38,6 +38,19 @@ contract ENSRegistry is ENS {
     records[_node].owner = _owner;
   }
 
+  /***
+    * @dev Sets the record for a subnode.
+    * @param node The parent node.
+    * @param label The hash of the label specifying the subnode.
+    * @param owner The address of the new owner.
+    * @param resolver The address of the resolver.
+    * @param ttl The TTL in seconds.
+    */
+  function setSubnodeRecord(bytes32 _node, bytes32 _label, address _owner, address _resolver, uint64 _ttl) 
+  external override {
+      bytes32 subnode = setSubnodeOwner(_node, _label, _owner);
+      _setResolverAndTTL(subnode, _resolver, _ttl);
+  }
   /**
    * @dev Transfers ownership of a subnode keccak256(node, label) to a new address. May only be called by the owner of the parent node.
    * @param _node The parent node.
@@ -48,10 +61,11 @@ contract ENSRegistry is ENS {
     bytes32 _node,
     bytes32 _label,
     address _owner
-  ) external override only_owner(_node) {
+  ) public override only_owner(_node) returns(bytes32) {
     bytes32 subnode = keccak256(abi.encodePacked(_node, _label));
     emit NewOwner(_node, _label, _owner);
     records[subnode].owner = _owner;
+    return subnode;
   }
 
   /**
@@ -99,5 +113,17 @@ contract ENSRegistry is ENS {
    */
   function ttl(bytes32 _node) external view override returns (uint64) {
     return records[_node].ttl;
+  }
+
+  function _setResolverAndTTL(bytes32 node, address resolver, uint64 ttl) internal {
+      if(resolver != records[node].resolver) {
+          records[node].resolver = resolver;
+          emit NewResolver(node, resolver);
+      }
+
+      if(ttl != records[node].ttl) {
+          records[node].ttl = ttl;
+          emit NewTTL(node, ttl);
+      }
   }
 }
