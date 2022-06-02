@@ -1,17 +1,17 @@
 /* eslint-disable node/no-unsupported-features/es-syntax */
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
-import { DappRegistry, TestToken } from '../typechain'
+import { DappRegistry, ENSRegistry, SubdomainRegistrar, TestToken } from '../typechain'
 
 describe('dapp registry', () => {
   let dappRegistry: DappRegistry
   let testToken: TestToken
+  let ens: ENSRegistry
+  let subdomainRegistry: SubdomainRegistrar
   const name = 'Swarm Dapp Registry'
-  const ens = '0x54247f84A6c8857d3214A298925A099aa0eDE08A'
-  const node = '0x787192fc5378cc32aa956ddfdedbf26b24e8d78e40109add0eea2c1a012c3dec' // alice.eth
   const amount = ethers.utils.parseEther('1')
   const record = {
-    node,
+    node: 'placeholder',
     owner: '0xC47c055b3EBfA044851Ac87B8240f77DF90fdcB8',
     description: 'NFT Sample Dapp',
     version: 1,
@@ -21,12 +21,20 @@ describe('dapp registry', () => {
     timestamp: new Date().getTime(),
   }
   before(async () => {
+    const ENSRegistry = await ethers.getContractFactory('ENSRegistry')
+    ens = await ENSRegistry.deploy()
+    await ens.deployed()
+
+    const SubdomainRegistrar = await ethers.getContractFactory('SubdomainRegistrar')
+    subdomainRegistry = await SubdomainRegistrar.deploy(ens.address, ethers.utils.formatBytes32String('fds'))
+    await subdomainRegistry.deployed()
+
     const TestToken = await ethers.getContractFactory('TestToken')
     testToken = await TestToken.deploy()
     await testToken.deployed()
 
     const DappRegistry = await ethers.getContractFactory('DappRegistry')
-    dappRegistry = await DappRegistry.deploy(name, testToken.address, ens, amount.toString())
+    dappRegistry = await DappRegistry.deploy(name, testToken.address, ens.address, amount.toString())
     await dappRegistry.deployed()
   })
 
@@ -38,17 +46,36 @@ describe('dapp registry', () => {
   })
 
   describe('when creating a new record', () => {
+    beforeEach(async () => {
+      const [owner] = await ethers.getSigners()
+      await subdomainRegistry.register(ethers.utils.formatBytes32String('dapp.registry.fds'), owner.address)
+      const query = ens.filters.NewOwner(null, null, null)
+      const logs = await ens.queryFilter(query)
+      const log = logs[0].args
+      expect(log[1]).equal('dapp.registry.fds')
+      expect(log[2]).equal(owner)
+    })
+
     it('should add dapp record', async () => {
+      let query = ens.filters.NewOwner(null, null, null)
+      let logs = await ens.queryFilter(query)
+      const node = logs[0].args[0]
+      record.node = node
+
       const staked = ethers.utils.parseEther('1')
       await testToken.approve(dappRegistry.address, staked)
       await dappRegistry.add(node, staked, record)
-      const query = dappRegistry.filters.DappRecordAdded(null, null, null)
-      const logs = await dappRegistry.queryFilter(query)
+      query = dappRegistry.filters.DappRecordAdded(null, null, null)
+      logs = await dappRegistry.queryFilter(query)
       const log = logs[0].args
       expect(log[0]).equal(node)
     })
 
     it('should fetch dapp', async () => {
+      const query = ens.filters.NewOwner(null, null, null)
+      const logs = await ens.queryFilter(query)
+      const node = logs[0].args[0]
+
       const dapp = await dappRegistry.get(node)
       expect(dapp.node).equal(node)
       expect(dapp.timestamp).equal(record.timestamp)
@@ -58,11 +85,19 @@ describe('dapp registry', () => {
       expect(dapp.owner).equal(record.owner)
     })
 
-    it('should get list of dapps', async () => {
-      const details = await dappRegistry.getRegistryDetails()
-      expect(name).equal(details[0])
+    it('should transfer ownership', async () => {
+      let query = ens.filters.NewOwner(null, null, null)
+      let logs = await ens.queryFilter(query)
+      const node = logs[0].args[0]
 
-      expect(amount).equal(details[2])
+      const [owner, acct1] = await ethers.getSigners()
+      await dappRegistry.setOwner(acct1.address, node)
+      query = dappRegistry.filters.TransferRecord(null, null, null)
+      logs = await dappRegistry.queryFilter(query)
+      const log = logs[0].args
+      expect(log[0]).equal(owner.address)
+      expect(log[1]).equal(acct1.address)
+      expect(log[2]).equal(node)
     })
   })
 })

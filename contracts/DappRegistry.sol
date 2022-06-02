@@ -41,7 +41,7 @@ contract DappRegistry {
 	mapping(bytes32 => Record) private records;
 
 	modifier only_owner(bytes32 _node) {
-		require(ens.owner(_node) == msg.sender && records[_node].owner == msg.sender, "Owner is not sender");
+		require(ens.owner(_node) == msg.sender, "Owner is not sender");
 		_;
 	}
 
