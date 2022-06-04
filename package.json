@@ -61,6 +61,7 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "bee-factory": "github:ethersphere/bee-factory"
+    "bee-factory": "github:ethersphere/bee-factory",
+    "dns-packet": "^5.3.1"
   }
 }

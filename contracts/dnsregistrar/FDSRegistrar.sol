@@ -20,7 +20,7 @@ interface IDNSRegistrar {
  * @dev An ENS registrar that allows the owner of a DNS name to claim the
  *      corresponding name in ENS.
  */
-contract DNSRegistrar is IDNSRegistrar {
+contract FDSRegistrar is IDNSRegistrar {
     using BytesUtils for bytes;
 
     DNSSEC public oracle;
