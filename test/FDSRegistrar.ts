@@ -1,7 +1,7 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
-import { BaseRegistrarImplementation, ENSRegistry } from '../typechain'
+import { FDSRegistrar, ENSRegistry } from '../typechain'
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 const ZERO_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000'
@@ -10,14 +10,23 @@ function sha3(value: string) {
   return ethers.utils.keccak256(ethers.utils.toUtf8Bytes(value))
 }
 
-describe('BaseRegistrar', () => {
+const advanceTime = (delay: number) => ethers.provider.send('evm_increaseTime', [delay])
+
+const mine = () => ethers.provider.send('evm_mine', [])
+
+module.exports = {
+  advanceTime,
+  mine,
+}
+
+describe('FDSRegistrar', () => {
   let ownerAccount: SignerWithAddress
   let controllerAccount: SignerWithAddress
   let registrantAccount: SignerWithAddress
   let otherAccount: SignerWithAddress
 
   let ens: ENSRegistry
-  let registrar: BaseRegistrarImplementation
+  let registrar: FDSRegistrar
 
   before(async () => {
     const signers = await ethers.getSigners()
@@ -28,9 +37,8 @@ describe('BaseRegistrar', () => {
     const ENS = await ethers.getContractFactory('ENSRegistry')
     ens = await ENS.deploy()
     await ens.deployed()
-
-    const BaseRegistrar = await ethers.getContractFactory('BaseRegistrarImplementation')
-    registrar = await BaseRegistrar.deploy(ens.address, ethers.utils.namehash('fds'))
+    const FDSRegistrar = await ethers.getContractFactory('FDSRegistrar')
+    registrar = await FDSRegistrar.deploy(ens.address)
     await registrar.addController(controllerAccount.address)
     await ens.setSubnodeOwner(ZERO_HASH, sha3('fds'), registrar.address)
   })
@@ -147,13 +155,25 @@ describe('BaseRegistrar', () => {
 
   //   it('should not permit transfer or reclaim during the grace period', async () => {
   //     // Advance to the grace period
-  //     const ts = (await web3.eth.getBlock('latest')).timestamp
-  //     await evm.advanceTime((await registrar.nameExpires(sha3('newname'))).toNumber() - ts + 3600)
-  //     await evm.mine()
-  //     await exceptions.expectFailure(
-  //       registrar.transferFrom(registrantAccount, otherAccount, sha3('newname'), { from: registrantAccount }),
-  //     )
-  //     await exceptions.expectFailure(registrar.reclaim(sha3('newname'), registrantAccount, { from: registrantAccount }))
+  //     const ts = (await ethers.provider.getBlock('latest')).timestamp
+  //     await advanceTime((await registrar.nameExpires(sha3('newname'))).toNumber() - ts + 3600)
+  //     await mine()
+
+  //     const reg = registrar.connect(registrantAccount)
+
+  //     try {
+  //       await reg.transferFrom(registrantAccount, otherAccount, sha3('newname'), { from: registrantAccount })
+  //     } catch (e: any) {
+  //       expect(e.message).contain('ERC721: transfer caller is not owner nor approve')
+  //     }
+
+  //     const otherAccountReg = registrar.connect(otherAccount)
+
+  //     try {
+  //       await registrar.reclaim(sha3('newname'), registrantAccount, { from: registrantAccount })
+  //     } catch (e: any) {
+  //       expect(e.message).contain('ERC721: transfer caller is not owner nor approve')
+  //     }
   //   })
 
   it('should allow renewal during the grace period', async () => {
@@ -162,10 +182,10 @@ describe('BaseRegistrar', () => {
   })
 
   //   it('should allow registration of an expired domain', async () => {
-  //     const ts = (await web3.eth.getBlock('latest')).timestamp
+  //     const ts = (await ethers.provider.getBlock('latest')).timestamp
   //     const expires = await registrar.nameExpires(sha3('newname'))
   //     const grace = await registrar.GRACE_PERIOD()
-  //     await evm.advanceTime(expires.toNumber() - ts + grace.toNumber() + 3600)
+  //     await advanceTime(expires.toNumber() - ts + grace.toNumber() + 3600)
 
   //     try {
   //       await registrar.ownerOf(sha3('newname'))
