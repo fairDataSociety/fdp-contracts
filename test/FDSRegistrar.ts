@@ -60,24 +60,48 @@ describe('BaseRegistrar', () => {
     expect((await registrar.nameExpires(sha3('newname'))).toNumber()).equal(oldExpires.add(86400).toNumber())
   })
 
-  //   it('should only allow the controller to register', async () => {
-  //     await exceptions.expectFailure(registrar.register(sha3('foo'), otherAccount, 86400, { from: otherAccount }))
-  //   })
+  it('should only allow the controller to register', async () => {
+    const otherAccountReg = registrar.connect(otherAccount)
 
-  //   it('should only allow the controller to renew', async () => {
-  //     await exceptions.expectFailure(registrar.renew(sha3('newname'), 86400, { from: otherAccount }))
-  //   })
+    try {
+      await otherAccountReg.register(sha3('foo'), otherAccount.address, 86400, { from: otherAccount.address })
+    } catch (e: any) {
+      expect(e.message).contain('Transaction reverted')
+    }
+  })
 
-  //   it('should not permit registration of already registered names', async () => {
-  //     await exceptions.expectFailure(
-  //       registrar.register(sha3('newname'), otherAccount, 86400, { from: controllerAccount }),
-  //     )
-  //     expect(await registrar.ownerOf(sha3('newname')), registrantAccount)
-  //   })
+  it('should only allow the controller to renew', async () => {
+    const otherAccountReg = registrar.connect(otherAccount)
 
-  //   it('should not permit renewing a name that is not registered', async () => {
-  //     await exceptions.expectFailure(registrar.renew(sha3('name3'), 86400, { from: controllerAccount }))
-  //   })
+    try {
+      await otherAccountReg.renew(sha3('newname'), 86400, { from: otherAccount.address })
+    } catch (e: any) {
+      expect(e.message).contain('Transaction reverted')
+    }
+  })
+
+  it('should not permit registration of already registered names', async () => {
+    const controllerAccountReg = registrar.connect(controllerAccount)
+    try {
+      await controllerAccountReg.register(sha3('newname'), otherAccount.address, 86400, {
+        from: controllerAccount.address,
+      })
+    } catch (e: any) {
+      expect(e.message).contain('Transaction reverted')
+    }
+
+    expect(await registrar.ownerOf(sha3('newname')), registrantAccount.address)
+  })
+
+  it('should not permit renewing a name that is not registered', async () => {
+    const controllerAccountReg = registrar.connect(controllerAccount)
+
+    try {
+      await controllerAccountReg.renew(sha3('name3'), 86400, { from: controllerAccount.address })
+    } catch (e: any) {
+      expect(e.message).contain('Transaction reverted')
+    }
+  })
 
   it('should permit the owner to reclaim a name', async () => {
     await ens.setSubnodeOwner(ZERO_HASH, sha3('fds'), ownerAccount.address)
@@ -89,9 +113,15 @@ describe('BaseRegistrar', () => {
     expect(await ens.owner(ethers.utils.namehash('newname.fds')), registrantAccount.address)
   })
 
-  //   it('should prohibit anyone else from reclaiming a name', async () => {
-  //     await exceptions.expectFailure(registrar.reclaim(sha3('newname'), registrantAccount, { from: otherAccount }))
-  //   })
+  it('should prohibit anyone else from reclaiming a name', async () => {
+    const otherAccountReg = registrar.connect(otherAccount)
+
+    try {
+      await otherAccountReg.reclaim(sha3('newname'), registrantAccount.address, { from: otherAccount.address })
+    } catch (e: any) {
+      expect(e.message).contain('Transaction reverted')
+    }
+  })
 
   it('should permit the owner to transfer a registration', async () => {
     const reg = registrar.connect(registrantAccount)
@@ -103,11 +133,17 @@ describe('BaseRegistrar', () => {
     await otherAccountReg.transferFrom(otherAccount.address, registrantAccount.address, sha3('newname'))
   })
 
-  //   it('should prohibit anyone else from transferring a registration', async () => {
-  //     await exceptions.expectFailure(
-  //       registrar.transferFrom(otherAccount, otherAccount, sha3('newname'), { from: otherAccount }),
-  //     )
-  //   })
+  it('should prohibit anyone else from transferring a registration', async () => {
+    const otherAccountReg = registrar.connect(otherAccount)
+
+    try {
+      await otherAccountReg.transferFrom(otherAccount.address, otherAccount.address, sha3('newname'), {
+        from: otherAccount.address,
+      })
+    } catch (e: any) {
+      expect(e.message).contain('ERC721: transfer caller is not owner nor approve')
+    }
+  })
 
   //   it('should not permit transfer or reclaim during the grace period', async () => {
   //     // Advance to the grace period
