@@ -153,48 +153,50 @@ describe('FDSRegistrar', () => {
     }
   })
 
-  //   it('should not permit transfer or reclaim during the grace period', async () => {
-  //     // Advance to the grace period
-  //     const ts = (await ethers.provider.getBlock('latest')).timestamp
-  //     await advanceTime((await registrar.nameExpires(sha3('newname'))).toNumber() - ts + 3600)
-  //     await mine()
+  it('should not permit transfer or reclaim during the grace period', async () => {
+    // Advance to the grace period
+    const ts = (await ethers.provider.getBlock('latest')).timestamp
+    await advanceTime((await registrar.nameExpires(sha3('newname'))).toNumber() - ts + 3600)
+    await mine()
 
-  //     const reg = registrar.connect(registrantAccount)
+    const reg = registrar.connect(registrantAccount)
 
-  //     try {
-  //       await reg.transferFrom(registrantAccount, otherAccount, sha3('newname'), { from: registrantAccount })
-  //     } catch (e: any) {
-  //       expect(e.message).contain('ERC721: transfer caller is not owner nor approve')
-  //     }
+    try {
+      await reg.transferFrom(registrantAccount.address, otherAccount.address, sha3('newname'), {
+        from: registrantAccount.address,
+      })
+    } catch (e: any) {
+      expect(e.message).contain('Transaction reverted')
+    }
 
-  //     const otherAccountReg = registrar.connect(otherAccount)
-
-  //     try {
-  //       await registrar.reclaim(sha3('newname'), registrantAccount, { from: registrantAccount })
-  //     } catch (e: any) {
-  //       expect(e.message).contain('ERC721: transfer caller is not owner nor approve')
-  //     }
-  //   })
+    try {
+      await reg.reclaim(sha3('newname'), registrantAccount.address, { from: registrantAccount.address })
+    } catch (e: any) {
+      expect(e.message).contain('Transaction reverted')
+    }
+  })
 
   it('should allow renewal during the grace period', async () => {
     const controllerAccountReg = registrar.connect(controllerAccount)
     await controllerAccountReg.renew(sha3('newname'), 86400)
   })
 
-  //   it('should allow registration of an expired domain', async () => {
-  //     const ts = (await ethers.provider.getBlock('latest')).timestamp
-  //     const expires = await registrar.nameExpires(sha3('newname'))
-  //     const grace = await registrar.GRACE_PERIOD()
-  //     await advanceTime(expires.toNumber() - ts + grace.toNumber() + 3600)
+  it('should allow registration of an expired domain', async () => {
+    const ts = (await ethers.provider.getBlock('latest')).timestamp
+    const expires = await registrar.nameExpires(sha3('newname'))
+    const grace = await registrar.GRACE_PERIOD()
+    await advanceTime(expires.toNumber() - ts + grace.toNumber() + 3600)
 
-  //     try {
-  //       await registrar.ownerOf(sha3('newname'))
-  //       assert.fail('should throw an exception')
-  //     } catch (error) {}
+    try {
+      await registrar.ownerOf(sha3('newname'))
+    } catch (error) {}
 
-  //     await registrar.register(sha3('newname'), otherAccount, 86400, { from: controllerAccount })
-  //     expect(await registrar.ownerOf(sha3('newname')), otherAccount)
-  //   })
+    const controllerAccountReg = registrar.connect(controllerAccount)
+    await controllerAccountReg.register(sha3('newname'), otherAccount.address, 86400, {
+      from: controllerAccount.address,
+    })
+    expect(await registrar.ownerOf(sha3('newname')), otherAccount.address)
+  })
 
   it('should allow the owner to set a resolver address', async () => {
     const ownerReg = registrar.connect(ownerAccount)
