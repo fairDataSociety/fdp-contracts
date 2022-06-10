@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./ERC20/IERC20.sol";
-import "./ENS.sol";
 
+import "@ensdomains/ens-contracts/contracts/registry/ENS.sol";
+import "./FDSRegistrar.sol";
 
 contract DappRegistry {
 
@@ -28,8 +28,9 @@ contract DappRegistry {
 
 	event DappRecordAdded(
 		bytes32 indexed node,
-		uint256 deposit,
-		address indexed applicant
+		bytes32 label,
+		uint256 duration,
+		address indexed owner
 	);
 	event TransferRecord(
 		address from,
@@ -40,90 +41,21 @@ contract DappRegistry {
 	// Maps listingHashes to associated node data
 	mapping(bytes32 => Record) private records;
 
-	modifier only_owner(bytes32 _node) {
-		require(ens.owner(_node) == msg.sender, "Owner is not sender");
-		_;
-	}
 
 	// Global Variables
-	IERC20 public token;
-    ENS private ens;
-	string public name;
-	uint256 public minDeposit;
+    ENS public ensInstance;
+	FDSRegistrar fdsRegistrar;
+	bytes32 baseNode;
 
-
-	// using the constructor to initialize the TCR parameters
-	// again, to keep it simple, skipping the Parameterizer and ParameterizerFactory
 	constructor(
-		string memory _name,
-		address _token,
-		address _ensAddr,
-		uint256 _minDeposit
+		ENS _ens,
+		FDSRegistrar _fdsRegistrar,
+		bytes32 _node
 	)  {
-		require(_token != address(0), "Token address should not be 0 address.");
-
-		token = IERC20(_token);
-		name = _name;
-		ens = ENS(_ensAddr);
-
-		// minimum deposit for listing to be whitelisted
-		minDeposit = _minDeposit;
+		ensInstance = _ens;
+		baseNode = _node;
+		fdsRegistrar = _fdsRegistrar;
 	}
-
-
-    /**
-     * @dev Sets the owner of the dapp record.
-     *
-     * Returns true if it passed
-     */
-	function setOwner(
-		address _to,
-		bytes32 _nodehash
-	) external only_owner(_nodehash) 
-	returns (bool){
-		records[_nodehash].owner = _to;
-		emit TransferRecord(msg.sender, _to, _nodehash);
-		return true;
-	}
-
-
-    /**
-     * @dev Burns / Transfer record address (node owner).
-     *
-     * Returns true if it passed
-     */
-	function burn(
-		bytes32 _nodehash
-	) external only_owner(_nodehash)
-	returns (bool) {
-		records[_nodehash].owner = address(0);
-		emit TransferRecord(msg.sender, address(0), _nodehash);
-		return true;
-	}
-
-
-    /**
-     * @dev Gets dapp registry information.
-     *
-     * Returns a tuple.
-     */
-	function getRegistryDetails()
-		public
-		view
-		returns (
-			string memory,
-			address,
-			uint256
-		)
-	{
-		string memory _name = name;
-		return (
-			_name,
-			address(token),
-			minDeposit
-		);
-	}
-
 	
     /**
      * @dev Gets dapp record.
@@ -146,7 +78,7 @@ contract DappRegistry {
 
 	
     /**
-     * @dev Adds a new dapp record.
+     * @dev Registers a new dapp record.
      *
      * Returns a boolean value indicating whether the operation succeeded.
      *
@@ -154,37 +86,17 @@ contract DappRegistry {
      */
 	function add(
 		bytes32 _nodehash,
-		uint256 _amount,
+		bytes32 _label,
+		address _owner,
+		uint _duration,
 		Record calldata _record
-	) external {
-		require(
-			records[_nodehash].node != _nodehash,
-			"Dapp name already exists"
-		);
-		require(
-			_amount >= minDeposit,
-			"Amount is less than minimum deposit"
-		);
-		require(
-			token.allowance(msg.sender, address(this))  >=  _amount,
-			"Insufficient allowance"
-		);
-		require(
-			token.balanceOf(msg.sender)  >=  _amount,
-			"Insufficient balance"
-		);
+	) external returns (bytes32) {
+		fdsRegistrar.register(uint256(_label), _owner, _duration);
+		
 		// Sets record
 		records[_nodehash]  = _record;
-		// Transfer tokens from user
-		require(
-			token.transferFrom(msg.sender, address(this), _amount),
-			"Token transfer failed."
-		);
-		emit DappRecordAdded(_nodehash, _amount, msg.sender);
+		emit DappRecordAdded(_nodehash, _label, _duration, msg.sender);
+
+		return _nodehash;
 	}
-
-
-
-	
-	// TODO: Add withdraw gas and withdraw token to contract
 }
