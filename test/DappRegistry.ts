@@ -4,7 +4,7 @@ import { DappRegistry, ENSRegistry, FDSRegistrar } from '../typechain'
 
 const ZERO_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000'
 
-function sha3(value: string) {
+function keccak256FromUtf8Bytes(value: string) {
   return ethers.utils.keccak256(ethers.utils.toUtf8Bytes(value))
 }
 
@@ -19,7 +19,7 @@ describe('dapp registry', () => {
     description: 'NFT Sample Dapp',
     version: 1,
     indexType: 1,
-    dataFormat: sha3('beeson'),
+    dataFormat: keccak256FromUtf8Bytes('beeson'),
     blobRef: '0xfd79d5e0ebd8407e422f53ce1d7c4c41ebf403be55143900f8d1490560294780',
     timestamp: new Date().getTime(),
   }
@@ -32,14 +32,14 @@ describe('dapp registry', () => {
     const FDSRegistrar = await ethers.getContractFactory('FDSRegistrar')
     registrar = await FDSRegistrar.deploy(ens.address)
     await registrar.addController(controllerAccount.address)
-    await ens.setSubnodeOwner(ZERO_HASH, sha3('fds'), registrar.address)
+    await ens.setSubnodeOwner(ZERO_HASH, keccak256FromUtf8Bytes('fds'), registrar.address)
 
     const DappRegistry = await ethers.getContractFactory('DappRegistry')
     // set ENS and FDS addresses, and configure subdomain (eg dappregistry.fds)
-    dappRegistry = await DappRegistry.deploy(ens.address, registrar.address, sha3('dappregistry'))
+    dappRegistry = await DappRegistry.deploy(ens.address, registrar.address, keccak256FromUtf8Bytes('dappregistry'))
     await dappRegistry.deployed()
     // set subnode owner and add to controller
-    await registrar.setSubnodeOwner(sha3('dappregistry'), dappRegistry.address)
+    await registrar.setSubnodeOwner(keccak256FromUtf8Bytes('dappregistry'), dappRegistry.address)
     await registrar.addController(dappRegistry.address)
   })
 
@@ -47,17 +47,23 @@ describe('dapp registry', () => {
     it('should add dapp record', async () => {
       const [owner] = await ethers.getSigners()
       record.node = ethers.utils.namehash('nftminter.dappregistry.fds')
-      await dappRegistry.add(record.node, sha3('nftminter.dappregistry'), owner.address, 86400, record)
+      await dappRegistry.add(
+        record.node,
+        keccak256FromUtf8Bytes('nftminter.dappregistry'),
+        owner.address,
+        86400,
+        record,
+      )
       const query = dappRegistry.filters.DappRecordAdded(null, null, null)
       const logs = await dappRegistry.queryFilter(query)
       const log = logs[0].args
       expect(log[0]).equal(record.node)
-      expect(log[1]).equal(sha3('nftminter.dappregistry'))
+      expect(log[1]).equal(keccak256FromUtf8Bytes('nftminter.dappregistry'))
       expect(log[2]).equal(86400)
       expect(log[3]).equal(owner.address)
 
       // expect(await ens.owner(ethers.utils.namehash('nftminter.dappregistry.fds'))).equal(owner.address)
-      expect(await registrar.ownerOf(sha3('nftminter.dappregistry'))).equal(owner.address)
+      expect(await registrar.ownerOf(keccak256FromUtf8Bytes('nftminter.dappregistry'))).equal(owner.address)
     })
 
     it('should fetch dapp', async () => {
