@@ -1,7 +1,7 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
-import { FDSRegistrar, ENSRegistry } from '../typechain'
+import { FDSRegistrar, FDSRegistry } from '../typechain'
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 const ZERO_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000'
@@ -20,7 +20,7 @@ describe('FDSRegistrar', () => {
   let registrantAccount: SignerWithAddress
   let otherAccount: SignerWithAddress
 
-  let ens: ENSRegistry
+  let ens: FDSRegistry
   let registrar: FDSRegistrar
 
   before(async () => {
@@ -29,7 +29,7 @@ describe('FDSRegistrar', () => {
     controllerAccount = signers[1]
     registrantAccount = signers[2]
     otherAccount = signers[3]
-    const ENS = await ethers.getContractFactory('ENSRegistry')
+    const ENS = await ethers.getContractFactory('FDSRegistry')
     ens = await ENS.deploy()
     await ens.deployed()
     const FDSRegistrar = await ethers.getContractFactory('FDSRegistrar')
@@ -53,21 +53,27 @@ describe('FDSRegistrar', () => {
     const block = await ethers.provider.getBlock('latest')
     expect(await ens.owner(ethers.utils.namehash('silentname.fds'))).equal(ZERO_ADDRESS)
     expect(await registrar.ownerOf(keccak256FromUtf8Bytes('silentname'))).equal(registrantAccount.address)
-    expect((await registrar.nameExpires(keccak256FromUtf8Bytes('silentname'))).toNumber()).equal(block.timestamp + 86400)
+    expect((await registrar.nameExpires(keccak256FromUtf8Bytes('silentname'))).toNumber()).equal(
+      block.timestamp + 86400,
+    )
   })
 
   it('should allow renewals', async () => {
     const controllerAccountReg = registrar.connect(controllerAccount)
     const oldExpires = await registrar.nameExpires(keccak256FromUtf8Bytes('newname'))
     await controllerAccountReg.renew(keccak256FromUtf8Bytes('newname'), 86400)
-    expect((await registrar.nameExpires(keccak256FromUtf8Bytes('newname'))).toNumber()).equal(oldExpires.add(86400).toNumber())
+    expect((await registrar.nameExpires(keccak256FromUtf8Bytes('newname'))).toNumber()).equal(
+      oldExpires.add(86400).toNumber(),
+    )
   })
 
   it('should only allow the controller to register', async () => {
     const otherAccountReg = registrar.connect(otherAccount)
 
     try {
-      await otherAccountReg.register(keccak256FromUtf8Bytes('foo'), otherAccount.address, 86400, { from: otherAccount.address })
+      await otherAccountReg.register(keccak256FromUtf8Bytes('foo'), otherAccount.address, 86400, {
+        from: otherAccount.address,
+      })
     } catch (e: any) {
       expect(e.message).contain('Transaction reverted')
     }
@@ -120,7 +126,9 @@ describe('FDSRegistrar', () => {
     const otherAccountReg = registrar.connect(otherAccount)
 
     try {
-      await otherAccountReg.reclaim(keccak256FromUtf8Bytes('newname'), registrantAccount.address, { from: otherAccount.address })
+      await otherAccountReg.reclaim(keccak256FromUtf8Bytes('newname'), registrantAccount.address, {
+        from: otherAccount.address,
+      })
     } catch (e: any) {
       expect(e.message).contain('Transaction reverted')
     }
@@ -133,16 +141,25 @@ describe('FDSRegistrar', () => {
     // Transfer does not update ENS without a call to reclaim.
     expect(await ens.owner(ethers.utils.namehash('newname.fds')), registrantAccount.address)
     const otherAccountReg = registrar.connect(otherAccount)
-    await otherAccountReg.transferFrom(otherAccount.address, registrantAccount.address, keccak256FromUtf8Bytes('newname'))
+    await otherAccountReg.transferFrom(
+      otherAccount.address,
+      registrantAccount.address,
+      keccak256FromUtf8Bytes('newname'),
+    )
   })
 
   it('should prohibit anyone else from transferring a registration', async () => {
     const otherAccountReg = registrar.connect(otherAccount)
 
     try {
-      await otherAccountReg.transferFrom(otherAccount.address, otherAccount.address, keccak256FromUtf8Bytes('newname'), {
-        from: otherAccount.address,
-      })
+      await otherAccountReg.transferFrom(
+        otherAccount.address,
+        otherAccount.address,
+        keccak256FromUtf8Bytes('newname'),
+        {
+          from: otherAccount.address,
+        },
+      )
     } catch (e: any) {
       expect(e.message).contain('ERC721: transfer caller is not owner nor approve')
     }
@@ -165,7 +182,9 @@ describe('FDSRegistrar', () => {
     }
 
     try {
-      await reg.reclaim(keccak256FromUtf8Bytes('newname'), registrantAccount.address, { from: registrantAccount.address })
+      await reg.reclaim(keccak256FromUtf8Bytes('newname'), registrantAccount.address, {
+        from: registrantAccount.address,
+      })
     } catch (e: any) {
       expect(e.message).contain('Transaction reverted')
     }
