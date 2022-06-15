@@ -143,19 +143,20 @@ contract ENSRegistry is ENS {
     * @param _operator The address that acts on behalf of the owner.
     * @return True if `operator` is an approved operator for `owner`, false otherwise.
     */
-  function isApprovedForAll(address _owner, address _operator) external override view returns (bool) {
+  function isApprovedForAll(address _owner, address _operator) external override pure returns (bool) {
+      // Hack: We don't use operators, this call supports the proper interface for interop with BaseRegistrarImplementation
       return false;
   }
   
-  function _setResolverAndTTL(bytes32 node, address resolver, uint64 ttl) internal {
-      if(resolver != records[node].resolver) {
-          records[node].resolver = resolver;
-          emit NewResolver(node, resolver);
+  function _setResolverAndTTL(bytes32 _node, address _resolver, uint64 _ttl) internal {
+      if(_resolver != records[_node].resolver) {
+          records[_node].resolver = _resolver;
+          emit NewResolver(_node, _resolver);
       }
 
-      if(ttl != records[node].ttl) {
-          records[node].ttl = ttl;
-          emit NewTTL(node, ttl);
+      if(_ttl != records[_node].ttl) {
+          records[_node].ttl = _ttl;
+          emit NewTTL(_node, _ttl);
       }
   }
 }
