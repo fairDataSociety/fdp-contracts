@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./ENS.sol";
+import "@ensdomains/ens-contracts/contracts/registry/ENS.sol";
+
 
 /**
  * A simple resolver anyone can use; only allows the owner of a node to set its
