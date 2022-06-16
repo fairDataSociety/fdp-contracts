@@ -1,7 +1,7 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
-import { FDSRegistrar, FDSRegistry } from '../typechain'
+import { FDSRegistrar, ENSRegistry } from '../typechain'
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 const ZERO_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000'
@@ -20,7 +20,7 @@ describe('FDSRegistrar', () => {
   let registrantAccount: SignerWithAddress
   let otherAccount: SignerWithAddress
 
-  let ens: FDSRegistry
+  let ens: ENSRegistry
   let registrar: FDSRegistrar
 
   before(async () => {
@@ -29,7 +29,7 @@ describe('FDSRegistrar', () => {
     controllerAccount = signers[1]
     registrantAccount = signers[2]
     otherAccount = signers[3]
-    const ENS = await ethers.getContractFactory('FDSRegistry')
+    const ENS = await ethers.getContractFactory('ENSRegistry')
     ens = await ENS.deploy()
     await ens.deployed()
     const FDSRegistrar = await ethers.getContractFactory('FDSRegistrar')
