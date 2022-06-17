@@ -4,7 +4,7 @@ export interface Environment {
   rpcUrl: string
   contractAddresses: {
     ensRegistry: EthAddress
-    subdomainRegistrar: EthAddress
+    fdsRegistrar: EthAddress
     publicResolver: EthAddress
   }
   performChecks: boolean
