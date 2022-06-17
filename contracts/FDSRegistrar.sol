@@ -21,16 +21,4 @@ contract FDSRegistrar is BaseRegistrarImplementation {
     BaseRegistrarImplementation(_registry, NAME_HASH) {
   }
 
-
-  /**
-   * @dev Transfers ownership of a subnode keccak256(node, label) to a new address. May only be called by the owner of the parent node.
-   * @param _label The hash of the label specifying the subnode.
-   * @param _owner The address of the new owner.
-   */
-  function setSubnodeOwner(
-    bytes32 _label,
-    address _owner
-  ) external returns(bytes32) {
-    return ens.setSubnodeOwner(NAME_HASH, _label, _owner);
-  }
 }
