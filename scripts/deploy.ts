@@ -4,9 +4,7 @@ import { namehash, keccak256, toUtf8Bytes, hexZeroPad } from 'ethers/lib/utils'
 import { ethers } from 'hardhat'
 import { waitForTransactionMined } from './utils'
 
-const ETH_DOMAIN = 'eth'
-const MAIN_SUBDOMAIN = process.env.ENS_DOMAIN || 'fds'
-const FULL_SUBDOMAIN = `${MAIN_SUBDOMAIN}.${ETH_DOMAIN}`
+const DOMAIN = 'fds'
 
 async function deployENS() {
   const ENS = await ethers.getContractFactory('ENSRegistry')
@@ -22,28 +20,23 @@ async function deployENS() {
   const [owner] = await ethers.getSigners()
   const ownerAddress = owner.address
 
-  const ethDomainNamehash = namehash(ETH_DOMAIN)
-  const subdomainHash = keccak256(toUtf8Bytes(MAIN_SUBDOMAIN))
-  const fullSubdomainNamehash = namehash(FULL_SUBDOMAIN)
-
-  let tx = await ens.setSubnodeOwner(hexZeroPad('0x0', 32), keccak256(toUtf8Bytes(ETH_DOMAIN)), ownerAddress)
-  await waitForTransactionMined(tx)
-
-  tx = await ens.setSubnodeOwner(ethDomainNamehash, subdomainHash, ownerAddress)
-  await waitForTransactionMined(tx)
+  const domainNamehash = namehash(DOMAIN)
 
   await resolver.deployed()
 
-  tx = await ens.setResolver(fullSubdomainNamehash, resolver.address)
+  let tx = await ens.setResolver(domainNamehash, resolver.address)
   await waitForTransactionMined(tx)
 
-  const SubdomainRegistrar = await ethers.getContractFactory('SubdomainRegistrar')
-  const registrar = await SubdomainRegistrar.deploy(ens.address, fullSubdomainNamehash)
+  const FDSRegistrar = await ethers.getContractFactory('FDSRegistrar')
+  const registrar = await FDSRegistrar.deploy(ens.address)
+  tx = await registrar.addController(ownerAddress)
+  await waitForTransactionMined(tx)
 
-  console.log(`SubdomainRegistrar deployed to: ${registrar.address}`)
+  console.log(`FDSRegistrar deployed to: ${registrar.address}`)
 
   await registrar.deployed()
-  tx = await ens.setSubnodeOwner(ethDomainNamehash, subdomainHash, registrar.address)
+
+  tx = await ens.setSubnodeOwner(hexZeroPad('0x0', 32), keccak256(toUtf8Bytes(DOMAIN)), registrar.address)
   await waitForTransactionMined(tx)
 
   console.log(`ENSRegistry deployed to:`, ens.address)
