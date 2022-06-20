@@ -20,6 +20,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@ensdomains/ens-contracts": "^0.0.11",
     "@babel/preset-typescript": "^7.16.7",
     "@types/dotenv-webpack": "^7.0.3",
     "@types/jest": "^27.4.1",

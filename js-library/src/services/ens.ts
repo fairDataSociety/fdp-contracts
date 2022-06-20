@@ -7,7 +7,7 @@ import { Environments } from '../model/environments.enum'
 import { EnsUserData } from '../model/ens-user-data.model'
 import { EthAddress, PublicKey } from '../model/hex.types'
 import { Environment } from '../model/environment.model'
-import ENSRegistryContractLocal from '../contracts/ENSRegistry/ENSRegistry.json'
+import ENSRegistryContractLocal from '../../../artifacts/@ensdomains/ens-contracts/contracts/registry/ENS.sol/ENS.json'
 import PublicResolverContractLocal from '../contracts/PublicResolver/PublicResolver.json'
 import FDSRegistrarContractLocal from '../contracts/FDSRegistrar/FDSRegistrar.json'
 import { Username } from '../model/domain.type'
@@ -122,10 +122,7 @@ export class ENS {
 
       if (ownerAddress === NULL_ADDRESS) {
         await waitTransaction(
-          this._fdsRegistrarContract.register(keccak256(toUtf8Bytes(username)), address, expires, {
-            gasLimit: '20000',
-            gasPrice: '200000000000',
-          }),
+          this._fdsRegistrarContract.register(keccak256(toUtf8Bytes(username)), address, expires),
         )
       }
 

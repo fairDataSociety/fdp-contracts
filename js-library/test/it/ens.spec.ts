@@ -1,5 +1,6 @@
 import { Wallet } from 'ethers'
-import { ENS, Environments, getEnvironmentConfig } from '../..'
+// @ts-ignore
+import { ENS, Environments, getEnvironmentConfig } from '../../'
 
 describe('ENS service tests', () => {
   const ens = new ENS({
@@ -22,19 +23,19 @@ describe('ENS service tests', () => {
     expect(result).toEqual(true)
   })
 
-  // test('Should register username and set public key', async () => {
-  //   const address = await wallet.getAddress()
+  test('Should register username and set public key', async () => {
+    const address = await wallet.getAddress()
 
-  //   await ens.registerUsername(username, address, wallet.publicKey)
+    await ens.registerUsername(username, address, wallet.publicKey)
 
-  //   const owner = await ens.getUsernameOwner(username)
+    const owner = await ens.getUsernameOwner(username)
 
-  //   expect(owner).toEqual(address)
+    expect(owner).toEqual(address)
 
-  //   const publicKey = await ens.getPublicKey(username)
+    const publicKey = await ens.getPublicKey(username)
 
-  //   expect(publicKey).toEqual(wallet.publicKey)
-  // })
+    expect(publicKey).toEqual(wallet.publicKey)
+  })
 
   test('Accessing public key of unexisting username should throw error', async () => {
     expect(ens.getPublicKey(missingUsername)).rejects.toEqual(

@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "ENS",
-  "sourceName": "@ensdomains/ens-contracts/contracts/registry/ENS.sol",
+  "sourceName": "contracts/ENS.sol",
   "abi": [
     {
       "anonymous": false,
