@@ -36,38 +36,30 @@ describe('dapp registry', () => {
 
     const DappRegistry = await ethers.getContractFactory('DappRegistry')
     // set ENS and FDS addresses, and configure subdomain (eg dappregistry.fds)
-    dappRegistry = await DappRegistry.deploy(ens.address, registrar.address, keccak256FromUtf8Bytes('dappregistry'))
-    await dappRegistry.deployed()
-    // set subnode owner and add to controller
-    await registrar.setSubnodeOwner(keccak256FromUtf8Bytes('dappregistry'), dappRegistry.address)
+    dappRegistry = await DappRegistry.deploy(ens.address, registrar.address)
     await registrar.addController(dappRegistry.address)
+    await dappRegistry.deployed()
   })
 
   describe('when creating a new record', () => {
     it('should add dapp record', async () => {
       const [owner] = await ethers.getSigners()
-      record.node = ethers.utils.namehash('nftminter.dappregistry.fds')
-      await dappRegistry.add(
-        record.node,
-        keccak256FromUtf8Bytes('nftminter.dappregistry'),
-        owner.address,
-        86400,
-        record,
-      )
+      record.node = ethers.utils.namehash('nftminter.fds')
+      await dappRegistry.add(record.node, keccak256FromUtf8Bytes('nftminter'), owner.address, 86400, record)
       const query = dappRegistry.filters.DappRecordAdded(null, null, null)
       const logs = await dappRegistry.queryFilter(query)
       const log = logs[0].args
       expect(log[0]).equal(record.node)
-      expect(log[1]).equal(keccak256FromUtf8Bytes('nftminter.dappregistry'))
+      expect(log[1]).equal(keccak256FromUtf8Bytes('nftminter'))
       expect(log[2]).equal(86400)
-      expect(log[3]).equal(owner.address)
 
-      // expect(await ens.owner(ethers.utils.namehash('nftminter.dappregistry.fds'))).equal(owner.address)
-      expect(await registrar.ownerOf(keccak256FromUtf8Bytes('nftminter.dappregistry'))).equal(owner.address)
+      expect(await ens.owner(ethers.utils.namehash('nftminter.fds'))).equal(owner.address)
+      expect(await registrar.ownerOf(keccak256FromUtf8Bytes('nftminter'))).equal(owner.address)
     })
 
-    it('should fetch dapp', async () => {
-      const node = ethers.utils.namehash('nftminter.dappregistry.fds')
+    it('should fetch dapp record', async () => {
+      const [owner] = await ethers.getSigners()
+      const node = ethers.utils.namehash('nftminter.fds')
 
       const dapp = await dappRegistry.get(node)
       expect(dapp.node).equal(node)
@@ -75,7 +67,46 @@ describe('dapp registry', () => {
       expect(dapp.blobRef).equal(record.blobRef)
       expect(dapp.dataFormat).equal(record.dataFormat)
       expect(dapp.description).equal(record.description)
-      expect(dapp.owner).equal(record.owner)
+
+      expect(await ens.owner(ethers.utils.namehash('nftminter.fds'))).equal(owner.address)
+      expect(await registrar.ownerOf(keccak256FromUtf8Bytes('nftminter'))).equal(owner.address)
+    })
+
+    it('should update dapp record', async () => {
+      const [owner] = await ethers.getSigners()
+      const node = ethers.utils.namehash('nftminter.fds')
+
+      let dapp = await dappRegistry.get(node)
+      expect(dapp.node).equal(node)
+      expect(dapp.timestamp).equal(record.timestamp)
+      expect(dapp.blobRef).equal(record.blobRef)
+      expect(dapp.dataFormat).equal(record.dataFormat)
+      expect(dapp.description).equal(record.description)
+      expect(dapp.version).equal(record.version)
+
+      const temp = dapp
+
+      // update
+      await dappRegistry.update(node, {
+        node: record.node,
+        description: 'Minter Dapp',
+        version: 2,
+        blobRef: record.blobRef,
+        indexType: 1,
+        dataFormat: record.dataFormat,
+        timestamp: 0,
+      })
+
+      dapp = await dappRegistry.get(node)
+      expect(dapp.node).equal(node)
+      expect(dapp.timestamp).equal(dapp.timestamp)
+      expect(dapp.blobRef).equal(temp.blobRef)
+      expect(dapp.dataFormat).equal(temp.dataFormat)
+      expect(dapp.description).equal(dapp.description)
+      expect(dapp.version).equal(dapp.version)
+
+      expect(await ens.owner(ethers.utils.namehash('nftminter.fds'))).equal(owner.address)
+      expect(await registrar.ownerOf(keccak256FromUtf8Bytes('nftminter'))).equal(owner.address)
     })
 
     it('should transfer ownership', async () => {
