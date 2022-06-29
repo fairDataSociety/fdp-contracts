@@ -3,10 +3,13 @@ ROOT_PATH=$(dirname "$0")
 ROOT_PATH=$( cd "$ROOT_PATH/.." && pwd )
 
 # Getting env variables from bee-factory
-BEE_ENV_PREFIX=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.sh BEE_ENV_PREFIX)
-BLOCKCHAIN_VERSION=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.sh BLOCKCHAIN_VERSION)
+BEE_ENV_PREFIX='fdp-play'
+# version of the new image
+BLOCKCHAIN_VERSION=1.2.1
+# base blockchian container name of the fdp-play environment to build upon 
 BLOCKCHAIN_CONTAINER_NAME="$BEE_ENV_PREFIX-blockchain"
-CONTRACTS_IMAGE_NAME="swarm-test-blockchain"
+# name of the fdp-contracts image
+CONTRACTS_IMAGE_NAME="fdp-contracts-blockchain"
 CONTRACTS_IMAGE_PREFIX="fairdatasociety"
 CONTRACTS_IMAGE_URL="$CONTRACTS_IMAGE_PREFIX/$CONTRACTS_IMAGE_NAME:$BLOCKCHAIN_VERSION"
 DIST_FOLDER="$ROOT_PATH/dist"
@@ -16,12 +19,7 @@ JS_LIB_CONTRACTS_DIR="$ROOT_PATH/js-library/src/contracts"
 echo "Compiling contracts..."
 npm run compile
 
-echo "Starting the blockchain image..."
-npm explore bee-factory -- npm install
-npm explore bee-factory -- ./scripts/network.sh
-npm explore bee-factory -- ./scripts/blockchain.sh
-
-echo "Deploying contracts to the bee container..."
+echo "Deploying contracts to the fdp-play environment..."
 DEPLOYMENT_OUTPUT=$(npm run deploy:bee)
 
 # Extracting contract addresses
@@ -45,8 +43,7 @@ docker commit $BLOCKCHAIN_CONTAINER_NAME $CONTRACTS_IMAGE_URL
 echo "Image generated: $CONTRACTS_IMAGE_URL"
 
 echo "Stop and remove running blockchain node that the image built on..."
-docker container stop $BLOCKCHAIN_CONTAINER_NAME
-docker container rm $BLOCKCHAIN_CONTAINER_NAME
+npm run env:stop-base
 
 echo "Copying meta files to the JS library"
 rm -rfv "$JS_LIB_CONTRACTS_DIR"/*
