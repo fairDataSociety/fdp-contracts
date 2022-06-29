@@ -1,6 +1,5 @@
 // TODO There is a eslint configuration error that needs to be fixed
-/* eslint-disable node/no-missing-import */
-import { namehash, keccak256, toUtf8Bytes, hexZeroPad } from 'ethers/lib/utils'
+import { keccak256, toUtf8Bytes, hexZeroPad } from 'ethers/lib/utils'
 import { ethers } from 'hardhat'
 import { waitForTransactionMined } from './utils'
 
@@ -10,22 +9,10 @@ async function deployENS() {
   const ENS = await ethers.getContractFactory('ENSRegistry')
   const ens = await ENS.deploy()
 
+  let tx
   await ens.deployed()
-
-  const publicResolver = await ethers.getContractFactory('PublicResolver')
-  const resolver = await publicResolver.deploy(ens.address)
-
-  console.log(`PublicResolver deployed to: ${resolver.address}`)
-
   const [owner] = await ethers.getSigners()
   const ownerAddress = owner.address
-
-  const domainNamehash = namehash(DOMAIN)
-
-  await resolver.deployed()
-
-  let tx = await ens.setResolver(domainNamehash, resolver.address)
-  await waitForTransactionMined(tx)
 
   const FDSRegistrar = await ethers.getContractFactory('FDSRegistrar')
   const registrar = await FDSRegistrar.deploy(ens.address)
@@ -40,6 +27,16 @@ async function deployENS() {
   await waitForTransactionMined(tx)
 
   console.log(`ENSRegistry deployed to:`, ens.address)
+
+  const publicResolver = await ethers.getContractFactory('PublicResolver')
+  const resolver = await publicResolver.deploy(ens.address)
+
+  console.log(`PublicResolver deployed to: ${resolver.address}`)
+
+  await resolver.deployed()
+
+  tx = await registrar.setResolver(resolver.address)
+  await waitForTransactionMined(tx)
 }
 
 async function main() {

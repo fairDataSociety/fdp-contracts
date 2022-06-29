@@ -1,3 +1,10 @@
+# Running latest ENS contracts with FDP play
+
+- Run with `fdp-play start --detach --blockchain-image fairdatasociety/fdp-play-blockchain:1.2.0 1.6.1`
+- Then update docker image with `npm run build:image` **NOTE**: Make sure to prune both containers and images
+- `cd js-library` and run `npm run build && npm test`
+
+
 # Build Docker images of FDP contracts
 
 In order to build docker images of the project you need to run [fdp-play](https://github.com/fairDataSociety/fdp-play) environment.

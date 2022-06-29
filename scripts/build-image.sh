@@ -5,7 +5,7 @@ ROOT_PATH=$( cd "$ROOT_PATH/.." && pwd )
 # Getting env variables from bee-factory
 BEE_ENV_PREFIX='fdp-play'
 # version of the new image
-BLOCKCHAIN_VERSION=1.2.1
+BLOCKCHAIN_VERSION=1.2.0
 # base blockchian container name of the fdp-play environment to build upon 
 BLOCKCHAIN_CONTAINER_NAME="$BEE_ENV_PREFIX-blockchain"
 # name of the fdp-contracts image
@@ -23,8 +23,8 @@ echo "Deploying contracts to the fdp-play environment..."
 DEPLOYMENT_OUTPUT=$(npm run deploy:bee)
 
 # Extracting contract addresses
-ENS_REGISTRY_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'ENSRegistry deployed to: \K[^\s]*')
 FDS_REGISTRAR_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'FDSRegistrar deployed to: \K[^\s]*')
+ENS_REGISTRY_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'ENSRegistry deployed to: \K[^\s]*')
 PUBLIC_RESOLVER_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'PublicResolver deployed to: \K[^\s]*')
 
 # Saving contract addresses to an .env file
