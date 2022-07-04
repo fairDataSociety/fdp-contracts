@@ -12,7 +12,8 @@
     "deploy:bee": "npx hardhat run --network bee scripts/deploy.ts",
     "env:start-base": "fdp-play start --detach --blockchain-image fairdatasociety/fdp-play-blockchain 1.6.1",
     "env:stop-base": "fdp-play stop",
-    "build:image": "./scripts/build-image.sh"
+    "build:image": "./scripts/build-image.sh",
+    "release:image": "./scripts/release-image.sh"
   },
   "repository": {
     "type": "git",
