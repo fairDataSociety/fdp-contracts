@@ -4,8 +4,6 @@
   "description": "Fair Data Protocol smart contracts and its utilities",
   "main": "dist/index.js",
   "scripts": {
-    "bee:run": "./bee-factory/scripts/environment.sh start",
-    "bee:stop": "./bee-factory/scripts/environment.sh stop",
     "test": "npx hardhat test",
     "compile": "npx hardhat compile",
     "deploy": "npx hardhat run --network localhost scripts/deploy.ts",
