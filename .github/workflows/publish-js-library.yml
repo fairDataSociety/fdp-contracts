@@ -15,13 +15,6 @@ on:
 jobs:
   release-please:
     runs-on: ubuntu-latest
-    steps:
-      - uses: google-github-actions/release-please-action@v3
-        id: release
-        with:
-          release-type: node
-          package-name: "@fairdatasociety/fdp-contracts-js-lib"
-          changelog-path: 'js-library/CHANGELOG.md'
 
       - uses: actions/checkout@v3
         # these if statements ensure that a publication only occurs when
