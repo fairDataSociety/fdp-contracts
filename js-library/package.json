@@ -6,7 +6,10 @@
   "scripts": {
     "start": "webpack --watch --config webpack.build.config.ts --env mode=development",
     "build": "webpack --config webpack.build.config.ts --env mode=production",
-    "deploy":"ts-node ./scripts/deploy.ts",
+    "deploy": "ts-node ./scripts/deploy.ts",
+    "env:start": "fdp-play start --detach --blockchain-image fairdatasociety/fdp-contracts-blockchain 1.6.1",
+    "env:stop": "fdp-play stop",
+    "ci:test": "npm run env:start && npm run build && npm run test",
     "test": "jest",
     "test:unit": "jest ./test/unit",
     "test:integration": "jest ./test/it"
@@ -20,8 +23,9 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@ensdomains/ens-contracts": "^0.0.11",
     "@babel/preset-typescript": "^7.16.7",
+    "@ensdomains/ens-contracts": "^0.0.11",
+    "@fairdatasociety/fdp-play": "^1.0.2",
     "@types/dotenv-webpack": "^7.0.3",
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.23",
