@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.0](https://github.com/fairDataSociety/fdp-contracts/compare/v1.0.0...v1.1.0) (2022-07-04)
+
+
+### Features
+
+* **contracts:** BMT Chunk  ([#19](https://github.com/fairDataSociety/fdp-contracts/issues/19)) ([b2a18a6](https://github.com/fairDataSociety/fdp-contracts/commit/b2a18a6a298fc07294f785187dacf3ff8ba590df))
+* **contracts:** fds registrar contracts ([#26](https://github.com/fairDataSociety/fdp-contracts/issues/26)) ([74b9266](https://github.com/fairDataSociety/fdp-contracts/commit/74b9266ddede0c37f05719115f037aab33f33827))
+* **contracts:** FDS Registrar specs passing with fdp-play dev environment ([#35](https://github.com/fairDataSociety/fdp-contracts/issues/35)) ([ae1c3a3](https://github.com/fairDataSociety/fdp-contracts/commit/ae1c3a3efa52377ee1fb5dbae21ce6ff69108ce5))
+* **contracts:** File BMT inclusion proof ([#20](https://github.com/fairDataSociety/fdp-contracts/issues/20)) ([a52b2f4](https://github.com/fairDataSociety/fdp-contracts/commit/a52b2f4819371b17d4bf6f3818076917b1ae0782))
+
 ## 1.0.0 (2022-05-09)
 
 
