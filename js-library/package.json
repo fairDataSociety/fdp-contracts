@@ -9,7 +9,7 @@
     "deploy": "ts-node ./scripts/deploy.ts",
     "env:start": "fdp-play start --detach --blockchain-image fairdatasociety/fdp-contracts-blockchain 1.6.1",
     "env:stop": "fdp-play stop",
-    "ci:test": "npm run env:start && npm run build && npm run test",
+    "ci:test": "npm run env:start && npm run build && npm run test && npm run env:stop",
     "test": "jest",
     "test:unit": "jest ./test/unit",
     "test:integration": "jest ./test/it"
