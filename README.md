@@ -1,10 +1,3 @@
-# Running latest ENS contracts with FDP play
-
-- Run with `fdp-play start --detach --blockchain-image fairdatasociety/fdp-play-blockchain:1.2.0 1.6.1`
-- Then update docker image with `npm run build:image` **NOTE**: Make sure to prune both containers and images
-- `cd js-library` and run `npm run build && npm test`
-
-
 # Build Docker images of FDP contracts
 
 In order to build docker images of the project you need to run [fdp-play](https://github.com/fairDataSociety/fdp-play) environment.
@@ -16,11 +9,14 @@ top on this environment you can deploy the smart contracts by running `scripts/b
 ```sh
 npm run build:image
 ```
+**NOTE**: Make sure to prune both containers and images
 
 This command has to produce a blockchain image with name `fairdatasociety/fdp-contracts-blockchain` that you try out with `fdp-play`
 ```sh
 fdp-play start --detach --blockchain-image fairdatasociety/fdp-contracts-blockchain:$BLOCKCHAIN_VERSION $BEE_VERSION
 ```
+
+**NOTE**: The JS contract library tests also should pass after modifications, in order to check that execute `cd js-library` and run `npm run build && npm test`
 
 # Advanced Sample Hardhat Project
 
