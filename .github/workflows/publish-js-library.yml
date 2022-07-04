@@ -20,7 +20,7 @@ jobs:
         id: release
         with:
           release-type: node
-          package-name: "@fairdatasociety/fdp-contracts"
+          package-name: "@fairdatasociety/fdp-contracts-js-lib"
           changelog-path: 'js-library/CHANGELOG.md'
 
       - uses: actions/checkout@v3
