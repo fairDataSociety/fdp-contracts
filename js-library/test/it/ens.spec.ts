@@ -1,5 +1,6 @@
 import { Wallet } from 'ethers'
-import { ENS, Environments, getEnvironmentConfig } from '../..'
+// @ts-ignore
+import { ENS, Environments, getEnvironmentConfig } from '../../'
 
 describe('ENS service tests', () => {
   const ens = new ENS({

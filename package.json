@@ -6,9 +6,14 @@
   "scripts": {
     "bee:run": "./bee-factory/scripts/environment.sh start",
     "bee:stop": "./bee-factory/scripts/environment.sh stop",
+    "test": "npx hardhat test",
     "compile": "npx hardhat compile",
     "deploy": "npx hardhat run --network localhost scripts/deploy.ts",
-    "deploy:bee": "npx hardhat run --network bee scripts/deploy.ts"
+    "deploy:bee": "npx hardhat run --network bee scripts/deploy.ts",
+    "env:start-base": "fdp-play start --detach --blockchain-image fairdatasociety/fdp-play-blockchain 1.6.1",
+    "env:stop-base": "fdp-play stop",
+    "build:image": "./scripts/build-image.sh",
+    "release:image": "./scripts/release-image.sh"
   },
   "repository": {
     "type": "git",
@@ -62,6 +67,6 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "bee-factory": "github:ethersphere/bee-factory"
+    "@fairdatasociety/fdp-play": "^1.0.1"
   }
 }

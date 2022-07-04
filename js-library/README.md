@@ -18,10 +18,9 @@ npm install --save @fairdatasociety/fdp-contracts ethers
 To work with local `fdp-contracts` docker image, execute the following command:
 
 ```bash
-docker run -p 9545:9545 fairdatasociety/swarm-test-blockchain:1.2.0
+fdp-play start --detach --blockchain-image fairdatasociety/fdp-contracts-blockchain $BEE_VERSION
 ```
-
-> **_NOTE_:** You can add the `--rm` flag to automatically remove the container after execution.
+**NOTE**: it will spin up the whole fdp environment for you with running Bee clients
 
 ### ENS
 

@@ -6,6 +6,7 @@
   "scripts": {
     "start": "webpack --watch --config webpack.build.config.ts --env mode=development",
     "build": "webpack --config webpack.build.config.ts --env mode=production",
+    "deploy":"ts-node ./scripts/deploy.ts",
     "test": "jest",
     "test:unit": "jest ./test/unit",
     "test:integration": "jest ./test/it"
@@ -19,6 +20,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@ensdomains/ens-contracts": "^0.0.11",
     "@babel/preset-typescript": "^7.16.7",
     "@types/dotenv-webpack": "^7.0.3",
     "@types/jest": "^27.4.1",

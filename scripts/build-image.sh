@@ -3,10 +3,13 @@ ROOT_PATH=$(dirname "$0")
 ROOT_PATH=$( cd "$ROOT_PATH/.." && pwd )
 
 # Getting env variables from bee-factory
-BEE_ENV_PREFIX=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.sh BEE_ENV_PREFIX)
-BLOCKCHAIN_VERSION=$(npm explore bee-factory -- ./scripts/utils/env-variable-value.sh BLOCKCHAIN_VERSION)
+BEE_ENV_PREFIX='fdp-play'
+# version of the new image
+BLOCKCHAIN_VERSION=1.0.0 # TODO from package.json
+# base blockchian container name of the fdp-play environment to build upon 
 BLOCKCHAIN_CONTAINER_NAME="$BEE_ENV_PREFIX-blockchain"
-CONTRACTS_IMAGE_NAME="swarm-test-blockchain"
+# name of the fdp-contracts image
+CONTRACTS_IMAGE_NAME="fdp-contracts-blockchain"
 CONTRACTS_IMAGE_PREFIX="fairdatasociety"
 CONTRACTS_IMAGE_URL="$CONTRACTS_IMAGE_PREFIX/$CONTRACTS_IMAGE_NAME:$BLOCKCHAIN_VERSION"
 DIST_FOLDER="$ROOT_PATH/dist"
@@ -16,23 +19,18 @@ JS_LIB_CONTRACTS_DIR="$ROOT_PATH/js-library/src/contracts"
 echo "Compiling contracts..."
 npm run compile
 
-echo "Starting the blockchain image..."
-npm explore bee-factory -- npm install
-npm explore bee-factory -- ./scripts/network.sh
-npm explore bee-factory -- ./scripts/blockchain.sh
-
-echo "Deploying contracts to the bee container..."
+echo "Deploying contracts to the fdp-play environment..."
 DEPLOYMENT_OUTPUT=$(npm run deploy:bee)
 
 # Extracting contract addresses
+FDS_REGISTRAR_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'FDSRegistrar deployed to: \K[^\s]*')
 ENS_REGISTRY_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'ENSRegistry deployed to: \K[^\s]*')
-SUBDOMAIN_REGISTRAR_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'SubdomainRegistrar deployed to: \K[^\s]*')
 PUBLIC_RESOLVER_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'PublicResolver deployed to: \K[^\s]*')
 
 # Saving contract addresses to an .env file
 mkdir "$DIST_FOLDER"
 echo "ENS_REGISTRY_ADDRESS=$ENS_REGISTRY_ADDRESS" > $ENV_FILE
-echo "SUBDOMAIN_REGISTRAR_ADDRESS=$SUBDOMAIN_REGISTRAR_ADDRESS" >> $ENV_FILE
+echo "FDS_REGISTRAR_ADDRESS=$FDS_REGISTRAR_ADDRESS" >> $ENV_FILE
 echo "PUBLIC_RESOLVER_ADDRESS=$PUBLIC_RESOLVER_ADDRESS" >> $ENV_FILE
 echo "Contract addresses saved to: $ENV_FILE"
 
@@ -45,8 +43,7 @@ docker commit $BLOCKCHAIN_CONTAINER_NAME $CONTRACTS_IMAGE_URL
 echo "Image generated: $CONTRACTS_IMAGE_URL"
 
 echo "Stop and remove running blockchain node that the image built on..."
-docker container stop $BLOCKCHAIN_CONTAINER_NAME
-docker container rm $BLOCKCHAIN_CONTAINER_NAME
+npm run env:stop-base
 
 echo "Copying meta files to the JS library"
 rm -rfv "$JS_LIB_CONTRACTS_DIR"/*
