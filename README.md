@@ -9,11 +9,11 @@ top on this environment you can deploy the smart contracts by running `scripts/b
 ```sh
 npm run build:image
 ```
-**NOTE**: Make sure to prune both containers and images
+**NOTE**: Make sure to prune the containers that have been stopped after deploying the contracts before moving on.
 
 This command has to produce a blockchain image with name `fairdatasociety/fdp-contracts-blockchain` that you try out with `fdp-play`
 ```sh
-fdp-play start --detach --blockchain-image fairdatasociety/fdp-contracts-blockchain:$BLOCKCHAIN_VERSION $BEE_VERSION
+fdp-play start --detach --blockchain-image fairdatasociety/fdp-contracts-blockchain $BEE_VERSION
 ```
 
 **NOTE**: The JS contract library tests also should pass after modifications, in order to check that execute `cd js-library` and run `npm run build && npm test`
