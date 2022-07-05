@@ -45,5 +45,6 @@ echo "Image generated: $CONTRACTS_IMAGE_URL"
 echo "Copying meta files to the JS library"
 rm -rfv "$JS_LIB_CONTRACTS_DIR"/*
 cp -a "$ROOT_PATH/artifacts/contracts/." "$JS_LIB_CONTRACTS_DIR"
+cp -a "$ROOT_PATH/artifacts/@ensdomains/ens-contracts/contracts/registry/." "$JS_LIB_CONTRACTS_DIR"
 cp "$ENV_FILE" "$JS_LIB_CONTRACTS_DIR"
 node scripts/rename-contracts.js "$JS_LIB_CONTRACTS_DIR"
