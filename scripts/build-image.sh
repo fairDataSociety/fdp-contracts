@@ -42,9 +42,6 @@ docker commit $BLOCKCHAIN_CONTAINER_NAME $CONTRACTS_IMAGE_URL
 
 echo "Image generated: $CONTRACTS_IMAGE_URL"
 
-echo "Stop and remove running blockchain node that the image built on..."
-npm run env:stop-base
-
 echo "Copying meta files to the JS library"
 rm -rfv "$JS_LIB_CONTRACTS_DIR"/*
 cp -a "$ROOT_PATH/artifacts/contracts/." "$JS_LIB_CONTRACTS_DIR"

@@ -1,4 +1,4 @@
-name: Build and publish image
+name: Build and publish fdp-contract blockchain image
 
 on:
   push:
@@ -39,6 +39,10 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        if: ${{ steps.release.outputs.release_created || github.event.inputs.release == 'true' }}
+
+      - name: Run the environment
+        run: npm run env:start-base
         if: ${{ steps.release.outputs.release_created || github.event.inputs.release == 'true' }}
 
       - name: Build image
