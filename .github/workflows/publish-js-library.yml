@@ -39,7 +39,7 @@ jobs:
       - run: npm ci --prefix js-library
         if: ${{ steps.release.outputs.release_created || github.event.inputs.release == 'true' }}
 
-      - run: cd js-library && ./scripts/test.sh && cd ..
+      - run: cd js-library && npm run ci:test && cd ..
         if: ${{ steps.release.outputs.release_created || github.event.inputs.release == 'true' }}
 
       - run: npm run build --prefix js-library
