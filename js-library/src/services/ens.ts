@@ -7,9 +7,9 @@ import { Environments } from '../model/environments.enum'
 import { EnsUserData } from '../model/ens-user-data.model'
 import { EthAddress, PublicKey } from '../model/hex.types'
 import { Environment } from '../model/environment.model'
-import ENSRegistryContractLocal from '../contracts/ENSRegistry/ENSRegistry.json'
+import ENSRegistryContractLocal from '../contracts/ENS/ENS.json'
 import PublicResolverContractLocal from '../contracts/PublicResolver/PublicResolver.json'
-import SubdomainRegistrarContractLocal from '../contracts/SubdomainRegistrar/SubdomainRegistrar.json'
+import FDSRegistrarContractLocal from '../contracts/FDSRegistrar/FDSRegistrar.json'
 import { Username } from '../model/domain.type'
 import { assertUsername } from '../utils/domains'
 import { checkMinBalance, extractMessageFromFailedTx, isTxError } from '../utils/blockchain'
@@ -20,7 +20,7 @@ export type SignerOrProvider = string | providers.Provider | Signer
 
 export const ENSRegistryContract = ENSRegistryContractLocal
 export const PublicResolverContract = PublicResolverContractLocal
-export const SubdomainRegistrarContract = SubdomainRegistrarContractLocal
+export const FDSRegistrarContract = FDSRegistrarContractLocal
 
 const MIN_BALANCE = BigNumber.from('10000000000000000')
 
@@ -31,7 +31,7 @@ const MIN_BALANCE = BigNumber.from('10000000000000000')
 export class ENS {
   private _provider: providers.JsonRpcProvider
   private _ensRegistryContract: Contract
-  private _subdomainRegistrarContract: Contract
+  private _fdsRegistrarContract: Contract
   private _publicResolverContract: Contract
 
   constructor(
@@ -41,15 +41,11 @@ export class ENS {
   ) {
     this._provider = new providers.JsonRpcProvider(config.rpcUrl)
 
-    const { ensRegistry, subdomainRegistrar, publicResolver } = config.contractAddresses
+    const { ensRegistry, fdsRegistrar, publicResolver } = config.contractAddresses
 
     this._ensRegistryContract = new Contract(ensRegistry, ENSRegistryContract.abi, this._provider)
     this._publicResolverContract = new Contract(publicResolver, PublicResolverContract.abi, this._provider)
-    this._subdomainRegistrarContract = new Contract(
-      subdomainRegistrar,
-      SubdomainRegistrarContract.abi,
-      this._provider,
-    )
+    this._fdsRegistrarContract = new Contract(fdsRegistrar, FDSRegistrarContract.abi, this._provider)
 
     if (signerOrProvider) {
       this.connect(signerOrProvider)
@@ -69,7 +65,7 @@ export class ENS {
    */
   public connect(signerOrProvider: SignerOrProvider) {
     this._publicResolverContract = this._publicResolverContract.connect(signerOrProvider)
-    this._subdomainRegistrarContract = this._subdomainRegistrarContract.connect(signerOrProvider)
+    this._fdsRegistrarContract = this._fdsRegistrarContract.connect(signerOrProvider)
     this._ensRegistryContract = this._ensRegistryContract.connect(signerOrProvider)
   }
 
@@ -107,6 +103,7 @@ export class ENS {
     username: Username,
     address: EthAddress,
     publicKey: PublicKey,
+    expires: number = 86400,
   ): Promise<void> {
     try {
       assertUsername(username)
@@ -125,7 +122,7 @@ export class ENS {
 
       if (ownerAddress === NULL_ADDRESS) {
         await waitTransaction(
-          this._subdomainRegistrarContract.register(keccak256(toUtf8Bytes(username)), address),
+          this._fdsRegistrarContract.register(keccak256(toUtf8Bytes(username)), address, expires),
         )
       }
 
@@ -138,6 +135,7 @@ export class ENS {
 
       await this.setPublicKey(username, publicKey)
     } catch (error) {
+      console.error(error)
       if (isTxError(error)) {
         throw new Error(extractMessageFromFailedTx(error))
       }

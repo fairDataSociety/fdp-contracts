@@ -1,11 +1,15 @@
 {
   "name": "@fairdatasociety/fdp-contracts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Library for interaction with FDS contracts",
   "main": "build/index.js",
   "scripts": {
     "start": "webpack --watch --config webpack.build.config.ts --env mode=development",
     "build": "webpack --config webpack.build.config.ts --env mode=production",
+    "deploy": "ts-node ./scripts/deploy.ts",
+    "env:start": "fdp-play start --detach --blockchain-image fairdatasociety/fdp-contracts-blockchain 1.6.1",
+    "env:stop": "fdp-play stop",
+    "ci:test": "npm run env:start && npm run build && npm run test && npm run env:stop",
     "test": "jest",
     "test:unit": "jest ./test/unit",
     "test:integration": "jest ./test/it"
@@ -20,6 +24,8 @@
   "license": "MIT",
   "devDependencies": {
     "@babel/preset-typescript": "^7.16.7",
+    "@ensdomains/ens-contracts": "^0.0.11",
+    "@fairdatasociety/fdp-play": "^1.0.2",
     "@types/dotenv-webpack": "^7.0.3",
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.23",

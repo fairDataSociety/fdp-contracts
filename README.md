@@ -1,3 +1,23 @@
+# Build Docker images of FDP contracts
+
+In order to build docker images of the project you need to run [fdp-play](https://github.com/fairDataSociety/fdp-play) environment.
+```sh
+npm run env:start-base
+```
+
+top on this environment you can deploy the smart contracts by running `scripts/build-image.sh` or
+```sh
+npm run build:image
+```
+**NOTE**: Make sure to prune the containers that have been stopped after deploying the contracts before moving on.
+
+This command has to produce a blockchain image with name `fairdatasociety/fdp-contracts-blockchain` that you try out with `fdp-play`
+```sh
+fdp-play start --detach --blockchain-image fairdatasociety/fdp-contracts-blockchain $BEE_VERSION
+```
+
+**NOTE**: The JS contract library tests also should pass after modifications, in order to check that execute `cd js-library` and run `npm run build && npm test`
+
 # Advanced Sample Hardhat Project
 
 This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
