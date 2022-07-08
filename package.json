@@ -8,6 +8,7 @@
     "compile": "npx hardhat compile",
     "deploy": "npx hardhat run --network localhost scripts/deploy.ts",
     "deploy:bee": "npx hardhat run --network bee scripts/deploy.ts",
+    "deploy:goerli": "npx hardhat run --network goerli scripts/deploy.ts",
     "env:start-base": "fdp-play start --detach --blockchain-image fairdatasociety/fdp-play-blockchain 1.6.1",
     "env:stop-base": "fdp-play stop",
     "build:image": "./scripts/build-image.sh",

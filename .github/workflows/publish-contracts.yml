@@ -49,6 +49,13 @@ jobs:
         run: ./scripts/build-image.sh
         if: ${{ steps.release.outputs.release_created || github.event.inputs.release == 'true' }}
 
+      - name: Deploy to Goerli
+        run: ./scripts/deploy.sh goerli
+        env:
+          GOERLI_URL: ${{secrets.GOERLI_URL}}
+          GOERLI_PRIVATE_KEY: ${{secrets.GOERLI_PRIVATE_KEY}}
+        if: ${{ steps.release.outputs.release_created || github.event.inputs.release == 'true' }}
+
       - name: Publish image
         run: ./scripts/release-image.sh
         if: ${{ steps.release.outputs.release_created || github.event.inputs.release == 'true' }}

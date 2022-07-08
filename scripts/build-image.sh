@@ -22,17 +22,8 @@ npm run compile
 echo "Deploying contracts to the fdp-play environment..."
 DEPLOYMENT_OUTPUT=$(npm run deploy:bee)
 
-# Extracting contract addresses
-FDS_REGISTRAR_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'FDSRegistrar deployed to: \K[^\s]*')
-ENS_REGISTRY_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'ENSRegistry deployed to: \K[^\s]*')
-PUBLIC_RESOLVER_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'PublicResolver deployed to: \K[^\s]*')
-
-# Saving contract addresses to an .env file
-mkdir "$DIST_FOLDER"
-echo "ENS_REGISTRY_ADDRESS=$ENS_REGISTRY_ADDRESS" > $ENV_FILE
-echo "FDS_REGISTRAR_ADDRESS=$FDS_REGISTRAR_ADDRESS" >> $ENV_FILE
-echo "PUBLIC_RESOLVER_ADDRESS=$PUBLIC_RESOLVER_ADDRESS" >> $ENV_FILE
-echo "Contract addresses saved to: $ENV_FILE"
+echo "" > $ENV_FILE
+./scripts/save-addresses.sh "" "$DEPLOYMENT_OUTPUT"
 
 docker cp "$ENV_FILE" "$BLOCKCHAIN_CONTAINER_NAME":/app/contracts-ganache.env
 docker cp artifacts/contracts/. "$BLOCKCHAIN_CONTAINER_NAME":/app/contracts
