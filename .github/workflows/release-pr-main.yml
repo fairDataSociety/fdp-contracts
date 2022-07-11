@@ -12,8 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: google-github-actions/release-please-action@v3
-        if: ${{ github.event.inputs.release == 'true' }}
         id: release
         with:
           release-type: node
           package-name: '@fairdatasociety/fdp-contracts'
+          pull-request-title-pattern: 'chore${scope}: release contracts ${version}'
+          monorepo-tags: 'main-'
