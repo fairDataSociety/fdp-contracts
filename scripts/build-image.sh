@@ -5,7 +5,12 @@ ROOT_PATH=$( cd "$ROOT_PATH/.." && pwd )
 # Getting env variables from bee-factory
 BEE_ENV_PREFIX='fdp-play'
 # version of the new image
-BLOCKCHAIN_VERSION=1.0.0 # TODO from package.json
+BLOCKCHAIN_VERSION=$(cat package.json \
+  | grep version \
+  | head -1 \
+  | awk -F: '{ print $2 }' \
+  | sed 's/[",]//g')
+
 # base blockchian container name of the fdp-play environment to build upon 
 BLOCKCHAIN_CONTAINER_NAME="$BEE_ENV_PREFIX-blockchain"
 # name of the fdp-contracts image
