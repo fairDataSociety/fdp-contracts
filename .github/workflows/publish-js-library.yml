@@ -4,7 +4,7 @@ on:
   release:
     types: [published]
     tags-ignore:
-      - main-*
+      - fdp-contracts-main*
   workflow_dispatch:
 
 jobs:

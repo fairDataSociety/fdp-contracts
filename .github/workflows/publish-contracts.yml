@@ -5,7 +5,7 @@ on:
   release:
     types: [published]
     tags-ignore:
-      - js-lib-*
+      - fdp-contracts-js-lib*
   workflow_dispatch:
 
 jobs:

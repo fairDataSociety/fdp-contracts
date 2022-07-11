@@ -17,7 +17,7 @@ jobs:
         with:
           release-type: node
           path: js-library
-          package-name: "@fairdatasociety/fdp-contracts-js-lib"
+          package-name: 'fdp-contracts-js-lib'
           changelog-path: 'js-library/CHANGELOG.md'
           version-file: 'js-library/package.json'
           pull-request-title-pattern: 'chore${scope}: release js-lib ${version}'
