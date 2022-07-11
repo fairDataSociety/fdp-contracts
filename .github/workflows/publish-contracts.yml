@@ -58,6 +58,6 @@ jobs:
         with:
           author_name: CI
           author_email: actions@github.com
-          message: 'build: update contract metadata'
+          message: 'fix: update contract metadata'
           add: 'js-library/src/contracts/'
         if: ${{ steps.release.outputs.release_created || github.event.inputs.release == 'true' }}
