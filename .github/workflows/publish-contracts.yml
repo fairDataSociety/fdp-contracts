@@ -37,5 +37,5 @@ jobs:
         with:
           author_name: CI
           author_email: actions@github.com
-          message: 'fix: update contract metadata'
+          message: 'feat(contract-upgrade): update contract metadata'
           add: 'js-library/src/contracts/'
