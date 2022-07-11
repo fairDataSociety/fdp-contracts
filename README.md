@@ -13,7 +13,7 @@ npm run build:image
 
 This command has to produce a blockchain image with name `fairdatasociety/fdp-contracts-blockchain` that you try out with `fdp-play`
 ```sh
-fdp-play start --detach --blockchain-image fairdatasociety/fdp-contracts-blockchain $BEE_VERSION
+fdp-play start --detach --blockchain-image fairdatasociety/fdp-contracts-blockchain
 ```
 
 **NOTE**: The JS contract library tests also should pass after modifications, in order to check that execute `cd js-library` and run `npm run build && npm test`
