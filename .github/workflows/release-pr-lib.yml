@@ -1,0 +1,22 @@
+# On each new commit to master, create/update a PR with release
+# automatically bumps version and creates changelog as per conventional commits
+name: Release Github
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        if: ${{ github.event.inputs.release == 'true' }}
+        id: release
+        with:
+          release-type: node
+          path: js-library
+          package-name: "@fairdatasociety/fdp-contracts-js-library"
+          changelog-path: 'js-library/CHANGELOG.md'
+          version-file: 'js-library/package.json'
