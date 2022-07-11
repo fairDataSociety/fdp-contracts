@@ -11,6 +11,21 @@ npm run build:image
 ```
 **NOTE**: Make sure to prune the containers that have been stopped after deploying the contracts before moving on.
 
+Copy and paste the generated dotenv configuration output, you'll need this to integrate with `fdp-storage` ENS contracts.
+
+Example:
+```shell
+============================================================
+              Generated .env for ReactJS
+============================================================
+REACT_APP_RPC_URL=http://localhost:9545
+REACT_APP_BEE_DEBUG_URL=http://localhost:1635
+REACT_APP_BEE_URL=http://localhost:1633
+REACT_APP_PUBLIC_RESOLVER_ADDRESS=0xFF6049B87215476aBf744eaA3a476cBAd46fB1cA
+REACT_APP_ENS_REGISTRY_ADDRESS=0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D
+REACT_APP_SUBDOMAIN_REGISTRAR_ADDRESS=0x7C728214be9A0049e6a86f2137ec61030D0AA964
+```
+
 This command has to produce a blockchain image with name `fairdatasociety/fdp-contracts-blockchain` that you try out with `fdp-play`
 ```sh
 fdp-play start --detach --blockchain-image fairdatasociety/fdp-contracts-blockchain $BEE_VERSION
