@@ -3,6 +3,8 @@ name: Build and publish JS library
 on:
   release:
     types: [published]
+    tags-ignore:
+      - main-*
   workflow_dispatch:
 
 jobs:

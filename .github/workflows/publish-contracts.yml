@@ -4,6 +4,8 @@ name: Build and publish fdp-contract blockchain image
 on:
   release:
     types: [published]
+    tags-ignore:
+      - js-lib-*
   workflow_dispatch:
 
 jobs:
