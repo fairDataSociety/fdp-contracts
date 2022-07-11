@@ -21,4 +21,4 @@ jobs:
           changelog-path: 'js-library/CHANGELOG.md'
           version-file: 'js-library/package.json'
           pull-request-title-pattern: 'chore${scope}: release js-lib ${version}'
-          monorepo-tags: 'js-lib-'
+          monorepo-tags: true
