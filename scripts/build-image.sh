@@ -16,10 +16,14 @@ DIST_FOLDER="$ROOT_PATH/dist"
 ENV_FILE="$DIST_FOLDER/contracts-ganache.env"
 JS_LIB_CONTRACTS_DIR="$ROOT_PATH/js-library/src/contracts"
 
-echo "Compiling contracts..."
+echo "============================================================"
+echo "               Compiling contracts..."
+echo "============================================================"
 npm run compile
 
-echo "Deploying contracts to the fdp-play environment..."
+echo "============================================================"
+echo "       Deploying contracts to the fdp-play environment..."
+echo "============================================================"
 DEPLOYMENT_OUTPUT=$(npm run deploy:bee)
 
 # Extracting contract addresses
@@ -42,9 +46,29 @@ docker commit $BLOCKCHAIN_CONTAINER_NAME $CONTRACTS_IMAGE_URL
 
 echo "Image generated: $CONTRACTS_IMAGE_URL"
 
-echo "Copying meta files to the JS library"
+echo "============================================================"
+echo "             Copying meta files to the JS library"
+echo "============================================================"
 rm -rfv "$JS_LIB_CONTRACTS_DIR"/*
 cp -a "$ROOT_PATH/artifacts/contracts/." "$JS_LIB_CONTRACTS_DIR"
 cp -a "$ROOT_PATH/artifacts/@ensdomains/ens-contracts/contracts/registry/." "$JS_LIB_CONTRACTS_DIR"
 cp "$ENV_FILE" "$JS_LIB_CONTRACTS_DIR"
 node scripts/rename-contracts.js "$JS_LIB_CONTRACTS_DIR"
+
+# Extracting contract addresses
+REACT_APP_SUBDOMAIN_REGISTRAR_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'FDSRegistrar deployed to: \K[^\s]*')
+REACT_APP_ENS_REGISTRY_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'ENSRegistry deployed to: \K[^\s]*')
+REACT_APP_PUBLIC_RESOLVER_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'PublicResolver deployed to: \K[^\s]*')
+REACT_APP_BEE_URL=http://localhost:1633
+REACT_APP_BEE_DEBUG_URL=http://localhost:1635
+REACT_APP_RPC_URL=http://localhost:9545
+
+echo "============================================================"
+echo "              Generated .env for ReactJS"
+echo "============================================================"
+echo "REACT_APP_RPC_URL=$REACT_APP_RPC_URL"
+echo "REACT_APP_BEE_DEBUG_URL=$REACT_APP_BEE_DEBUG_URL"
+echo "REACT_APP_BEE_URL=$REACT_APP_BEE_URL"
+echo "REACT_APP_PUBLIC_RESOLVER_ADDRESS=$REACT_APP_PUBLIC_RESOLVER_ADDRESS"
+echo "REACT_APP_ENS_REGISTRY_ADDRESS=$REACT_APP_ENS_REGISTRY_ADDRESS"
+echo "REACT_APP_SUBDOMAIN_REGISTRAR_ADDRESS=$REACT_APP_SUBDOMAIN_REGISTRAR_ADDRESS"
