@@ -25,7 +25,7 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.16.7",
     "@ensdomains/ens-contracts": "^0.0.11",
-    "@fairdatasociety/fdp-play": "^1.0.2",
+    "@fairdatasociety/fdp-play": "^2.0.0",
     "@types/dotenv-webpack": "^7.0.3",
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.23",
