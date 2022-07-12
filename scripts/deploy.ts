@@ -6,7 +6,7 @@ import { waitForTransactionMined } from './utils'
 const DOMAIN = 'fds'
 
 async function deployENS() {
-  const ENS = await ethers.getContractFactory('ENSRegistry')
+  const ENS = await ethers.getContractFactory('contracts/ENSRegistry.sol:ENSRegistry')
   const ens = await ENS.deploy()
 
   let tx
