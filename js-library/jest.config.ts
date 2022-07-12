@@ -4,7 +4,7 @@ export default {
   moduleFileExtensions: ['ts', 'js', 'json'],
   testMatch: ['**/test/**/*.spec.ts'],
   transform: {
-    '^.+\\.spec.ts$': 'ts-jest',
+    '^.+\\.ts$': 'ts-jest',
   },
   setupFiles: ['dotenv/config'],
   coverageDirectory: 'coverage',

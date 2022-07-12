@@ -75,26 +75,18 @@ describe('FDSRegistrar', () => {
     )
   })
 
-  it('should only allow the controller to register', async () => {
+  it('should allow new account to register', async () => {
     const otherAccountReg = registrar.connect(otherAccount)
 
-    try {
-      await otherAccountReg.register(keccak256FromUtf8Bytes('foo'), otherAccount.address, 86400, {
-        from: otherAccount.address,
-      })
-    } catch (e: any) {
-      expect(e.message).contain('Transaction reverted')
-    }
+    await otherAccountReg.register(keccak256FromUtf8Bytes('foo'), otherAccount.address, 86400, {
+      from: otherAccount.address,
+    })
   })
 
-  it('should only allow the controller to renew', async () => {
+  it('should allow new account to renew', async () => {
     const otherAccountReg = registrar.connect(otherAccount)
 
-    try {
-      await otherAccountReg.renew(keccak256FromUtf8Bytes('newname'), 86400, { from: otherAccount.address })
-    } catch (e: any) {
-      expect(e.message).contain('Transaction reverted')
-    }
+    await otherAccountReg.renew(keccak256FromUtf8Bytes('newname'), 86400, { from: otherAccount.address })
   })
 
   it('should not permit registration of already registered names', async () => {

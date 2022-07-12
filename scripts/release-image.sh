@@ -4,11 +4,8 @@ ROOT_PATH=$( cd "$ROOT_PATH/.." && pwd )
 
 # Getting env variables from bee-factory
 # version of the new image
-BLOCKCHAIN_VERSION=$(cat package.json \
-  | grep version \
-  | head -1 \
-  | awk -F: '{ print $2 }' \
-  | sed 's/[",]//g')
+# grep from package.json https://gist.github.com/DarrenN/8c6a5b969481725a4413?permalink_comment_id=3535314#gistcomment-3535314
+BLOCKCHAIN_VERSION=$(awk -F'"' '/"version": ".+"/{ print $4; exit; }' package.json)
 CONTRACTS_IMAGE_NAME="fdp-contracts-blockchain"
 CONTRACTS_IMAGE_PREFIX="fairdatasociety"
 CONTRACTS_IMAGE_URL="$CONTRACTS_IMAGE_PREFIX/$CONTRACTS_IMAGE_NAME:$BLOCKCHAIN_VERSION"
