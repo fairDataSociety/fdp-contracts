@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v1.1.0...fdp-contracts-main-v1.1.1) (2022-07-12)
+
+
+### Bug Fixes
+
+* fdsregistrar ([#60](https://github.com/fairDataSociety/fdp-contracts/issues/60)) ([7b67d2f](https://github.com/fairDataSociety/fdp-contracts/commit/7b67d2fd3d5f408e10c1ba6f44c83c242a158c3e))
+
 ## 1.1.0 (2022-07-11)
 
 
