@@ -121,6 +121,11 @@ export class ENS {
       }
 
       if (ownerAddress === NULL_ADDRESS) {
+        // Per ENS team recommendation, add user as controller
+        await waitTransaction(
+          this._fdsRegistrarContract.addController(ownerAddress),
+        )
+
         await waitTransaction(
           this._fdsRegistrarContract.register(keccak256(toUtf8Bytes(username)), address, expires),
         )
