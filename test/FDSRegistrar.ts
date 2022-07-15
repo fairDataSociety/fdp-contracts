@@ -29,12 +29,15 @@ describe('FDSRegistrar', () => {
     controllerAccount = signers[1]
     registrantAccount = signers[2]
     otherAccount = signers[3]
-    const ENS = await ethers.getContractFactory('ENSRegistry')
+    const ENS = await ethers.getContractFactory(
+      '@ensdomains/ens-contracts/contracts/registry/ENSRegistry.sol:ENSRegistry',
+    )
+    // @ts-ignore
     ens = await ENS.deploy()
     await ens.deployed()
     const FDSRegistrar = await ethers.getContractFactory('FDSRegistrar')
     registrar = await FDSRegistrar.deploy(ens.address)
-    await registrar.addController(controllerAccount.address)
+    // Do not add controller account, use registrar account instead inside each test
     await ens.setSubnodeOwner(ZERO_HASH, keccak256FromUtf8Bytes('fds'), registrar.address)
 
     const publicResolver = await ethers.getContractFactory('PublicResolver')
@@ -45,9 +48,17 @@ describe('FDSRegistrar', () => {
     await registrar.setResolver(resolver.address)
   })
 
+  beforeEach(async () => {
+    await registrar.addController(registrantAccount.address)
+  })
+
+  afterEach(async () => {
+    await registrar.removeController(registrantAccount.address)
+  })
+
   it('should allow new registrations', async () => {
-    const controllerAccountReg = registrar.connect(controllerAccount)
-    await controllerAccountReg.register(keccak256FromUtf8Bytes('newname'), registrantAccount.address, 86400)
+    const selfRegistration = registrar.connect(registrantAccount)
+    await selfRegistration.register(keccak256FromUtf8Bytes('newname'), registrantAccount.address, 86400)
 
     const block = await ethers.provider.getBlock('latest')
     expect(await ens.owner(ethers.utils.namehash('newname.fds'))).equal(registrantAccount.address)
@@ -56,8 +67,8 @@ describe('FDSRegistrar', () => {
   })
 
   it('should allow registrations without updating the registry', async () => {
-    const controllerAccountReg = registrar.connect(controllerAccount)
-    await controllerAccountReg.registerOnly(keccak256FromUtf8Bytes('silentname'), registrantAccount.address, 86400)
+    const selfRegistration = registrar.connect(registrantAccount)
+    await selfRegistration.registerOnly(keccak256FromUtf8Bytes('silentname'), registrantAccount.address, 86400)
     const block = await ethers.provider.getBlock('latest')
     expect(await ens.owner(ethers.utils.namehash('silentname.fds'))).equal(ZERO_ADDRESS)
     expect(await registrar.ownerOf(keccak256FromUtf8Bytes('silentname'))).equal(registrantAccount.address)
@@ -67,26 +78,34 @@ describe('FDSRegistrar', () => {
   })
 
   it('should allow renewals', async () => {
-    const controllerAccountReg = registrar.connect(controllerAccount)
+    const selfRegistration = registrar.connect(registrantAccount)
     const oldExpires = await registrar.nameExpires(keccak256FromUtf8Bytes('newname'))
-    await controllerAccountReg.renew(keccak256FromUtf8Bytes('newname'), 86400)
+    await selfRegistration.renew(keccak256FromUtf8Bytes('newname'), 86400)
     expect((await registrar.nameExpires(keccak256FromUtf8Bytes('newname'))).toNumber()).equal(
       oldExpires.add(86400).toNumber(),
     )
   })
 
-  it('should allow new account to register', async () => {
+  it('should only allow the controller to register', async () => {
     const otherAccountReg = registrar.connect(otherAccount)
 
-    await otherAccountReg.register(keccak256FromUtf8Bytes('foo'), otherAccount.address, 86400, {
-      from: otherAccount.address,
-    })
+    try {
+      await otherAccountReg.register(keccak256FromUtf8Bytes('foo'), otherAccount.address, 86400, {
+        from: otherAccount.address,
+      })
+    } catch (e: any) {
+      expect(e.message).contain('Transaction reverted')
+    }
   })
 
-  it('should allow new account to renew', async () => {
+  it('should only allow the controller to renew', async () => {
     const otherAccountReg = registrar.connect(otherAccount)
 
-    await otherAccountReg.renew(keccak256FromUtf8Bytes('newname'), 86400, { from: otherAccount.address })
+    try {
+      await otherAccountReg.renew(keccak256FromUtf8Bytes('newname'), 86400, { from: otherAccount.address })
+    } catch (e: any) {
+      expect(e.message).contain('Transaction reverted')
+    }
   })
 
   it('should not permit registration of already registered names', async () => {
@@ -191,8 +210,8 @@ describe('FDSRegistrar', () => {
   })
 
   it('should allow renewal during the grace period', async () => {
-    const controllerAccountReg = registrar.connect(controllerAccount)
-    await controllerAccountReg.renew(keccak256FromUtf8Bytes('newname'), 86400)
+    const selfRegistration = registrar.connect(registrantAccount)
+    await selfRegistration.renew(keccak256FromUtf8Bytes('newname'), 86400)
   })
 
   it('should allow registration of an expired domain', async () => {
@@ -205,9 +224,9 @@ describe('FDSRegistrar', () => {
       await registrar.ownerOf(keccak256FromUtf8Bytes('newname'))
     } catch (error) {}
 
-    const controllerAccountReg = registrar.connect(controllerAccount)
-    await controllerAccountReg.register(keccak256FromUtf8Bytes('newname'), otherAccount.address, 86400, {
-      from: controllerAccount.address,
+    const selfRegistration = registrar.connect(registrantAccount)
+    await selfRegistration.register(keccak256FromUtf8Bytes('newname'), otherAccount.address, 86400, {
+      from: registrantAccount.address,
     })
     expect(await registrar.ownerOf(keccak256FromUtf8Bytes('newname')), otherAccount.address)
   })
