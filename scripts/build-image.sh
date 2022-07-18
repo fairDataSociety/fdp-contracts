@@ -14,19 +14,15 @@ CONTRACTS_IMAGE_NAME="fdp-contracts-blockchain"
 CONTRACTS_IMAGE_PREFIX="fairdatasociety"
 CONTRACTS_IMAGE_URL="$CONTRACTS_IMAGE_PREFIX/$CONTRACTS_IMAGE_NAME:$BLOCKCHAIN_VERSION"
 DIST_FOLDER="$ROOT_PATH/dist"
-ENV_FILE="$DIST_FOLDER/contracts-ganache.env"
+ENV_FILE="$DIST_FOLDER/contracts-docker.env"
 JS_LIB_CONTRACTS_DIR="$ROOT_PATH/js-library/src/contracts"
 
 echo "Compiling contracts..."
 npm run compile
 
-echo "Deploying contracts to the fdp-play environment..."
-DEPLOYMENT_OUTPUT=$(npm run deploy:bee)
+./scripts/deploy.sh docker
 
-echo "" > $ENV_FILE
-./scripts/save-addresses.sh "" "$DEPLOYMENT_OUTPUT"
-
-docker cp "$ENV_FILE" "$BLOCKCHAIN_CONTAINER_NAME":/app/contracts-ganache.env
+docker cp "$ENV_FILE" "$BLOCKCHAIN_CONTAINER_NAME":/app/contracts-docker.env
 docker cp artifacts/contracts/. "$BLOCKCHAIN_CONTAINER_NAME":/app/contracts
 
 echo "Creating a new image..."

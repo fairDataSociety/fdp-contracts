@@ -57,7 +57,10 @@ const config = (env: ENV) => {
         },
       ],
     },
-    plugins: [new Dotenv({ path: path.resolve(srcDir, 'contracts', 'contracts-ganache.env') })],
+    plugins: [
+      new Dotenv({ path: path.resolve(srcDir, 'contracts', 'contracts-docker.env') }),
+      new Dotenv({ path: path.resolve(srcDir, 'contracts', 'contracts-goerli.env') }),
+    ],
   }
 }
 

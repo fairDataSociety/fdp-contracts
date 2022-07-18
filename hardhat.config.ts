@@ -48,7 +48,7 @@ const config: HardhatUserConfig = {
       url: process.env.ROPSTEN_URL || '',
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
-    bee: {
+    docker: {
       url: process.env.BEE_BLOCKCHAIN_URL || 'http://localhost:9545',
     },
     goerli: {
