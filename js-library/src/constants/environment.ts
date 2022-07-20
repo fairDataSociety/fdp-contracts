@@ -15,7 +15,7 @@ export const ENVIRONMENT_CONFIGS: EnvironmentConfigs = {
     performChecks: false,
   },
   [Environments.GOERLI]: {
-    rpcUrl: 'https://goerli.net/',
+    rpcUrl: 'https://xdai.dev.fairdatasociety.org/',
     contractAddresses: {
       ensRegistry: process.env.GOERLI_ENS_REGISTRY_ADDRESS as EthAddress,
       fdsRegistrar: process.env.GOERLI_FDS_REGISTRAR_ADDRESS as EthAddress,
