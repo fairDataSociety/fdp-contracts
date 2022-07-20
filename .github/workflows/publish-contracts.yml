@@ -35,6 +35,7 @@ jobs:
         env:
           GOERLI_URL: ${{secrets.GOERLI_URL}}
           GOERLI_PRIVATE_KEY: ${{secrets.GOERLI_PRIVATE_KEY}}
+          MAX_INTERVAL: 100000
 
       # - name: Publish image
       #   run: ./scripts/release-image.sh
