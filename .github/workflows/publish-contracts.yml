@@ -23,12 +23,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Commented out just for test
-      # - name: Run the environment
-      #   run: npm run env:start-base
+      - name: Run the environment
+        run: npm run env:start-base
 
-      # - name: Build image
-      #   run: ./scripts/build-image.sh
+      - name: Build image
+        run: ./scripts/build-image.sh
 
       - name: Deploy to Goerli
         run: ./scripts/deploy.sh goerli
@@ -37,8 +36,8 @@ jobs:
           GOERLI_PRIVATE_KEY: ${{secrets.GOERLI_PRIVATE_KEY}}
           MAX_INTERVAL: 100000
 
-      # - name: Publish image
-      #   run: ./scripts/release-image.sh
+      - name: Publish image
+        run: ./scripts/release-image.sh
 
       - name: Commit new contract metadata
         uses: EndBug/add-and-commit@v9
