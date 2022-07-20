@@ -14,28 +14,15 @@ CONTRACTS_IMAGE_NAME="fdp-contracts-blockchain"
 CONTRACTS_IMAGE_PREFIX="fairdatasociety"
 CONTRACTS_IMAGE_URL="$CONTRACTS_IMAGE_PREFIX/$CONTRACTS_IMAGE_NAME:$BLOCKCHAIN_VERSION"
 DIST_FOLDER="$ROOT_PATH/dist"
-ENV_FILE="$DIST_FOLDER/contracts-ganache.env"
+ENV_FILE="$DIST_FOLDER/contracts-docker.env"
 JS_LIB_CONTRACTS_DIR="$ROOT_PATH/js-library/src/contracts"
 
 echo "Compiling contracts..."
 npm run compile
 
-echo "Deploying contracts to the fdp-play environment..."
-DEPLOYMENT_OUTPUT=$(npm run deploy:bee)
+./scripts/deploy.sh docker
 
-# Extracting contract addresses
-FDS_REGISTRAR_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'FDSRegistrar deployed to: \K[^\s]*')
-ENS_REGISTRY_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'ENSRegistry deployed to: \K[^\s]*')
-PUBLIC_RESOLVER_ADDRESS=$(echo $DEPLOYMENT_OUTPUT | grep -Po 'PublicResolver deployed to: \K[^\s]*')
-
-# Saving contract addresses to an .env file
-mkdir "$DIST_FOLDER"
-echo "ENS_REGISTRY_ADDRESS=$ENS_REGISTRY_ADDRESS" > $ENV_FILE
-echo "FDS_REGISTRAR_ADDRESS=$FDS_REGISTRAR_ADDRESS" >> $ENV_FILE
-echo "PUBLIC_RESOLVER_ADDRESS=$PUBLIC_RESOLVER_ADDRESS" >> $ENV_FILE
-echo "Contract addresses saved to: $ENV_FILE"
-
-docker cp "$ENV_FILE" "$BLOCKCHAIN_CONTAINER_NAME":/app/contracts-ganache.env
+docker cp "$ENV_FILE" "$BLOCKCHAIN_CONTAINER_NAME":/app/contracts-docker.env
 docker cp artifacts/contracts/. "$BLOCKCHAIN_CONTAINER_NAME":/app/contracts
 
 echo "Creating a new image..."

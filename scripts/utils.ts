@@ -2,7 +2,7 @@ import { Transaction } from 'ethers'
 import { ethers } from 'hardhat'
 
 const INTERVAL = 1000
-const MAX_INTERVAL = 15 * INTERVAL
+const MAX_INTERVAL = process.env.MAX_INTERVAL || 15 * INTERVAL
 
 export function waitForTransactionMined(tx: Transaction): Promise<void> {
   return new Promise((resolve, reject) => {

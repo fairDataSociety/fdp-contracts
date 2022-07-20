@@ -20,7 +20,7 @@ CONTAINER_ID=$(docker run --rm -d $FDP_CONTRACTS_IMAGE)
 # execute commands to fetch contracts-ganache.env and contracts folder
 rm -rfv "$JS_LIB_CONTRACTS_DIR"/*
 docker cp "$CONTAINER_ID:/app/contracts/." "$JS_LIB_CONTRACTS_DIR"
-docker cp "$CONTAINER_ID:/app/contracts-ganache.env" "$JS_LIB_CONTRACTS_DIR/contracts-ganache.env"
+docker cp "$CONTAINER_ID:/app/contracts-docker.env" "$JS_LIB_CONTRACTS_DIR/contracts-docker.env"
 node "$ROOT_PATH/scripts/rename-contracts.js" "$JS_LIB_CONTRACTS_DIR"
 
 # stop and delete the container

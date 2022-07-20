@@ -29,6 +29,13 @@ jobs:
       - name: Build image
         run: ./scripts/build-image.sh
 
+      - name: Deploy to Goerli
+        run: ./scripts/deploy.sh goerli
+        env:
+          GOERLI_URL: ${{secrets.GOERLI_URL}}
+          GOERLI_PRIVATE_KEY: ${{secrets.GOERLI_PRIVATE_KEY}}
+          MAX_INTERVAL: 100000
+
       - name: Publish image
         run: ./scripts/release-image.sh
 
