@@ -11,7 +11,10 @@ ENV_FILE="$DIST_FOLDER/contracts-$1.env"
 JS_LIB_CONTRACTS_DIR="$ROOT_PATH/js-library/src/contracts"
 
 echo "Deploying contracts to $1..."
-DEPLOYMENT_OUTPUT=$(npm run deploy:$1)
+
+if ! DEPLOYMENT_OUTPUT=$(npm run deploy:$1); then
+    exit $?
+fi
 
 ./scripts/save-addresses.sh "$1" "$DEPLOYMENT_OUTPUT"
 
