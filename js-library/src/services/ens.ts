@@ -115,7 +115,7 @@ export class ENS {
 
         ownerAddress = await this.getUsernameOwner(username)
 
-        if (ownerAddress !== NULL_ADDRESS && ownerAddress !== address) {
+        if (ownerAddress !== NULL_ADDRESS) {
           throw new Error(`ENS: Username ${username} is not available`)
         }
       }
