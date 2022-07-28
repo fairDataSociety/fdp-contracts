@@ -135,7 +135,6 @@ export class ENS {
 
       await this.setPublicKey(username, publicKey)
     } catch (error) {
-      console.error(error)
       if (isTxError(error)) {
         throw new Error(extractMessageFromFailedTx(error))
       }
