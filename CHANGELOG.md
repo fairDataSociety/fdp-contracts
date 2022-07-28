@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.2](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v1.1.1...fdp-contracts-main-v1.1.2) (2022-07-28)
+
+
+### Bug Fixes
+
+* **ens:** per ENS team support recommendation, user can be a controller. updated specs and previously rollbacked code ([#63](https://github.com/fairDataSociety/fdp-contracts/issues/63)) ([08c3eab](https://github.com/fairDataSociety/fdp-contracts/commit/08c3eab91c446f9365325d12644b9583b2646a76))
+* fix docker addresses ([#69](https://github.com/fairDataSociety/fdp-contracts/issues/69)) ([2bf5b7e](https://github.com/fairDataSociety/fdp-contracts/commit/2bf5b7e8969bf3505c96518e13f6f78dc0f5fc4f))
+* fix goerli rpc url ([#68](https://github.com/fairDataSociety/fdp-contracts/issues/68)) ([e164263](https://github.com/fairDataSociety/fdp-contracts/commit/e164263c3876c4d5d7ba2672bc9a8125958087c4))
+* prevent re-registration from the same account ([#71](https://github.com/fairDataSociety/fdp-contracts/issues/71)) ([b77e9b7](https://github.com/fairDataSociety/fdp-contracts/commit/b77e9b7053303ecb5d229ffe76cfebc7af4a423e)), closes [#49](https://github.com/fairDataSociety/fdp-contracts/issues/49)
+
+
+### Reverts
+
+* fix(ens): per ENS team support recommendation, user can be a controller. updated specs and previously rollbacked code ([#63](https://github.com/fairDataSociety/fdp-contracts/issues/63)) ([#67](https://github.com/fairDataSociety/fdp-contracts/issues/67)) ([04f4fd1](https://github.com/fairDataSociety/fdp-contracts/commit/04f4fd1a8fc479778bb7761dafc15a98ad13953e))
+
 ## [1.1.1](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v1.1.0...fdp-contracts-main-v1.1.1) (2022-07-12)
 
 
