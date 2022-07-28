@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v1.0.3...fdp-contracts-js-lib-v1.0.4) (2022-07-28)
+
+
+### Bug Fixes
+
+* prevent re-registration from the same account ([#71](https://github.com/fairDataSociety/fdp-contracts/issues/71)) ([b77e9b7](https://github.com/fairDataSociety/fdp-contracts/commit/b77e9b7053303ecb5d229ffe76cfebc7af4a423e)), closes [#49](https://github.com/fairDataSociety/fdp-contracts/issues/49)
+
 ## [1.0.3](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v1.0.2...fdp-contracts-js-lib-v1.0.3) (2022-07-20)
 
 
