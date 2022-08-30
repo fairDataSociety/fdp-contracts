@@ -8,6 +8,19 @@ import 'solidity-coverage'
 
 dotenv.config()
 
+task('send', 'Send coin from the first available account to the passed address', async (taskArgs: any, hre) => {
+  const accounts = await hre.ethers.getSigners()
+  const account = accounts[0]
+  const tx = {
+    to: taskArgs.to,
+    value: hre.ethers.utils.parseEther(taskArgs.amount),
+  }
+  const response = await account.sendTransaction(tx)
+  console.log(`${taskArgs.amount} ETH has been sent to ${taskArgs.to}.\n\tTxId: ${response.hash}`)
+})
+  .addParam('amount', 'The Ether to being send')
+  .addParam('to', 'Ethereum Address of the recipient')
+
 task('accounts', 'Prints the list of accounts', async (taskArgs, hre) => {
   const accounts = await hre.ethers.getSigners()
 
