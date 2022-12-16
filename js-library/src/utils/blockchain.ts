@@ -32,11 +32,17 @@ export function extractGanacheErrorMessage(error: GanacheError): string {
   return message.substring(message.indexOf('revert') + 7)
 }
 
-export function extractMessageFromFailedTx(exception: TxError): string {
-  const errorBody = JSON.parse(exception.error.body)
-
-  if (isGanacheError(errorBody)) {
-    return extractGanacheErrorMessage(errorBody)
+export function extractMessageFromFailedTx(exception: unknown): string {
+  let errorBody
+  if ((exception as TxError)?.error?.body) {
+    errorBody = JSON.parse((exception as TxError).error.body)
+    if (isGanacheError(errorBody)) {
+      return extractGanacheErrorMessage(errorBody)
+    }
+  } else if((exception as GanacheError)?.error?.message){
+    errorBody = (exception as GanacheError)?.error?.message
+  } else {
+    errorBody = 'Unknown error: ' + JSON.stringify(exception)
   }
 
   throw errorBody
