@@ -1,8 +1,8 @@
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
 
-describe('VerifySignature', function () {
-  it('Check signature', async function () {
+describe('Signatues', function () {
+  it('should recover postage stamp signature', async function () {
     const accounts = await ethers.getSigners()
 
     const PostageStampSig = await ethers.getContractFactory('PostageStampSig')
