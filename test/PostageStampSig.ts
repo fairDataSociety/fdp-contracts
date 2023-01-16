@@ -5,14 +5,7 @@ describe('VerifySignature', function () {
   it('Check signature', async function () {
     const accounts = await ethers.getSigners()
 
-    const Signature = await ethers.getContractFactory('Signature')
-    const signature = await Signature.deploy()
-    await signature.deployed()
-    const PostageStampSig = await ethers.getContractFactory('PostageStampSig', {
-      libraries: {
-        Signature: signature.address,
-      },
-    })
+    const PostageStampSig = await ethers.getContractFactory('PostageStampSig')
     const postageStampSig = await PostageStampSig.deploy()
     await postageStampSig.deployed()
 
@@ -25,9 +18,9 @@ describe('VerifySignature', function () {
     const hash = await postageStampSig.getMessageHash(chunkAddrHex, batchIdHex, index, ts)
     const sig = await signer.signMessage(ethers.utils.arrayify(hash))
 
-    const ethHash = await signature.getEthSignedMessageHash(hash)
+    const ethHash = await postageStampSig.getEthSignedMessageHash(hash)
 
-    expect(signer.address).to.equal(await signature.recoverSigner(ethHash, sig))
+    expect(signer.address).to.equal(await postageStampSig.recoverSigner(ethHash, sig))
 
     // Correct signature and message returns true
     expect(await postageStampSig.verify(signer.address, sig, chunkAddrHex, batchIdHex, index, ts)).to.equal(true)

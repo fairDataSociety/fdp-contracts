@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./Signature.sol";
 
-library PostageStampSig {
+contract PostageStampSig is Signature {
       /** Hash of the message to sign */
     function getMessageHash(
         bytes32 _chunkAddr,

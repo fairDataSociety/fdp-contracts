@@ -16,7 +16,7 @@ How to Sign and Verify
 3. Compare recovered signer to claimed signer
 */
 
-library Signature {
+contract Signature {
     /** Appends Ethereum Signed Message prefix to the message hash */
     function getEthSignedMessageHash(
         bytes32 _messageHash
