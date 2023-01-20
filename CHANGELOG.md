@@ -7,7 +7,17 @@
 
 * fdsregistrar ([#60](https://github.com/fairDataSociety/fdp-contracts/issues/60)) ([7b67d2f](https://github.com/fairDataSociety/fdp-contracts/commit/7b67d2fd3d5f408e10c1ba6f44c83c242a158c3e))
 
-## 1.1.0 (2022-07-11)
+## [1.1.0](https://github.com/fairDataSociety/fdp-contracts/compare/v1.0.0...v1.1.0) (2022-07-04)
+
+
+### Features
+
+* **contracts:** BMT Chunk  ([#19](https://github.com/fairDataSociety/fdp-contracts/issues/19)) ([b2a18a6](https://github.com/fairDataSociety/fdp-contracts/commit/b2a18a6a298fc07294f785187dacf3ff8ba590df))
+* **contracts:** fds registrar contracts ([#26](https://github.com/fairDataSociety/fdp-contracts/issues/26)) ([74b9266](https://github.com/fairDataSociety/fdp-contracts/commit/74b9266ddede0c37f05719115f037aab33f33827))
+* **contracts:** FDS Registrar specs passing with fdp-play dev environment ([#35](https://github.com/fairDataSociety/fdp-contracts/issues/35)) ([ae1c3a3](https://github.com/fairDataSociety/fdp-contracts/commit/ae1c3a3efa52377ee1fb5dbae21ce6ff69108ce5))
+* **contracts:** File BMT inclusion proof ([#20](https://github.com/fairDataSociety/fdp-contracts/issues/20)) ([a52b2f4](https://github.com/fairDataSociety/fdp-contracts/commit/a52b2f4819371b17d4bf6f3818076917b1ae0782))
+
+## 1.0.0 (2022-05-09)
 
 
 ### Features
@@ -17,13 +27,8 @@
 * Add build image script and fix the deployment script ([c604b0e](https://github.com/fairDataSociety/fdp-contracts/commit/c604b0e9e9adca515cd1d6645c3580e968383214))
 * Add ENS deployment ([b6efdff](https://github.com/fairDataSociety/fdp-contracts/commit/b6efdff988bb0d033f57f9dd5a7e024ca0273210))
 * add initial js-library project (work in progress) ([8d29b3f](https://github.com/fairDataSociety/fdp-contracts/commit/8d29b3f1b5d6bc067db682374c793eadb6fb12ba))
-* **ci:** read  package version ([#40](https://github.com/fairDataSociety/fdp-contracts/issues/40)) ([a41fd1a](https://github.com/fairDataSociety/fdp-contracts/commit/a41fd1a2747244d38e9f1f654bb7ce52884c5427))
 * Complete build-image.sh script ([46c079d](https://github.com/fairDataSociety/fdp-contracts/commit/46c079d0a278cee40bc9e39f6bf9c79d13caea94))
 * complete js library setup ([3ab029c](https://github.com/fairDataSociety/fdp-contracts/commit/3ab029c8663f9d0f879f1a64afd2b9c3acfc70bc))
-* **contracts:** BMT Chunk  ([#19](https://github.com/fairDataSociety/fdp-contracts/issues/19)) ([b2a18a6](https://github.com/fairDataSociety/fdp-contracts/commit/b2a18a6a298fc07294f785187dacf3ff8ba590df))
-* **contracts:** fds registrar contracts ([#26](https://github.com/fairDataSociety/fdp-contracts/issues/26)) ([74b9266](https://github.com/fairDataSociety/fdp-contracts/commit/74b9266ddede0c37f05719115f037aab33f33827))
-* **contracts:** FDS Registrar specs passing with fdp-play dev environment ([#35](https://github.com/fairDataSociety/fdp-contracts/issues/35)) ([ae1c3a3](https://github.com/fairDataSociety/fdp-contracts/commit/ae1c3a3efa52377ee1fb5dbae21ce6ff69108ce5))
-* **contracts:** File BMT inclusion proof ([#20](https://github.com/fairDataSociety/fdp-contracts/issues/20)) ([a52b2f4](https://github.com/fairDataSociety/fdp-contracts/commit/a52b2f4819371b17d4bf6f3818076917b1ae0782))
 * improve ENS configuration ([8efdf02](https://github.com/fairDataSociety/fdp-contracts/commit/8efdf02c3c32d3936460fe6de5868c78f6ab3f39))
 * init ([#1](https://github.com/fairDataSociety/fdp-contracts/issues/1)) ([40a4b18](https://github.com/fairDataSociety/fdp-contracts/commit/40a4b18e6a6ce6d7a3e1dac0544207745b7a4136))
 
@@ -41,7 +46,6 @@
 * fix image url ([079f09d](https://github.com/fairDataSociety/fdp-contracts/commit/079f09df3256c0a0b48a570ff27526e37dfe2067))
 * fix import ([f44a11d](https://github.com/fairDataSociety/fdp-contracts/commit/f44a11de2bc7724468c7ac5273b775a4e9a2cb65))
 * fix keys check ([45f1e7e](https://github.com/fairDataSociety/fdp-contracts/commit/45f1e7e9120ee33367afdd351c9b4705cfbd030c))
-* fix library import of ens contract ([#42](https://github.com/fairDataSociety/fdp-contracts/issues/42)) ([fa6f1ac](https://github.com/fairDataSociety/fdp-contracts/commit/fa6f1aceb14070844d618f8666b8af0479ff33ee))
 * fix the deploy script ([f792aa4](https://github.com/fairDataSociety/fdp-contracts/commit/f792aa4e94f275e8a1b50b169ae64c7437dc722f))
 * fix type checkings and bash variable usage ([423cdcb](https://github.com/fairDataSociety/fdp-contracts/commit/423cdcb6d22b0c6b2c5bf33061398c2211c8e9b3))
 * fix types ([927ec52](https://github.com/fairDataSociety/fdp-contracts/commit/927ec527cc5cda381f4b42e9c5863181ecb45b6d))
