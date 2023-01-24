@@ -1,5 +1,35 @@
 # Changelog
 
+## [2.0.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v1.1.1...fdp-contracts-main-v2.0.0) (2023-01-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* publish contrats ([#97](https://github.com/fairDataSociety/fdp-contracts/issues/97))
+
+### Features
+
+* send coin command ([edc208b](https://github.com/fairDataSociety/fdp-contracts/commit/edc208ba8f863176e164cd18bbd0388b73a70cf6))
+
+
+### Bug Fixes
+
+* **ens:** per ENS team support recommendation, user can be a controller. updated specs and previously rollbacked code ([#63](https://github.com/fairDataSociety/fdp-contracts/issues/63)) ([08c3eab](https://github.com/fairDataSociety/fdp-contracts/commit/08c3eab91c446f9365325d12644b9583b2646a76))
+* fix docker addresses ([#69](https://github.com/fairDataSociety/fdp-contracts/issues/69)) ([2bf5b7e](https://github.com/fairDataSociety/fdp-contracts/commit/2bf5b7e8969bf3505c96518e13f6f78dc0f5fc4f))
+* fix goerli rpc url ([#68](https://github.com/fairDataSociety/fdp-contracts/issues/68)) ([e164263](https://github.com/fairDataSociety/fdp-contracts/commit/e164263c3876c4d5d7ba2672bc9a8125958087c4))
+* improved error throwing for testnets ([#90](https://github.com/fairDataSociety/fdp-contracts/issues/90)) ([16bd394](https://github.com/fairDataSociety/fdp-contracts/commit/16bd39429d5d30065cf2c5f99e7296a72c109a01))
+* prevent re-registration from the same account ([#71](https://github.com/fairDataSociety/fdp-contracts/issues/71)) ([b77e9b7](https://github.com/fairDataSociety/fdp-contracts/commit/b77e9b7053303ecb5d229ffe76cfebc7af4a423e)), closes [#49](https://github.com/fairDataSociety/fdp-contracts/issues/49)
+
+
+### Reverts
+
+* fix(ens): per ENS team support recommendation, user can be a controller. updated specs and previously rollbacked code ([#63](https://github.com/fairDataSociety/fdp-contracts/issues/63)) ([#67](https://github.com/fairDataSociety/fdp-contracts/issues/67)) ([04f4fd1](https://github.com/fairDataSociety/fdp-contracts/commit/04f4fd1a8fc479778bb7761dafc15a98ad13953e))
+
+
+### Code Refactoring
+
+* publish contrats ([#97](https://github.com/fairDataSociety/fdp-contracts/issues/97)) ([c52d377](https://github.com/fairDataSociety/fdp-contracts/commit/c52d3772861f4ddce25d6b0794c1761ab052388e))
+
 ## [1.1.1](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v1.1.0...fdp-contracts-main-v1.1.1) (2022-07-12)
 
 
