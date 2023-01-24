@@ -1,5 +1,5 @@
 {
-  "name": "@fairdatasociety/fdp-contracts",
+  "name": "@fairdatasociety/fdp-contracts-js",
   "version": "1.0.4",
   "description": "Library for interaction with FDS contracts",
   "main": "build/index.js",
