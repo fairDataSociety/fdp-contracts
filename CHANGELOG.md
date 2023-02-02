@@ -2,6 +2,8 @@
 
 ## [2.0.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v1.1.1...fdp-contracts-main-v2.0.0) (2023-01-24)
 
+The current `@fairdatasociety/fdp-contracts` will be taken over by the Solidity source codes for smart contract based projects meanwhile the corresponding JS library will be published under name `@fairdatasociety/fdp-contracts-js`.
+
 
 ### ⚠ BREAKING CHANGES
 
