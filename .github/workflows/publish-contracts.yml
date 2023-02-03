@@ -8,6 +8,8 @@ on:
       - fdp-contracts-js-lib*
   workflow_dispatch:
 
+  # PR test
+
 jobs:
   publish-contracts:
     runs-on: ubuntu-latest
