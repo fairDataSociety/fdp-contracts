@@ -39,8 +39,18 @@ async function deployENS() {
   await waitForTransactionMined(tx)
 }
 
+async function deployDappRegistry() {
+  const DappRegistry = await ethers.getContractFactory('DappRegistry')
+  const dappRegistry = await DappRegistry.deploy()
+
+  await dappRegistry.deployed()
+
+  console.log(`DappRegistry deployed to: ${dappRegistry.address}`)
+}
+
 async function main() {
   await deployENS()
+  await deployDappRegistry()
 }
 
 main().catch(error => {
