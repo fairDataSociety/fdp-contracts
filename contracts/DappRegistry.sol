@@ -33,41 +33,50 @@ contract DappRegistry is Ownable, AccessControl {
 
   bytes32 public constant VALIDATOR_ROLE = keccak256("VALIDATOR_ROLE");
 
-  function grantAdminRole(address _account) public onlyRole(DEFAULT_ADMIN_ROLE) {
-    this.grantRole(DEFAULT_ADMIN_ROLE, _account);
+  constructor () {
+    _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
   }
 
-  function revokeAdminRole(address _account) public onlyRole(DEFAULT_ADMIN_ROLE) {
-    this.revokeRole(DEFAULT_ADMIN_ROLE, _account);
+  modifier onlyAdmin() {
+    require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Missing admin role");
+    _;
+  }
+
+  function grantAdminRole(address _account) public onlyAdmin {
+    _grantRole(DEFAULT_ADMIN_ROLE, _account);
+  }
+
+  function revokeAdminRole(address _account) public onlyAdmin {
+    _revokeRole(DEFAULT_ADMIN_ROLE, _account);
   }
 
   function isAdmin(address _account) public view returns(bool) {
-    return this.hasRole(DEFAULT_ADMIN_ROLE, _account);
+    return hasRole(DEFAULT_ADMIN_ROLE, _account);
   }
 
-  function grantValidatorRole(address _account) public onlyRole(DEFAULT_ADMIN_ROLE) {
-    this.grantRole(VALIDATOR_ROLE, _account);
+  function grantValidatorRole(address _account) public onlyAdmin {
+    _grantRole(VALIDATOR_ROLE, _account);
   }
 
-  function revokeValidatorRole(address _account) public onlyRole(DEFAULT_ADMIN_ROLE) {
-    this.revokeRole(VALIDATOR_ROLE, _account);
+  function revokeValidatorRole(address _account) public onlyAdmin {
+    _revokeRole(VALIDATOR_ROLE, _account);
   }
 
   function isValidator(address _account) public view returns(bool) {
-    return this.hasRole(VALIDATOR_ROLE, _account);
+    return hasRole(VALIDATOR_ROLE, _account);
   }
 
   modifier recordEditingAllowed(uint32 _location) {
     Record memory record = _records[_location];
-    require(record.location == 0, "Record doesn't exist");
-    require(record.creator != msg.sender && !this.hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Sender is not owner");
+    require(record.location != 0, "Record doesn't exist");
+    require(record.creator == msg.sender || hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Sender is not owner");
     _;
   }
 
   modifier recordValidationAllowed(uint32 _location) {
     Record memory record = _records[_location];
-    require(record.location == 0, "Record doesn't exist");
-    require(!this.hasRole(VALIDATOR_ROLE, msg.sender) && !this.hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Validation is not allowed");
+    require(record.location != 0, "Record doesn't exist");
+    require(hasRole(VALIDATOR_ROLE, msg.sender) || hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Validation is not allowed");
     _;
   }
 
@@ -78,7 +87,7 @@ contract DappRegistry is Ownable, AccessControl {
    */
   function craeteRecord(uint32 _location, uint32 _urlHash) public {
     Record storage record = _records[_location];
-    require(record.location != 0, "Record already exists");
+    require(record.location == 0, "Record already exists");
 
     User storage user = _users[msg.sender];
 
@@ -86,8 +95,8 @@ contract DappRegistry is Ownable, AccessControl {
     record.location = _location;
     record.urlHash = _urlHash;
     record.timestamp = block.timestamp;
-    record.index = recordList.length - 1;
-    record.creatorIndex = user.records.length - 1;
+    record.index = recordList.length;
+    record.creatorIndex = user.records.length;
 
     _records[_location] = record;
     recordList.push(_location);
@@ -152,8 +161,12 @@ contract DappRegistry is Ownable, AccessControl {
     return hashes;
   }
 
-  function getRecord(uint32 _location)public view returns (Record memory) {
+  function getRecord(uint32 _location) public view returns (Record memory) {
     return _records[_location];
+  }
+
+  function getUser(address _account) public view returns (User memory) {
+    return _users[_account];
   }
 
 }
