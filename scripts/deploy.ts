@@ -1,7 +1,21 @@
 // TODO There is a eslint configuration error that needs to be fixed
 import { keccak256, toUtf8Bytes, hexZeroPad } from 'ethers/lib/utils'
-import { ethers } from 'hardhat'
+import { ethers, network } from 'hardhat'
+import { promisify } from 'util'
 import { waitForTransactionMined } from './utils'
+import childProcess from 'child_process'
+
+const exec = promisify(childProcess.exec)
+
+let changes = ['ENS', 'BMT', 'DAPP_REGISTRY']
+
+async function loadChanges(): Promise<string[]> {
+  const { stdout, stderr } = await exec('./scripts/get-changes.sh')
+  if (stderr) {
+    throw new Error(stderr)
+  }
+  return stdout.trim().split(' ')
+}
 
 const DOMAIN = 'fds'
 
@@ -40,7 +54,20 @@ async function deployENS() {
 }
 
 async function main() {
-  await deployENS()
+  if (network.name !== 'localhost' && network.name !== 'docker') {
+    changes = await loadChanges()
+  }
+  console.log('Detected changes for contracts: ', changes)
+
+  if (changes.includes('ENS')) {
+    console.log('Deploying ENS contracts')
+    await deployENS()
+  }
+  // TODO Uncomment when dapp registry gets merged
+  // if (changes.includes('DAPP_REGISTRY')) {
+  //   console.log('Deploying the DappRegistry contract')
+  //   await deployDappRegistry()
+  // }
 }
 
 main().catch(error => {
