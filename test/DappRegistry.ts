@@ -159,12 +159,14 @@ describe('DappRegistry tests', () => {
       userAccount3.address,
     )
 
+    // User 1 before deleting the record with hash = 1 => records = [1, 2, 3]
+    // User 1 after deleting the record with hash = 1 => records = [3, 2]
     await checkUser(dappRegistry.connect(userAccount1), [3, 2], userAccount1.address)
     await checkUser(dappRegistry.connect(userAccount2), user2RecordHashes, userAccount2.address)
     await checkUser(dappRegistry.connect(userAccount3), user3RecordHashes, userAccount3.address)
 
     // Before deleting the record with hash = 9 => recordList = [9, 2, 3, 4, 5, 6, 7, 8]
-    // After deleting the record with hash = 1 => recordList = [8, 2, 3, 4, 5, 6, 7]
+    // After deleting the record with hash = 9 => recordList = [8, 2, 3, 4, 5, 6, 7]
     await dappRegistry.connect(userAccount3).deleteRecord(createRecordHash(9))
 
     user3RecordHashes = [7, 8]
@@ -179,6 +181,8 @@ describe('DappRegistry tests', () => {
     )
     await checkUserRecords(dappRegistry.connect(userAccount3), user3RecordHashes, [6, 0], [0, 1], userAccount3.address)
 
+    // User 3 before deleting the record with hash = 9 => records = [7, 8, 9]
+    // User 3 after deleting the record with hash = 9 => records = [7, 8]
     await checkUser(dappRegistry.connect(userAccount1), [3, 2], userAccount1.address)
     await checkUser(dappRegistry.connect(userAccount2), user2RecordHashes, userAccount2.address)
     await checkUser(dappRegistry.connect(userAccount3), user3RecordHashes, userAccount3.address)
