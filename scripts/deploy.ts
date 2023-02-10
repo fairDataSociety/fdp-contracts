@@ -1,21 +1,10 @@
 // TODO There is a eslint configuration error that needs to be fixed
 import { keccak256, toUtf8Bytes, hexZeroPad } from 'ethers/lib/utils'
 import { ethers, network } from 'hardhat'
-import { promisify } from 'util'
+import getChanges, { ContractsChange } from './get-changes'
 import { waitForTransactionMined } from './utils'
-import childProcess from 'child_process'
 
-const exec = promisify(childProcess.exec)
-
-let changes = ['ENS', 'BMT', 'DAPP_REGISTRY']
-
-async function loadChanges(): Promise<string[]> {
-  const { stdout, stderr } = await exec('./scripts/get-changes.sh')
-  if (stderr) {
-    throw new Error(stderr)
-  }
-  return stdout.trim().split(' ')
-}
+let changes: ContractsChange[] = ['ENS', 'BMT', 'DAPP_REGISTRY']
 
 const DOMAIN = 'fds'
 
@@ -55,7 +44,7 @@ async function deployENS() {
 
 async function main() {
   if (network.name !== 'localhost' && network.name !== 'docker') {
-    changes = await loadChanges()
+    changes = await getChanges()
   }
   console.log('Detected changes for contracts: ', changes)
 
