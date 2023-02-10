@@ -12,8 +12,8 @@ contract DappRegistry is Ownable, AccessControl {
   // Dapp record
   struct Record {
     address creator;
-    uint32 location;
-    uint32 urlHash;
+    bytes32 location;
+    bytes32 urlHash;
     uint index;
     uint creatorIndex;
     uint256 timestamp;
@@ -22,14 +22,14 @@ contract DappRegistry is Ownable, AccessControl {
   }
 
   struct User {
-    uint32[] records;
-    uint32[] validatedRecords;
+    bytes32[] records;
+    bytes32[] validatedRecords;
   }
 
   mapping(address => User) internal _users;
-  mapping(uint32 => Record) internal _records;
+  mapping(bytes32 => Record) internal _records;
   
-  uint32[] public recordList;
+  bytes32[] public recordList;
 
   bytes32 public constant VALIDATOR_ROLE = keccak256("VALIDATOR_ROLE");
 
@@ -66,14 +66,14 @@ contract DappRegistry is Ownable, AccessControl {
     return hasRole(VALIDATOR_ROLE, _account);
   }
 
-  modifier recordEditingAllowed(uint32 _location) {
+  modifier recordEditingAllowed(bytes32 _location) {
     Record memory record = _records[_location];
     require(record.location != 0, "Record doesn't exist");
     require(record.creator == msg.sender || hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Sender is not owner");
     _;
   }
 
-  modifier recordValidationAllowed(uint32 _location) {
+  modifier recordValidationAllowed(bytes32 _location) {
     Record memory record = _records[_location];
     require(record.location != 0, "Record doesn't exist");
     require(hasRole(VALIDATOR_ROLE, msg.sender) || hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Validation is not allowed");
@@ -85,7 +85,7 @@ contract DappRegistry is Ownable, AccessControl {
    * _location - Swarm hash
    * _urlHash - keccak256 hash of the dApp URL
    */
-  function craeteRecord(uint32 _location, uint32 _urlHash) public {
+  function craeteRecord(bytes32 _location, bytes32 _urlHash) public {
     Record storage record = _records[_location];
     require(record.location == 0, "Record already exists");
 
@@ -103,7 +103,7 @@ contract DappRegistry is Ownable, AccessControl {
     user.records.push(_location);
   }
 
-  function deleteRecord(uint32 _location) public recordEditingAllowed(_location) {
+  function deleteRecord(bytes32 _location) public recordEditingAllowed(_location) {
     Record memory record = _records[_location];
     User storage user = _users[record.creator];
 
@@ -125,7 +125,7 @@ contract DappRegistry is Ownable, AccessControl {
     delete _records[_location];
   }
 
-  function updateRecord(uint32 _location, uint32 _urlHash) public recordEditingAllowed(_location) {
+  function updateRecord(bytes32 _location, bytes32 _urlHash) public recordEditingAllowed(_location) {
     Record storage record = _records[_location];
 
     record.location = _location;
@@ -133,7 +133,7 @@ contract DappRegistry is Ownable, AccessControl {
     record.timestamp = block.timestamp;
   }
 
-  function validateRecord(uint32 _location, bool _isValidated) public recordValidationAllowed(_location) {
+  function validateRecord(bytes32 _location, bool _isValidated) public recordValidationAllowed(_location) {
     Record storage record = _records[_location];
     User storage user = _users[record.creator];
 
@@ -147,12 +147,12 @@ contract DappRegistry is Ownable, AccessControl {
     return recordList.length;
   }
 
-  function getRecordSlice(uint _startIndex, uint _length) public view returns (uint32[] memory) {
+  function getRecordSlice(uint _startIndex, uint _length) public view returns (bytes32[] memory) {
     if (_startIndex + _length > recordList.length) {
       _length = recordList.length - _startIndex;
     }
 
-    uint32[] memory hashes = new uint32[](_length);
+    bytes32[] memory hashes = new bytes32[](_length);
 
     for (uint i = 0; i < _length; i++) {
         hashes[i] = recordList[_startIndex + i];
@@ -161,7 +161,7 @@ contract DappRegistry is Ownable, AccessControl {
     return hashes;
   }
 
-  function getRecord(uint32 _location) public view returns (Record memory) {
+  function getRecord(bytes32 _location) public view returns (Record memory) {
     return _records[_location];
   }
 

@@ -50,7 +50,7 @@ describe('DappRegistry tests', () => {
     return Promise.all(
       recordHashes.map(recordHash => {
         const hash = createRecordHash(recordHash)
-        const urlHash = createRecordHash(recordHash << 8)
+        const urlHash = createRecordHash(recordHash)
         return userDappRegistry.craeteRecord(hash, urlHash)
       }),
     )
@@ -65,11 +65,13 @@ describe('DappRegistry tests', () => {
   ) {
     return Promise.all(
       recordHashes.map(async (recordHash, index) => {
-        const record = await userDappRegistry.getRecord(recordHash)
+        const record = await userDappRegistry.getRecord(createRecordHash(recordHash))
+
+        const hash = createRecordHash(recordHash)
 
         expect(record[0]).equal(address) // address
-        expect(record[1]).equal(recordHash) // location
-        expect(record[2]).equal(recordHash << 8) // urlHash
+        expect(record[1]).equal(hash) // location
+        expect(record[2]).equal(hash) // urlHash
         expect(record[3]).equal(indices[index]) // index
         expect(record[4]).equal(userIndices[index]) // creatorIndex
       }),
@@ -79,7 +81,7 @@ describe('DappRegistry tests', () => {
   async function checkUser(userDappRegistry: DappRegistry, recordHashes: number[], address: string) {
     const user = await userDappRegistry.getUser(address)
 
-    user.records.forEach((hash, index) => expect(hash).equal(recordHashes[index]))
+    user.records.forEach((hash, index) => expect(hash).equal(createRecordHash(recordHashes[index])))
   }
 
   it('Should add new dApp records', async () => {
