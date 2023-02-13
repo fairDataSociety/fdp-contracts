@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v2.0.0...fdp-contracts-js-lib-v2.0.1) (2023-02-10)
+
+
+### Bug Fixes
+
+* return back previous goerli addresses ([#102](https://github.com/fairDataSociety/fdp-contracts/issues/102)) ([bbfab03](https://github.com/fairDataSociety/fdp-contracts/commit/bbfab03ce882297c4bb325a65f7ecceb090cc97d))
+
 ## [2.0.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v1.0.4...fdp-contracts-js-lib-v2.0.0) (2023-02-02)
 
 
