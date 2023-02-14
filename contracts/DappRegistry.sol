@@ -42,30 +42,6 @@ contract DappRegistry is Ownable, AccessControl {
     _;
   }
 
-  function grantAdminRole(address _account) public onlyAdmin {
-    _grantRole(DEFAULT_ADMIN_ROLE, _account);
-  }
-
-  function revokeAdminRole(address _account) public onlyAdmin {
-    _revokeRole(DEFAULT_ADMIN_ROLE, _account);
-  }
-
-  function isAdmin(address _account) public view returns(bool) {
-    return hasRole(DEFAULT_ADMIN_ROLE, _account);
-  }
-
-  function grantValidatorRole(address _account) public onlyAdmin {
-    _grantRole(VALIDATOR_ROLE, _account);
-  }
-
-  function revokeValidatorRole(address _account) public onlyAdmin {
-    _revokeRole(VALIDATOR_ROLE, _account);
-  }
-
-  function isValidator(address _account) public view returns(bool) {
-    return hasRole(VALIDATOR_ROLE, _account);
-  }
-
   modifier recordEditingAllowed(bytes32 _location) {
     Record memory record = _records[_location];
     require(record.location != 0, "Record doesn't exist");
@@ -87,7 +63,7 @@ contract DappRegistry is Ownable, AccessControl {
    */
   function craeteRecord(bytes32 _location, bytes32 _urlHash) public {
     Record storage record = _records[_location];
-    require(record.location == 0, "Record already exists");
+    require(record.location == bytes32(0), "Record already exists");
 
     User storage user = _users[msg.sender];
 
@@ -114,15 +90,6 @@ contract DappRegistry is Ownable, AccessControl {
     }
 
     user.records.pop();
-
-    lastIndex = recordList.length - 1;
-    if (record.index != lastIndex) {
-      recordList[record.index] = recordList[lastIndex];
-      _records[recordList[record.index]].index = record.index;
-    }
-
-    recordList.pop();
-    delete _records[_location];
   }
 
   function updateRecord(bytes32 _location, bytes32 _urlHash) public recordEditingAllowed(_location) {
@@ -135,12 +102,14 @@ contract DappRegistry is Ownable, AccessControl {
 
   function validateRecord(bytes32 _location, bool _isValidated) public recordValidationAllowed(_location) {
     Record storage record = _records[_location];
-    User storage user = _users[record.creator];
+    User storage validator = _users[msg.sender];
 
     record.isValidated = _isValidated;
     record.validator = msg.sender;
 
-    user.validatedRecords.push(_location);
+    if (_isValidated) {
+      validator.validatedRecords.push(_location);
+    }
   }
 
   function getRecordCount() public view returns (uint) {
@@ -159,6 +128,16 @@ contract DappRegistry is Ownable, AccessControl {
     }
 
     return hashes;
+  }
+
+  function getRecords(bytes32[] memory _recordHashes) public view returns (Record[] memory) {
+    Record[] memory records = new Record[](_recordHashes.length);
+    
+    for (uint i = 0; i < _recordHashes.length; i++) {
+        records[i] = _records[_recordHashes[i]];
+    }
+
+    return records;
   }
 
   function getRecord(bytes32 _location) public view returns (Record memory) {

@@ -20,6 +20,7 @@ To work with local `fdp-contracts` docker image, execute the following command:
 ```bash
 fdp-play start --detach --blockchain-image fairdatasociety/fdp-contracts-blockchain $BEE_VERSION
 ```
+
 **NOTE**: it will spin up the whole fdp environment for you with running Bee clients
 
 ### ENS
@@ -29,22 +30,22 @@ configured with predefined configurations or with a custom one. Currently, the o
 is for the localhost envirnoment, which means it will use the `swarm-test-blockchain` image running locally on
 `http://localhost:9545` address.
 
-Predefined configurations can be fetched using the `getEnvironmentConfig` function.
+Predefined configurations can be fetched using the `getEnsEnvironmentConfig` function.
 
 ```typescript
-import { ENS, Environments, getEnvironmentConfig } from '@fairdatasociety/fdp-contracts'
+import { ENS, Environments, getEnsEnvironmentConfig } from '@fairdatasociety/fdp-contracts'
 
-const ens = new ENS(getEnvironmentConfig(Environments.LOCALHOST))
+const ens = new ENS(getEnsEnvironmentConfig(Environments.LOCALHOST))
 ```
 
-To use custom configuration, provide an instance of `Environment` type, or modify some of the predefined
+To use custom configuration, provide an instance of `EnsEnvironment` type, or modify some of the predefined
 configurations:
 
 ```typescript
-import { ENS, Environments, getEnvironmentConfig, Environment } from '@fairdatasociety/fdp-contracts'
+import { ENS, Environments, getEnsEnvironmentConfig, EnsEnvironment } from '@fairdatasociety/fdp-contracts'
 
-const customConfig: Environment = {
-  ...getEnvironmentConfig(Environments.LOCALHOST),
+const customConfig: EnsEnvironment = {
+  ...getEnsEnvironmentConfig(Environments.LOCALHOST),
   rpcUrl: 'www.example.com',
 }
 
@@ -88,6 +89,24 @@ async function example() {
   console.log(`Username ${username} successfully registered.`)
 }
 ```
+
+### dApp Registry
+
+The `DappRegistry` class provides API to interact with the dApp registry smart contract.
+
+```typescript
+import { DappRegistry, Environments, getDappRegistryEnvironmentConfig } from '@fairdatasociety/fdp-contracts'
+
+const dappRegistry = new DappRegistry(getDappRegistryEnvironmentConfig(Environments.LOCALHOST))
+```
+
+Once when an instance is created, connect your signer:
+
+```typescript
+dappRegistry.connect(signer)
+```
+
+Then all methods will be available to interact with the smart contract.
 
 ## Development
 

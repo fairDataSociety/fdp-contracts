@@ -1,10 +1,11 @@
 import { Environments } from '../model/environments.enum'
-import { Environment } from '../model/environment.model'
+import { DappRegistryEnvironment, EnsEnvironment } from '../model/environment.model'
 import { EthAddress } from '../model'
 
-export type EnvironmentConfigs = { [environment in Environments]: Environment }
+export type EnsEnvironmentConfigs = { [environment in Environments]: EnsEnvironment }
+export type DappRegistryEnvironmentConfigs = { [environment in Environments]: DappRegistryEnvironment }
 
-export const ENVIRONMENT_CONFIGS: EnvironmentConfigs = {
+export const ENS_ENVIRONMENT_CONFIGS: EnsEnvironmentConfigs = {
   [Environments.LOCALHOST]: {
     rpcUrl: 'http://127.0.0.1:9545/',
     contractAddresses: {
@@ -25,6 +26,21 @@ export const ENVIRONMENT_CONFIGS: EnvironmentConfigs = {
   },
 }
 
-export function getEnvironmentConfig(environment: Environments): Environment {
-  return ENVIRONMENT_CONFIGS[environment]
+export const DAPP_REGISTRY_ENVIRONMENT_CONFIGS: DappRegistryEnvironmentConfigs = {
+  [Environments.LOCALHOST]: {
+    rpcUrl: 'http://127.0.0.1:9545/',
+    contractAddress: process.env.DOCKER_DAPP_REGISTRY_REGISTRY_ADDRESS as EthAddress,
+  },
+  [Environments.GOERLI]: {
+    rpcUrl: 'https://xdai.dev.fairdatasociety.org/',
+    contractAddress: process.env.GOERLI_DAPP_REGISTRY_REGISTRY_ADDRESS as EthAddress,
+  },
+}
+
+export function getEnsEnvironmentConfig(environment: Environments): EnsEnvironment {
+  return ENS_ENVIRONMENT_CONFIGS[environment]
+}
+
+export function getDappRegistryEnvironmentConfig(environment: Environments): DappRegistryEnvironment {
+  return DAPP_REGISTRY_ENVIRONMENT_CONFIGS[environment]
 }

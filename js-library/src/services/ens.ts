@@ -1,12 +1,12 @@
 import { utils, Contract, Signer, providers, BigNumber } from 'ethers'
 import { ENS_DOMAIN, NULL_ADDRESS } from '../constants/constants'
-import { ENVIRONMENT_CONFIGS } from '../constants/environment'
+import { ENS_ENVIRONMENT_CONFIGS } from '../constants/environment'
 import { waitTransaction } from '../utils/tx'
 import { joinPublicKey, isPublicKeyValid, splitPublicKey } from '../utils/keys'
 import { Environments } from '../model/environments.enum'
 import { EnsUserData } from '../model/ens-user-data.model'
 import { EthAddress, PublicKey } from '../model/hex.types'
-import { Environment } from '../model/environment.model'
+import { EnsEnvironment } from '../model/environment.model'
 import ENSRegistryContractLocal from '../contracts/ENSRegistry/ENSRegistry.json'
 import PublicResolverContractLocal from '../contracts/PublicResolver/PublicResolver.json'
 import FDSRegistrarContractLocal from '../contracts/FDSRegistrar/FDSRegistrar.json'
@@ -35,7 +35,7 @@ export class ENS {
   private _publicResolverContract: Contract
 
   constructor(
-    private config: Environment = ENVIRONMENT_CONFIGS[Environments.LOCALHOST],
+    private config: EnsEnvironment = ENS_ENVIRONMENT_CONFIGS[Environments.LOCALHOST],
     signerOrProvider: SignerOrProvider | null = null,
     private domain = ENS_DOMAIN,
   ) {
