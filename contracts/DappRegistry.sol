@@ -61,7 +61,7 @@ contract DappRegistry is Ownable, AccessControl {
    * _location - Swarm hash
    * _urlHash - keccak256 hash of the dApp URL
    */
-  function craeteRecord(bytes32 _location, bytes32 _urlHash) public {
+  function createRecord(bytes32 _location, bytes32 _urlHash) public {
     Record storage record = _records[_location];
     require(record.location == bytes32(0), "Record already exists");
 

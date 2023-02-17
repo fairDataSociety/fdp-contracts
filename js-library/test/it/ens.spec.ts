@@ -39,7 +39,7 @@ describe('ENS service tests', () => {
     wallet2 = wallet2.connect(ens2.provider)
     ens2.connect(wallet2)
     const username2 = 'test_user_2'
-    
+
     await topUpAddress(ens2.provider, wallet2.address)
     await ens2.registerUsername(username2, wallet2.address, wallet2.publicKey)
 
