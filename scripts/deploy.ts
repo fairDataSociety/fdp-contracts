@@ -1,6 +1,7 @@
 // TODO There is a eslint configuration error that needs to be fixed
 import { keccak256, toUtf8Bytes, hexZeroPad } from 'ethers/lib/utils'
-import { ethers } from 'hardhat'
+import { ethers, network } from 'hardhat'
+import getChanges, { ContractsChange } from './get-changes'
 import { waitForTransactionMined } from './utils'
 
 const DOMAIN = 'fds'
@@ -40,7 +41,17 @@ async function deployENS() {
 }
 
 async function main() {
-  await deployENS()
+  let changes: ContractsChange[] = ['ENS', 'BMT']
+
+  if (network.name !== 'localhost' && network.name !== 'docker') {
+    changes = await getChanges()
+  }
+  console.log('Detected changes for contracts: ', changes)
+
+  if (changes.includes('ENS')) {
+    console.log('Deploying ENS contracts')
+    await deployENS()
+  }
 }
 
 main().catch(error => {
