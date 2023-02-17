@@ -3,7 +3,7 @@ import { promisify } from 'util'
 
 const exec = promisify(childProcess.exec)
 
-export type ContractsChange = 'ENS' | 'BMT' | 'DAPP_REGISTRY'
+export type ContractsChange = 'ENS' | 'BMT'
 
 function processShellResponse({ stdout, stderr }: { stdout: string; stderr: string }): string {
   if (stderr) {
@@ -26,7 +26,7 @@ async function getChangedFiles(): Promise<string[]> {
 }
 /**
  * Checks which sets of contracts have been changed since previous release
- * @returns Example return ['ENS', 'BMT', 'DAPP_REGISTRY']
+ * @returns Example return ['ENS', 'BMT']
  */
 export default async function getChanges(): Promise<ContractsChange[]> {
   const changes: ContractsChange[] = []
@@ -42,10 +42,6 @@ export default async function getChanges(): Promise<ContractsChange[]> {
 
   if (changedFiles.includes('contracts/BMTChunk.sol') || changedFiles.includes('contracts/BMTFile.sol')) {
     changes.push('BMT')
-  }
-
-  if (changedFiles.includes('contracts/DappRegistry.sol')) {
-    changes.push('DAPP_REGISTRY')
   }
 
   return changes

@@ -4,8 +4,6 @@ import { ethers, network } from 'hardhat'
 import getChanges, { ContractsChange } from './get-changes'
 import { waitForTransactionMined } from './utils'
 
-let changes: ContractsChange[] = ['ENS', 'BMT', 'DAPP_REGISTRY']
-
 const DOMAIN = 'fds'
 
 async function deployENS() {
@@ -43,6 +41,8 @@ async function deployENS() {
 }
 
 async function main() {
+  let changes: ContractsChange[] = ['ENS', 'BMT']
+
   if (network.name !== 'localhost' && network.name !== 'docker') {
     changes = await getChanges()
   }
@@ -52,11 +52,6 @@ async function main() {
     console.log('Deploying ENS contracts')
     await deployENS()
   }
-  // TODO Uncomment when dapp registry gets merged
-  // if (changes.includes('DAPP_REGISTRY')) {
-  //   console.log('Deploying the DappRegistry contract')
-  //   await deployDappRegistry()
-  // }
 }
 
 main().catch(error => {
