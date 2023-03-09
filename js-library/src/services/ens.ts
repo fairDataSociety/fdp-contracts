@@ -143,11 +143,11 @@ export class ENS {
   }
 
   /**
-   * Estimates gas for the registerUsername method
+   * Estimates gas amount for the registerUsername method
    * @param username ENS username
    * @param address Owner address of the username
    * @param publicKey Hex string of a public key
-   * @returns gas estimation
+   * @returns gas amount estimation
    */
   public async registerUsernameEstimateGas(
     username: Username,
@@ -157,7 +157,7 @@ export class ENS {
   ): Promise<BigNumber> {
     const [publicKeyX, publicKeyY] = splitPublicKey(publicKey)
 
-    const prices = await Promise.all([
+    const gasAmounts = await Promise.all([
       this._fdsRegistrarContract.estimateGas.register(keccak256(toUtf8Bytes(username)), address, expires),
       this._ensRegistryContract.estimateGas.setResolver(
         this.hashUsername(username),
@@ -166,7 +166,7 @@ export class ENS {
       this._publicResolverContract.estimateGas.setPubkey(this.hashUsername(username), publicKeyX, publicKeyY),
     ])
 
-    return prices.reduce((sum, price) => sum.add(price), BigNumber.from(0))
+    return gasAmounts.reduce((sum, amount) => sum.add(amount), BigNumber.from(0))
   }
 
   /**
