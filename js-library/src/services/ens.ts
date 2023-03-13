@@ -1,7 +1,7 @@
 import { utils, Contract, Signer, providers, BigNumber } from 'ethers'
 import { ENS_DOMAIN, NULL_ADDRESS } from '../constants/constants'
 import { ENVIRONMENT_CONFIGS } from '../constants/environment'
-import { waitTransaction } from '../utils/tx'
+import { waitRequestTransaction, waitTransaction } from '../utils/tx'
 import { joinPublicKey, isPublicKeyValid, splitPublicKey } from '../utils/keys'
 import { Environments } from '../model/environments.enum'
 import { EnsUserData } from '../model/ens-user-data.model'
@@ -13,6 +13,7 @@ import FDSRegistrarContractLocal from '../contracts/FDSRegistrar/FDSRegistrar.js
 import { Username } from '../model/domain.type'
 import { assertUsername } from '../utils/domains'
 import { checkMinBalance, extractMessageFromFailedTx, isTxError } from '../utils/blockchain'
+import { ServiceRequest } from '../model/service-request.model'
 
 const { keccak256, toUtf8Bytes, namehash } = utils
 
@@ -23,6 +24,13 @@ export const PublicResolverContract = PublicResolverContractLocal
 export const FDSRegistrarContract = FDSRegistrarContractLocal
 
 const MIN_BALANCE = BigNumber.from('10000000000000000')
+
+export interface RegisterUsernameRequestData {
+  username: Username
+  address: EthAddress
+  publicKey: PublicKey
+  expires: number
+}
 
 /**
  * ENS Class
@@ -94,46 +102,84 @@ export class ENS {
   }
 
   /**
-   * Sets owner of the provided username on ENS
+   * Creates a request object that needs to be used to invoke the registerUsername method.
+   * The request object can be used to invoke the method multiple times without making any
+   * inconsistencies. This can be useful if registration fails because of insufficient funds,
+   * or some other reason.
    * @param username ENS username
    * @param address Owner address of the username
    * @param publicKey Hex string of a public key
+   * @returns ServiceRequest instance that can be used to invoke the request multiple times if fails.
    */
-  public async registerUsername(
+  public createRegisterUsernameRequest(
     username: Username,
     address: EthAddress,
     publicKey: PublicKey,
     expires: number = 86400,
-  ): Promise<void> {
+  ): ServiceRequest<RegisterUsernameRequestData> {
+    const request: ServiceRequest<RegisterUsernameRequestData> = {
+      stage: 0,
+      data: {
+        username,
+        address,
+        publicKey,
+        expires,
+      },
+      completedTxs: [],
+    }
+
+    return request
+  }
+
+  /**
+   * Sets owner of the provided username on ENS
+   * @param registerRequest request object previously created by the createRegisterUsernameRequest method
+   */
+  public async registerUsername(registerRequest: ServiceRequest<RegisterUsernameRequestData>): Promise<void> {
+    const {
+      data: { username, address, publicKey, expires },
+    } = registerRequest
     try {
-      assertUsername(username)
+      if (registerRequest.stage === 0) {
+        assertUsername(username)
 
-      let ownerAddress: EthAddress = NULL_ADDRESS
+        let ownerAddress: EthAddress = NULL_ADDRESS
 
-      if (this.config.performChecks) {
-        await checkMinBalance(this.provider, address, MIN_BALANCE)
+        if (this.config.performChecks) {
+          await checkMinBalance(this.provider, address, MIN_BALANCE)
 
-        ownerAddress = await this.getUsernameOwner(username)
+          ownerAddress = await this.getUsernameOwner(username)
 
-        if (ownerAddress !== NULL_ADDRESS) {
-          throw new Error(`ENS: Username ${username} is not available`)
+          if (ownerAddress !== NULL_ADDRESS) {
+            throw new Error(`ENS: Username ${username} is not available`)
+          }
         }
+
+        if (ownerAddress === NULL_ADDRESS) {
+          await waitRequestTransaction(this._provider, registerRequest, () =>
+            this._fdsRegistrarContract.register(keccak256(toUtf8Bytes(username)), address, expires),
+          )
+        }
+
+        registerRequest.stage = 1
       }
 
-      if (ownerAddress === NULL_ADDRESS) {
-        await waitTransaction(
-          this._fdsRegistrarContract.register(keccak256(toUtf8Bytes(username)), address, expires),
+      if (registerRequest.stage < 2) {
+        await waitRequestTransaction(this._provider, registerRequest, () =>
+          this._ensRegistryContract.setResolver(
+            this.hashUsername(username),
+            this._publicResolverContract.address,
+          ),
         )
+
+        registerRequest.stage = 2
       }
 
-      await waitTransaction(
-        this._ensRegistryContract.setResolver(
-          this.hashUsername(username),
-          this._publicResolverContract.address,
-        ),
-      )
+      if (registerRequest.stage < 3) {
+        await this.setPublicKey(registerRequest, username, publicKey)
 
-      await this.setPublicKey(username, publicKey)
+        registerRequest.stage = 3
+      }
     } catch (error) {
       if (isTxError(error)) {
         throw new Error(extractMessageFromFailedTx(error))
@@ -203,10 +249,14 @@ export class ENS {
    * @param username ENS username
    * @param publicKey Public key that will be added to ENS
    */
-  public setPublicKey(username: Username, publicKey: PublicKey): Promise<void> {
+  public setPublicKey(
+    request: ServiceRequest<RegisterUsernameRequestData>,
+    username: Username,
+    publicKey: PublicKey,
+  ): Promise<void> {
     assertUsername(username)
     const [publicKeyX, publicKeyY] = splitPublicKey(publicKey)
-    return waitTransaction(
+    return waitRequestTransaction(this._provider, request, () =>
       this._publicResolverContract.setPubkey(this.hashUsername(username), publicKeyX, publicKeyY),
     )
   }
