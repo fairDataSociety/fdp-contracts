@@ -4,6 +4,7 @@ import DappRegistryContractLocal from '../contracts/DappRegistry/DappRegistry.js
 import { DappRegistryEnvironment, Environments, EthAddress, HexString, SwarmLocation } from '../model'
 import { DappRecord } from '../model/dapp-record.model'
 import { DappUser } from '../model/dapp-user.model'
+import { waitTransaction } from '../utils/tx'
 import { SignerOrProvider } from './ens'
 
 export const DappRegistryContract = DappRegistryContractLocal
@@ -52,7 +53,7 @@ export class DappRegistry {
   }
 
   public grantAdminRole(address: EthAddress): Promise<void> {
-    return this._dappRegistryContract.grantRole(ADMIN_ROLE, address)
+    return waitTransaction(this._dappRegistryContract.grantRole(ADMIN_ROLE, address))
   }
 
   public isAdmin(address: EthAddress): Promise<boolean> {
@@ -60,11 +61,11 @@ export class DappRegistry {
   }
 
   public revokeAdminRole(address: EthAddress): Promise<void> {
-    return this._dappRegistryContract.revokeRole(ADMIN_ROLE, address)
+    return waitTransaction(this._dappRegistryContract.revokeRole(ADMIN_ROLE, address))
   }
 
   public grantValidatorRole(address: EthAddress): Promise<void> {
-    return this._dappRegistryContract.grantRole(VALIDATOR_ROLE, address)
+    return waitTransaction(this._dappRegistryContract.grantRole(VALIDATOR_ROLE, address))
   }
 
   public isValidator(address: EthAddress): Promise<boolean> {
@@ -72,23 +73,27 @@ export class DappRegistry {
   }
 
   public revokeValidatorRole(address: EthAddress): Promise<void> {
-    return this._dappRegistryContract.revokeRole(VALIDATOR_ROLE, address)
+    return waitTransaction(this._dappRegistryContract.revokeRole(VALIDATOR_ROLE, address))
   }
 
   public createRecord(location: SwarmLocation, urlHash: HexString): Promise<void> {
-    return this._dappRegistryContract.createRecord(location, urlHash)
-  }
-
-  public updateRecord(location: SwarmLocation, urlHash: HexString): Promise<void> {
-    return this._dappRegistryContract.updateRecord(location, urlHash)
+    return waitTransaction(this._dappRegistryContract.createRecord(location, urlHash))
   }
 
   public deleteRecord(location: SwarmLocation): Promise<void> {
-    return this._dappRegistryContract.deleteRecord(location)
+    return waitTransaction(this._dappRegistryContract.deleteRecord(location))
   }
 
-  public validateRecord(location: SwarmLocation, isValid: boolean): Promise<void> {
-    return this._dappRegistryContract.validateRecord(location, isValid)
+  public validateRecord(location: SwarmLocation): Promise<void> {
+    return waitTransaction(this._dappRegistryContract.validateRecord(location))
+  }
+
+  public unvalidateRecord(location: SwarmLocation): Promise<void> {
+    return waitTransaction(this._dappRegistryContract.unvalidateRecord(location))
+  }
+
+  public getValidatedRecords(address: EthAddress): Promise<DappRecord[]> {
+    return this._dappRegistryContract.getValidatedRecords(address)
   }
 
   public getRecordCount(): Promise<BigNumber> {

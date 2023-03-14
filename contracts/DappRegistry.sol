@@ -17,12 +17,12 @@ contract DappRegistry is Ownable, AccessControl {
     uint index;
     uint creatorIndex;
     uint256 timestamp;
-    bool isValidated;
-    address validator;
   }
 
   struct User {
+    // user's dapps
     bytes32[] records;
+    // dapps that the user validated
     bytes32[] validatedRecords;
   }
 
@@ -92,23 +92,26 @@ contract DappRegistry is Ownable, AccessControl {
     user.records.pop();
   }
 
-  function updateRecord(bytes32 _location, bytes32 _urlHash) public recordEditingAllowed(_location) {
-    Record storage record = _records[_location];
-
-    record.location = _location;
-    record.urlHash = _urlHash;
-    record.timestamp = block.timestamp;
+  function validateRecord(bytes32 _location) public recordValidationAllowed(_location) {
+    User storage validator = _users[msg.sender];
+    
+    validator.validatedRecords.push(_location);
   }
 
-  function validateRecord(bytes32 _location, bool _isValidated) public recordValidationAllowed(_location) {
-    Record storage record = _records[_location];
+  function unvalidateRecord(bytes32 _location) public recordValidationAllowed(_location) {
     User storage validator = _users[msg.sender];
+    uint lastIndex = validator.validatedRecords.length - 1;
 
-    record.isValidated = _isValidated;
-    record.validator = msg.sender;
+    for (uint i = 0; i <= lastIndex; i++) {
+      if (validator.validatedRecords[i] == _location) {
+        if (i != lastIndex) {
+          validator.validatedRecords[i] = validator.validatedRecords[lastIndex];
+        }
 
-    if (_isValidated) {
-      validator.validatedRecords.push(_location);
+        validator.validatedRecords.pop();
+
+        break;
+      }
     }
   }
 
@@ -135,6 +138,17 @@ contract DappRegistry is Ownable, AccessControl {
     
     for (uint i = 0; i < _recordHashes.length; i++) {
         records[i] = _records[_recordHashes[i]];
+    }
+
+    return records;
+  }
+
+  function getValidatedRecords(address _validatorAddress) public view returns (Record[] memory) {
+    User memory user = _users[_validatorAddress];
+    Record[] memory records = new Record[](user.validatedRecords.length);
+    
+    for (uint i = 0; i < user.validatedRecords.length; i++) {
+        records[i] = _records[user.validatedRecords[i]];
     }
 
     return records;
