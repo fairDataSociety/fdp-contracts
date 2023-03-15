@@ -25,6 +25,12 @@ export const FDSRegistrarContract = FDSRegistrarContractLocal
 
 const MIN_BALANCE = BigNumber.from('10000000000000000')
 
+enum RegisterUsernameStage {
+  FDS_REGISTER_COMPLETED = 1,
+  SET_RESOLVER_COMPLETED = 2,
+  SET_PUBLIC_KEY_COMPLETED = 3,
+}
+
 export interface RegisterUsernameRequestData {
   username: Username
   address: EthAddress
@@ -138,7 +144,7 @@ export class ENS {
       data: { username, address, publicKey, expires },
     } = registerRequest
     try {
-      if (registerRequest.stage === 0) {
+      if (registerRequest.stage < RegisterUsernameStage.FDS_REGISTER_COMPLETED) {
         assertUsername(username)
 
         let ownerAddress: EthAddress = NULL_ADDRESS
@@ -159,10 +165,10 @@ export class ENS {
           )
         }
 
-        registerRequest.stage = 1
+        registerRequest.stage = RegisterUsernameStage.FDS_REGISTER_COMPLETED
       }
 
-      if (registerRequest.stage < 2) {
+      if (registerRequest.stage < RegisterUsernameStage.SET_RESOLVER_COMPLETED) {
         await waitRequestTransaction(this._provider, registerRequest, () =>
           this._ensRegistryContract.setResolver(
             this.hashUsername(username),
@@ -170,13 +176,13 @@ export class ENS {
           ),
         )
 
-        registerRequest.stage = 2
+        registerRequest.stage = RegisterUsernameStage.SET_RESOLVER_COMPLETED
       }
 
-      if (registerRequest.stage < 3) {
+      if (registerRequest.stage < RegisterUsernameStage.SET_PUBLIC_KEY_COMPLETED) {
         await this.setPublicKey(registerRequest, username, publicKey)
 
-        registerRequest.stage = 3
+        registerRequest.stage = RegisterUsernameStage.SET_PUBLIC_KEY_COMPLETED
       }
     } catch (error) {
       if (isTxError(error)) {
