@@ -1,7 +1,7 @@
 import { utils, Contract, Signer, providers, BigNumber } from 'ethers'
 import { ENS_DOMAIN, NULL_ADDRESS } from '../constants/constants'
 import { ENVIRONMENT_CONFIGS } from '../constants/environment'
-import { waitRequestTransaction, waitTransaction } from '../utils/tx'
+import { waitRequestTransaction } from '../utils/tx'
 import { joinPublicKey, isPublicKeyValid, splitPublicKey } from '../utils/keys'
 import { Environments } from '../model/environments.enum'
 import { EnsUserData } from '../model/ens-user-data.model'
@@ -117,7 +117,7 @@ export class ENS {
     publicKey: PublicKey,
     expires: number = 86400,
   ): ServiceRequest<RegisterUsernameRequestData> {
-    const request: ServiceRequest<RegisterUsernameRequestData> = {
+    return {
       stage: 0,
       data: {
         username,
@@ -127,8 +127,6 @@ export class ENS {
       },
       completedTxs: [],
     }
-
-    return request
   }
 
   /**
@@ -246,6 +244,7 @@ export class ENS {
 
   /**
    * Sets user's public key to the user's ENS entry
+   * @param request object previously created by the createRegisterUsernameRequest method
    * @param username ENS username
    * @param publicKey Public key that will be added to ENS
    */
