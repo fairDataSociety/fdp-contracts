@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v2.0.1...fdp-contracts-js-lib-v2.1.0) (2023-03-20)
+
+
+### Features
+
+* retry mechanism for username registration ([#106](https://github.com/fairDataSociety/fdp-contracts/issues/106)) ([99fc7e5](https://github.com/fairDataSociety/fdp-contracts/commit/99fc7e5c0045eac2d6dbd6b704ad7f946723816a))
+
 ## [2.0.1](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v2.0.0...fdp-contracts-js-lib-v2.0.1) (2023-02-10)
 
 
