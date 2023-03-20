@@ -22,7 +22,7 @@ describe('ENS service tests', () => {
   test('Should register username and set public key', async () => {
     const address = await wallet.getAddress()
 
-    await ens.registerUsername(username, address, wallet.publicKey)
+    await ens.registerUsername(ens.createRegisterUsernameRequest(username, address, wallet.publicKey))
 
     const owner = await ens.getUsernameOwner(username)
 
@@ -39,9 +39,11 @@ describe('ENS service tests', () => {
     wallet2 = wallet2.connect(ens2.provider)
     ens2.connect(wallet2)
     const username2 = 'test_user_2'
-    
+
     await topUpAddress(ens2.provider, wallet2.address)
-    await ens2.registerUsername(username2, wallet2.address, wallet2.publicKey)
+    await ens2.registerUsername(
+      ens.createRegisterUsernameRequest(username2, wallet2.address, wallet2.publicKey),
+    )
 
     const owner = await ens.getUsernameOwner(username2)
 
