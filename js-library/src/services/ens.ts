@@ -197,6 +197,7 @@ export class ENS {
    * @param username ENS username
    * @param address Owner address of the username
    * @param publicKey Hex string of a public key
+   * @param customRpc (optional) custom RPC provider if the default one can't calculate gas
    * @returns gas amount estimation
    */
   public async registerUsernameEstimateGas(
@@ -204,16 +205,41 @@ export class ENS {
     address: EthAddress,
     publicKey: PublicKey,
     expires: number = 86400,
+    customRpc?: providers.JsonRpcProvider,
   ): Promise<BigNumber> {
+    const rpc = customRpc || this._provider
     const [publicKeyX, publicKeyY] = splitPublicKey(publicKey)
 
+    const encodedRegisterFn = this._fdsRegistrarContract.interface.encodeFunctionData('register', [
+      keccak256(toUtf8Bytes(username)),
+      address,
+      expires,
+    ])
+
+    const encodedSetResolverFn = this._ensRegistryContract.interface.encodeFunctionData('setResolver', [
+      this.hashUsername(username),
+      this._publicResolverContract.address,
+    ])
+
+    const encodedSetPubkeyFn = this._publicResolverContract.interface.encodeFunctionData('setPubkey', [
+      this.hashUsername(username),
+      publicKeyX,
+      publicKeyY,
+    ])
+
     const gasAmounts = await Promise.all([
-      this._fdsRegistrarContract.estimateGas.register(keccak256(toUtf8Bytes(username)), address, expires),
-      this._ensRegistryContract.estimateGas.setResolver(
-        this.hashUsername(username),
-        this._publicResolverContract.address,
-      ),
-      this._publicResolverContract.estimateGas.setPubkey(this.hashUsername(username), publicKeyX, publicKeyY),
+      rpc.estimateGas({
+        to: this._fdsRegistrarContract.address,
+        data: encodedRegisterFn,
+      }),
+      rpc.estimateGas({
+        to: this._ensRegistryContract.address,
+        data: encodedSetResolverFn,
+      }),
+      rpc.estimateGas({
+        to: this._publicResolverContract.address,
+        data: encodedSetPubkeyFn,
+      }),
     ])
 
     return gasAmounts.reduce((sum, amount) => sum.add(amount), BigNumber.from(0))
