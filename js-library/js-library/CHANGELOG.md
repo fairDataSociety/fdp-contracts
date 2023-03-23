@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v2.1.0...fdp-contracts-js-lib-v2.2.0) (2023-03-23)
+
+
+### Features
+
+* custom rpc provider for gas estimation ([#108](https://github.com/fairDataSociety/fdp-contracts/issues/108)) ([93ece33](https://github.com/fairDataSociety/fdp-contracts/commit/93ece33f09d72b9c8a96d747188de8e35aac2608))
+
 ## [2.1.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v2.0.1...fdp-contracts-js-lib-v2.1.0) (2023-03-20)
 
 
