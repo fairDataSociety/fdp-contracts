@@ -14,9 +14,7 @@ function processShellResponse({ stdout, stderr }: { stdout: string; stderr: stri
 }
 
 async function getPreviousReleaseCommitHash(): Promise<string> {
-  return processShellResponse(
-    await exec('git log --all -n 1 --grep="chore(master): release contracts" --pretty=format:"%h"'),
-  )
+  return processShellResponse(await exec('git log -n 1 --grep="chore(master): release contracts" --pretty=format:"%h"'))
 }
 
 async function getChangedFiles(): Promise<string[]> {
