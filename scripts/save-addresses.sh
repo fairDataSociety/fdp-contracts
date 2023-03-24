@@ -11,9 +11,9 @@ DIST_FOLDER="$ROOT_PATH/dist"
 ENV_FILE="$DIST_FOLDER/contracts-$1.env"
 JS_LIB_ENV_FILE="$ROOT_PATH/js-library/src/contracts/contracts-$1.env"
 
-EXISTING_ADDRESSES=$(cat $JS_LIB_ENV_FILE)
+EXISTING_ADDRESSES=$(cat "$JS_LIB_ENV_FILE")
 
-pwd
+mkdir -p "$DIST_FOLDER"
 
 echo "" > "$ENV_FILE"
 
@@ -38,7 +38,6 @@ then
 fi
 
 # Saving contract addresses to an .env file
-mkdir -p "$DIST_FOLDER"
 echo "${1^^}_ENS_REGISTRY_ADDRESS=$ENS_REGISTRY_ADDRESS" >> "$ENV_FILE"
 echo "${1^^}_FDS_REGISTRAR_ADDRESS=$FDS_REGISTRAR_ADDRESS" >> "$ENV_FILE"
 echo "${1^^}_PUBLIC_RESOLVER_ADDRESS=$PUBLIC_RESOLVER_ADDRESS" >> "$ENV_FILE"
