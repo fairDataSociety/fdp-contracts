@@ -22,6 +22,8 @@ async function getPreviousReleaseCommitHash(): Promise<string> {
 async function getChangedFiles(): Promise<string[]> {
   const lastReleaseCommitHash = await getPreviousReleaseCommitHash()
   const changesResponse = processShellResponse(await exec(`git diff --name-only HEAD ${lastReleaseCommitHash}`))
+  console.log('Changed files: ', changesResponse)
+
   return changesResponse.split('\n')
 }
 
