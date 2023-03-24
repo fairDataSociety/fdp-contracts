@@ -13,6 +13,8 @@ JS_LIB_ENV_FILE="$ROOT_PATH/js-library/src/contracts/contracts-$1.env"
 
 EXISTING_ADDRESSES=$(cat $JS_LIB_ENV_FILE)
 
+pwd
+
 echo "" > "$ENV_FILE"
 
 # Extracting contract addresses
