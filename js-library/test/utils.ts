@@ -1,20 +1,24 @@
 import { providers, utils } from 'ethers'
-import { ENS, Environments, getEnvironmentConfig } from '../'
+import { ENS, Environments, getEnsEnvironmentConfig } from '../'
 
 export function initEns(): ENS {
   return new ENS({
-    ...getEnvironmentConfig(Environments.LOCALHOST),
+    ...getEnsEnvironmentConfig(Environments.LOCALHOST),
     performChecks: true,
   })
 }
 
-export async function topUpAddress(provider: providers.JsonRpcProvider, address: string, amountInEther = '1') {
+export async function topUpAddress(
+  provider: providers.JsonRpcProvider,
+  address: string,
+  amountInEther = '1',
+) {
   const account = (await provider.listAccounts())[0]
   await provider.send('eth_sendTransaction', [
     {
       from: account,
       to: address,
-      value: utils.hexlify(utils.parseEther(amountInEther))
+      value: utils.hexlify(utils.parseEther(amountInEther)),
     },
   ])
 

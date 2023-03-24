@@ -1,6 +1,6 @@
 import { EthAddress } from './hex.types'
 
-export interface Environment {
+export interface EnsEnvironment {
   rpcUrl: string
   contractAddresses: {
     ensRegistry: EthAddress
@@ -8,4 +8,9 @@ export interface Environment {
     publicResolver: EthAddress
   }
   performChecks: boolean
+}
+
+export interface DappRegistryEnvironment {
+  rpcUrl: string
+  contractAddress: EthAddress
 }

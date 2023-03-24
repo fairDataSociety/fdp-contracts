@@ -40,8 +40,17 @@ async function deployENS() {
   await waitForTransactionMined(tx)
 }
 
+async function deployDappRegistry() {
+  const DappRegistry = await ethers.getContractFactory('DappRegistry')
+  const dappRegistry = await DappRegistry.deploy()
+
+  await dappRegistry.deployed()
+
+  console.log(`DappRegistry deployed to: ${dappRegistry.address}`)
+}
+
 async function main() {
-  let changes: ContractsChange[] = ['ENS', 'BMT']
+  let changes: ContractsChange[] = ['ENS', 'BMT', 'DAPP_REGISTRY']
 
   if (network.name !== 'localhost' && network.name !== 'docker') {
     changes = await getChanges()
@@ -51,6 +60,11 @@ async function main() {
   if (changes.includes('ENS')) {
     console.log('Deploying ENS contracts')
     await deployENS()
+  }
+
+  if (changes.includes('DAPP_REGISTRY')) {
+    console.log('Deploying DappRegistry contract')
+    await deployDappRegistry()
   }
 }
 
