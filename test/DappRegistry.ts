@@ -54,7 +54,7 @@ describe('DappRegistry tests', () => {
       recordHashes.map(recordHash => {
         const hash = createRecordHash(recordHash)
         const urlHash = createRecordHash(recordHash)
-        return userDappRegistry.craeteRecord(hash, urlHash)
+        return userDappRegistry.createRecord(hash, urlHash)
       }),
     )
   }
@@ -256,14 +256,12 @@ describe('DappRegistry tests', () => {
 
   it('Should validate records', async () => {
     const validatorDappRegistry = dappRegistry.connect(validatorAccount)
-    let record = await validatorDappRegistry.getRecord(createRecordHash(12))
 
-    expect(record[6]).equals(false)
+    await validatorDappRegistry.validateRecord(createRecordHash(12))
 
-    await validatorDappRegistry.validateRecord(createRecordHash(12), true)
+    const validatedRecords = await validatorDappRegistry.getValidatedRecords(validatorAccount.address)
 
-    record = await validatorDappRegistry.getRecord(createRecordHash(12))
-
-    expect(record[6]).equals(true)
+    expect(validatedRecords.length).equals(1)
+    expect(validatedRecords[0][1]).equals(createRecordHash(12))
   })
 })
