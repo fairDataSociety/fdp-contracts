@@ -62,10 +62,10 @@ async function main() {
     await deployENS()
   }
 
-  if (changes.includes('DAPP_REGISTRY')) {
-    console.log('Deploying DappRegistry contract')
-    await deployDappRegistry()
-  }
+  // if (changes.includes('DAPP_REGISTRY')) {
+  console.log('Deploying DappRegistry contract')
+  await deployDappRegistry()
+  // }
 }
 
 main().catch(error => {
