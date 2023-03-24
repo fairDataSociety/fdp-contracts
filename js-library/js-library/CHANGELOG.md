@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.3.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v2.2.0...fdp-contracts-js-lib-v2.3.0) (2023-03-24)
+## [3.0.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v2.2.0...fdp-contracts-js-lib-v3.0.0) (2023-03-24)
 
 
 ### Features
