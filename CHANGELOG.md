@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.1.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v2.0.0...fdp-contracts-main-v2.1.0) (2023-03-24)
+
+
+### Features
+
+* **contract-upgrade:** update contract metadata ([bf0d2b4](https://github.com/fairDataSociety/fdp-contracts/commit/bf0d2b4d71c95116302eac580a72e48d17d587c1))
+* custom rpc provider for gas estimation ([#108](https://github.com/fairDataSociety/fdp-contracts/issues/108)) ([93ece33](https://github.com/fairDataSociety/fdp-contracts/commit/93ece33f09d72b9c8a96d747188de8e35aac2608))
+* dapp registry ([#104](https://github.com/fairDataSociety/fdp-contracts/issues/104)) ([8a386bd](https://github.com/fairDataSociety/fdp-contracts/commit/8a386bda6c1019ed9d1fac777dc6e40fcc1591cb))
+* deployment of updated contracts only ([#101](https://github.com/fairDataSociety/fdp-contracts/issues/101)) ([bb62ffe](https://github.com/fairDataSociety/fdp-contracts/commit/bb62ffe465a94df767cb140eae79b12e8a5b629d))
+* retry mechanism for username registration ([#106](https://github.com/fairDataSociety/fdp-contracts/issues/106)) ([99fc7e5](https://github.com/fairDataSociety/fdp-contracts/commit/99fc7e5c0045eac2d6dbd6b704ad7f946723816a))
+
+
+### Bug Fixes
+
+* return back previous goerli addresses ([#102](https://github.com/fairDataSociety/fdp-contracts/issues/102)) ([bbfab03](https://github.com/fairDataSociety/fdp-contracts/commit/bbfab03ce882297c4bb325a65f7ecceb090cc97d))
+
 ## [2.0.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v1.1.1...fdp-contracts-main-v2.0.0) (2023-01-24)
 
 The current `@fairdatasociety/fdp-contracts` will be taken over by the Solidity source codes for smart contract based projects meanwhile the corresponding JS library will be published under name `@fairdatasociety/fdp-contracts-js`.
