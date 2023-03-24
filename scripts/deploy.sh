@@ -14,6 +14,8 @@ echo "Deploying contracts to $1..."
 DEPLOYMENT_OUTPUT=$(npm run deploy:$1)
 DEPLOYMENT_STATUS=$?
 
+echo $DEPLOYMENT_OUTPUT
+
 if [ "$DEPLOYMENT_STATUS" -ne 0 ]; then
   exit $DEPLOYMENT_STATUS
 fi
