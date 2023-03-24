@@ -19,7 +19,6 @@ contract DappRegistry is Ownable, AccessControl {
     uint256 timestamp;
   }
 
-  // User record
   struct User {
     // user's dapps
     bytes32[] records;
