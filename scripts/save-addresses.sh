@@ -10,8 +10,8 @@ ROOT_PATH=$( cd "$ROOT_PATH/.." && pwd )
 DIST_FOLDER="$ROOT_PATH/dist"
 ENV_FILE="$DIST_FOLDER/contracts-$1.env"
 JS_LIB_ENV_FILE="$ROOT_PATH/js-library/src/contracts/contracts-$1.env"
-echo $JS_LIB_ENV_FILE
-EXISTING_ADDRESSES=$(cat $JS_LIB_ENV_FILE)
+
+EXISTING_ADDRESSES=$(cat "$JS_LIB_ENV_FILE")
 
 mkdir -p "$DIST_FOLDER"
 

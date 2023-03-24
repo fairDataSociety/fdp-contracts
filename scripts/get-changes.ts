@@ -26,6 +26,10 @@ async function getChangedFiles(): Promise<string[]> {
 
   return changesResponse.split('\n')
 }
+
+function hasChange(changedFiles: string[], filename: string): boolean {
+  return changedFiles.some(changedFile => changedFile.includes(filename))
+}
 /**
  * Checks which sets of contracts have been changed since previous release
  * @returns Example return ['ENS', 'BMT']
@@ -35,18 +39,18 @@ export default async function getChanges(): Promise<ContractsChange[]> {
   const changedFiles = await getChangedFiles()
 
   if (
-    changedFiles.includes('contracts/ENSRegistry.sol') ||
-    changedFiles.includes('contracts/FDSRegistrar.sol') ||
-    changedFiles.includes('contracts/PublicResolver.sol')
+    hasChange(changedFiles, 'contracts/ENSRegistry.sol') ||
+    hasChange(changedFiles, 'contracts/FDSRegistrar.sol') ||
+    hasChange(changedFiles, 'contracts/PublicResolver.sol')
   ) {
     changes.push('ENS')
   }
 
-  if (changedFiles.includes('contracts/BMTChunk.sol') || changedFiles.includes('contracts/BMTFile.sol')) {
+  if (hasChange(changedFiles, 'contracts/BMTChunk.sol') || hasChange(changedFiles, 'contracts/BMTFile.sol')) {
     changes.push('BMT')
   }
 
-  if (changedFiles.includes('contracts/DappRegistry.sol')) {
+  if (hasChange(changedFiles, 'contracts/DappRegistry.sol')) {
     changes.push('DAPP_REGISTRY')
   }
 
