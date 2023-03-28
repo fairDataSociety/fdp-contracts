@@ -29,11 +29,11 @@ export const ENS_ENVIRONMENT_CONFIGS: EnsEnvironmentConfigs = {
 export const DAPP_REGISTRY_ENVIRONMENT_CONFIGS: DappRegistryEnvironmentConfigs = {
   [Environments.LOCALHOST]: {
     rpcUrl: 'http://127.0.0.1:9545/',
-    contractAddress: process.env.DOCKER_DAPP_REGISTRY_REGISTRY_ADDRESS as EthAddress,
+    contractAddress: process.env.DOCKER_DAPP_REGISTRY_ADDRESS as EthAddress,
   },
   [Environments.GOERLI]: {
     rpcUrl: 'https://xdai.dev.fairdatasociety.org/',
-    contractAddress: process.env.GOERLI_DAPP_REGISTRY_REGISTRY_ADDRESS as EthAddress,
+    contractAddress: process.env.GOERLI_DAPP_REGISTRY_ADDRESS as EthAddress,
   },
 }
 
