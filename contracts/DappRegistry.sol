@@ -31,10 +31,8 @@ contract DappRegistry is Ownable, AccessControl {
   
   bytes32[] public recordList;
 
-  bytes32 public constant VALIDATOR_ROLE = keccak256("VALIDATOR_ROLE");
-
   constructor () {
-    _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
   }
 
   modifier onlyAdmin() {
@@ -46,13 +44,6 @@ contract DappRegistry is Ownable, AccessControl {
     Record memory record = _records[_location];
     require(record.location != 0, "Record doesn't exist");
     require(record.creator == msg.sender || hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Sender is not owner");
-    _;
-  }
-
-  modifier recordValidationAllowed(bytes32 _location) {
-    Record memory record = _records[_location];
-    require(record.location != 0, "Record doesn't exist");
-    require(hasRole(VALIDATOR_ROLE, msg.sender) || hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Validation is not allowed");
     _;
   }
 
@@ -92,13 +83,13 @@ contract DappRegistry is Ownable, AccessControl {
     user.records.pop();
   }
 
-  function validateRecord(bytes32 _location) public recordValidationAllowed(_location) {
+  function validateRecord(bytes32 _location) public {
     User storage validator = _users[msg.sender];
     
     validator.validatedRecords.push(_location);
   }
 
-  function unvalidateRecord(bytes32 _location) public recordValidationAllowed(_location) {
+  function unvalidateRecord(bytes32 _location) public {
     User storage validator = _users[msg.sender];
     uint lastIndex = validator.validatedRecords.length - 1;
 

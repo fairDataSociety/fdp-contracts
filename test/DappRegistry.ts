@@ -9,7 +9,6 @@ function createRecordHash(recordHash: number) {
 }
 
 const ADMIN_ROLE = utils.hexZeroPad(utils.hexlify(0), 32)
-const VALIDATOR_ROLE = utils.keccak256(utils.toUtf8Bytes('VALIDATOR_ROLE'))
 
 describe('DappRegistry tests', () => {
   let ownerAccount: SignerWithAddress
@@ -40,13 +39,6 @@ describe('DappRegistry tests', () => {
     await ownerDappRegistry.grantRole(ADMIN_ROLE, adminAccount.address)
     const isAdmin = await ownerDappRegistry.hasRole(ADMIN_ROLE, adminAccount.address)
     expect(isAdmin).equal(true)
-  })
-
-  it('Should grant validator access', async () => {
-    const adminDappRegistry = dappRegistry.connect(adminAccount)
-    await adminDappRegistry.grantRole(VALIDATOR_ROLE, validatorAccount.address)
-    const isValidator = await adminDappRegistry.hasRole(VALIDATOR_ROLE, validatorAccount.address)
-    expect(isValidator).equal(true)
   })
 
   function createUserRecords(userDappRegistry: DappRegistry, recordHashes: number[]) {
