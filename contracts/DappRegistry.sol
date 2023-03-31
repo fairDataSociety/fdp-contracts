@@ -74,7 +74,16 @@ contract DappRegistry is Ownable, AccessControl {
     Record memory record = _records[_location];
     User storage user = _users[record.creator];
 
-    uint lastIndex = user.records.length - 1;
+    uint lastIndex = recordList.length - 1;
+    if (record.index != lastIndex) {
+      recordList[record.index] = recordList[lastIndex];
+      _records[recordList[record.index]].index = record.index;
+    }
+
+    recordList.pop();
+    delete _records[_location];
+
+    lastIndex = user.records.length - 1;
     if (record.creatorIndex != lastIndex) {
       user.records[record.creatorIndex] = user.records[lastIndex];
       _records[user.records[record.creatorIndex]].creatorIndex = record.creatorIndex;
