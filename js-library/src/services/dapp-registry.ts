@@ -1,9 +1,15 @@
 import { utils, Contract, providers, BigNumber } from 'ethers'
 import { DAPP_REGISTRY_ENVIRONMENT_CONFIGS } from '../constants'
 import DappRegistryContractLocal from '../contracts/DappRegistry/DappRegistry.json'
-import { DappRegistryEnvironment, Environments, EthAddress, HexString, SwarmLocation } from '../model'
+import {
+  DappRegistryEnvironment,
+  Environments,
+  EthAddress,
+  HexString,
+  RecordHash,
+  SwarmLocation,
+} from '../model'
 import { DappRecord } from '../model/dapp-record.model'
-import { DappUser } from '../model/dapp-user.model'
 import { waitTransaction } from '../utils/tx'
 import { SignerOrProvider } from './ens'
 
@@ -80,16 +86,16 @@ export class DappRegistry {
     return waitTransaction(this._dappRegistryContract.createRecord(location, urlHash))
   }
 
-  public deleteRecord(location: SwarmLocation): Promise<void> {
-    return waitTransaction(this._dappRegistryContract.deleteRecord(location))
+  public editRecord(recordHash: RecordHash, newLocation: SwarmLocation): Promise<void> {
+    return waitTransaction(this._dappRegistryContract.editRecord(recordHash, newLocation))
   }
 
-  public validateRecord(location: SwarmLocation): Promise<void> {
-    return waitTransaction(this._dappRegistryContract.validateRecord(location))
+  public validateRecord(recordHash: RecordHash): Promise<void> {
+    return waitTransaction(this._dappRegistryContract.validateRecord(recordHash))
   }
 
-  public unvalidateRecord(location: SwarmLocation): Promise<void> {
-    return waitTransaction(this._dappRegistryContract.unvalidateRecord(location))
+  public unvalidateRecord(recordHash: RecordHash): Promise<void> {
+    return waitTransaction(this._dappRegistryContract.unvalidateRecord(recordHash))
   }
 
   public getValidatedRecords(address: EthAddress): Promise<DappRecord[]> {
@@ -100,39 +106,36 @@ export class DappRegistry {
     return this._dappRegistryContract.getRecordCount()
   }
 
-  public getRecordSlice(start: BigNumber, length: BigNumber): Promise<SwarmLocation[]> {
+  public getRecordSlice(start: BigNumber, length: BigNumber): Promise<RecordHash[]> {
     return this._dappRegistryContract.getRecordSlice(start, length)
   }
 
-  public async getRecord(location: SwarmLocation): Promise<DappRecord> {
-    const record = await this._dappRegistryContract.getRecord(location)
+  public async getRecord(recordHash: RecordHash): Promise<DappRecord> {
+    const record = await this._dappRegistryContract.getRecord(recordHash)
 
     return this.convertDappRecord(record)
   }
 
-  public async getRecords(locations: SwarmLocation[]): Promise<DappRecord[]> {
-    const records: Array<Array<string>> = await this._dappRegistryContract.getRecords(locations)
+  public async getRecords(recordHashes: RecordHash[]): Promise<DappRecord[]> {
+    const records: Array<Array<string>> = await this._dappRegistryContract.getRecords(recordHashes)
 
     return records.map(record => this.convertDappRecord(record))
   }
 
-  public async getUser(address: EthAddress): Promise<DappUser> {
-    const user = await this._dappRegistryContract.getUser(address)
-
-    return {
-      records: user[0],
-      validatedRecords: user[1],
-    }
+  public async getUserRecordHashes(address: EthAddress): Promise<RecordHash[]> {
+    return this._dappRegistryContract.getUser(address)
   }
 
   private convertDappRecord(record: Array<string>): DappRecord {
     return {
-      creator: record[0],
-      location: record[1],
-      urlHash: record[2],
-      index: BigNumber.from(record[3]),
-      creatorIndex: BigNumber.from(record[4]),
-      timestamp: new Date(record[5]),
+      recordHash: record[0],
+      creator: record[1],
+      location: record[2],
+      urlHash: record[3],
+      edited: Boolean(record[4]),
+      index: BigNumber.from(record[5]),
+      creatorIndex: BigNumber.from(record[6]),
+      timestamp: new Date(record[7]),
     }
   }
 }

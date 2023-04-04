@@ -4,11 +4,12 @@ import { utils } from 'ethers'
 import { ethers } from 'hardhat'
 import { DappRegistry } from '../typechain'
 
-function createRecordHash(recordHash: number) {
+function createHash(recordHash: number) {
   return utils.hexZeroPad(utils.hexlify(recordHash), 32)
 }
 
 const ADMIN_ROLE = utils.hexZeroPad(utils.hexlify(0), 32)
+const VALIDATOR_ROLE = utils.keccak256(utils.toUtf8Bytes('VALIDATOR_ROLE'))
 
 describe('DappRegistry tests', () => {
   let ownerAccount: SignerWithAddress
@@ -41,45 +42,45 @@ describe('DappRegistry tests', () => {
     expect(isAdmin).equal(true)
   })
 
+  it('Should grant validator access', async () => {
+    const adminDappRegistry = dappRegistry.connect(adminAccount)
+    await adminDappRegistry.grantRole(VALIDATOR_ROLE, validatorAccount.address)
+    const isValidator = await adminDappRegistry.hasRole(VALIDATOR_ROLE, validatorAccount.address)
+    expect(isValidator).equal(true)
+  })
+
   function createUserRecords(userDappRegistry: DappRegistry, recordHashes: number[]) {
     return Promise.all(
       recordHashes.map(recordHash => {
-        const hash = createRecordHash(recordHash)
-        const urlHash = createRecordHash(recordHash)
+        const hash = createHash(recordHash)
+        const urlHash = createHash(recordHash)
         return userDappRegistry.createRecord(hash, urlHash)
       }),
     )
   }
 
-  function checkUserRecords(
+  async function checkUserRecords(
     userDappRegistry: DappRegistry,
-    recordHashes: number[],
+    locations: number[],
     indices: number[],
     userIndices: number[],
     address: string,
   ) {
-    return Promise.all(
-      recordHashes.map(async (recordHash, index) => {
-        const record = await userDappRegistry.getRecord(createRecordHash(recordHash))
+    const records = await userDappRegistry.getUserRecordHashes(address)
 
-        const hash = createRecordHash(recordHash)
-
-        expect(record[0]).equal(address) // address
-        expect(record[1]).equal(hash) // location
-        expect(record[2]).equal(hash) // urlHash
-        expect(record[3]).equal(indices[index]) // index
-        expect(record[4]).equal(userIndices[index]) // creatorIndex
+    await Promise.all(
+      records.map(async (recordHash, index) => {
+        const record = await userDappRegistry.getRecord(recordHash)
+        expect(record[1]).equal(address) // address
+        expect(record[2]).equal(createHash(locations[index])) // location
+        expect(record[3]).equal(createHash(locations[index])) // urlHash
+        expect(record[5]).equal(indices[index]) // index
+        expect(record[6]).equal(userIndices[index]) // creatorIndex
       }),
     )
   }
 
-  async function checkUser(userDappRegistry: DappRegistry, recordHashes: number[], address: string) {
-    const user = await userDappRegistry.getUser(address)
-
-    user.records.forEach((hash, index) => expect(hash).equal(createRecordHash(recordHashes[index])))
-  }
-
-  it('Adding multiple records and deleting them should return state to initial', async () => {
+  it('Multiple users should be able to add records', async () => {
     await createUserRecords(dappRegistry.connect(userAccount1), [1])
     await createUserRecords(dappRegistry.connect(userAccount2), [2])
     await createUserRecords(dappRegistry.connect(userAccount3), [3])
@@ -88,74 +89,32 @@ describe('DappRegistry tests', () => {
     await createUserRecords(dappRegistry.connect(userAccount3), [6])
     await createUserRecords(dappRegistry.connect(userAccount1), [7])
 
-    await dappRegistry.connect(userAccount3).deleteRecord(createRecordHash(3))
-    await dappRegistry.connect(userAccount2).deleteRecord(createRecordHash(5))
-    await dappRegistry.connect(userAccount1).deleteRecord(createRecordHash(7))
-
-    await checkUserRecords(dappRegistry.connect(userAccount1), [1, 4], [0, 3], [0, 1], userAccount1.address)
-    await checkUserRecords(dappRegistry.connect(userAccount2), [2], [1], [0], userAccount2.address)
-    await checkUserRecords(dappRegistry.connect(userAccount3), [6], [5], [0], userAccount3.address)
-
-    await dappRegistry.connect(userAccount1).deleteRecord(createRecordHash(1))
-    await dappRegistry.connect(userAccount3).deleteRecord(createRecordHash(6))
-    await dappRegistry.connect(userAccount2).deleteRecord(createRecordHash(2))
-
-    await checkUserRecords(dappRegistry.connect(userAccount1), [4], [3], [0], userAccount1.address)
-    await checkUserRecords(dappRegistry.connect(userAccount2), [], [], [], userAccount2.address)
-    await checkUserRecords(dappRegistry.connect(userAccount3), [], [], [], userAccount3.address)
-
-    await dappRegistry.connect(userAccount1).deleteRecord(createRecordHash(4))
-
-    await checkUserRecords(dappRegistry.connect(userAccount1), [], [], [], userAccount1.address)
-
-    const hashes = await dappRegistry.connect(userAccount1).getRecordSlice(0, 100)
-
-    expect(hashes.length).equal(7)
+    await checkUserRecords(dappRegistry.connect(userAccount1), [1, 4, 7], [0, 3, 6], [0, 1, 2], userAccount1.address)
+    await checkUserRecords(dappRegistry.connect(userAccount2), [2, 5], [1, 4], [0, 1], userAccount2.address)
+    await checkUserRecords(dappRegistry.connect(userAccount3), [3, 6], [2, 5], [0, 1], userAccount3.address)
   })
 
-  it('Multiple users should be able to add new dApp records', async () => {
-    const user1RecordHashes = [11, 12, 13]
-    const user2RecordHashes = [14, 15, 16]
-    const user3RecordHashes = [17, 18, 19]
+  it('User should be able to edit record', async () => {
+    const user1DappRegistry = dappRegistry.connect(userAccount1)
 
-    const userIndices = [0, 1, 2]
+    const records = await user1DappRegistry.getUserRecordHashes(userAccount1.address)
+    let record = await user1DappRegistry.getRecord(records[1])
 
-    await createUserRecords(dappRegistry.connect(userAccount1), user1RecordHashes)
-    await createUserRecords(dappRegistry.connect(userAccount2), user2RecordHashes)
-    await createUserRecords(dappRegistry.connect(userAccount3), user3RecordHashes)
+    expect(record[2]).equals(createHash(4))
 
-    await checkUserRecords(
-      dappRegistry.connect(userAccount1),
-      user1RecordHashes,
-      [7, 8, 9],
-      userIndices,
-      userAccount1.address,
-    )
-    await checkUserRecords(
-      dappRegistry.connect(userAccount2),
-      user2RecordHashes,
-      [10, 11, 12],
-      userIndices,
-      userAccount2.address,
-    )
-    await checkUserRecords(
-      dappRegistry.connect(userAccount3),
-      user3RecordHashes,
-      [13, 14, 15],
-      userIndices,
-      userAccount3.address,
-    )
+    await user1DappRegistry.editRecord(records[1], createHash(8))
 
-    await checkUser(dappRegistry.connect(userAccount1), user1RecordHashes, userAccount1.address)
-    await checkUser(dappRegistry.connect(userAccount2), user2RecordHashes, userAccount2.address)
-    await checkUser(dappRegistry.connect(userAccount3), user3RecordHashes, userAccount3.address)
+    record = await user1DappRegistry.getRecord(records[1])
+
+    expect(record[2]).equals(createHash(8))
   })
 
-  it("User who is not owner shouldn't be able to delete records", async () => {
+  it("User who is not owner shouldn't be able to edit records", async () => {
     const validatorDappRegistry = dappRegistry.connect(validatorAccount)
+    const records = await validatorDappRegistry.getUserRecordHashes(userAccount1.address)
     let correctError = false
     try {
-      await validatorDappRegistry.deleteRecord(createRecordHash(2))
+      await validatorDappRegistry.editRecord(records[1], createHash(9))
     } catch (error) {
       correctError = String(error).includes('Sender is not owner')
     }
@@ -163,97 +122,44 @@ describe('DappRegistry tests', () => {
     expect(correctError).equal(true)
   })
 
-  it('User should be able to delete own records', async () => {
-    await dappRegistry.connect(userAccount1).deleteRecord(createRecordHash(11))
-
-    // Before deleting the record with hash = 1 => recordList = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    // After deleting the record with hash = 1 => recordList = [9, 2, 3, 4, 5, 6, 7, 8]
-    const user1RecordHashes = [12, 13]
-    const user2RecordHashes = [14, 15, 16]
-    let user3RecordHashes = [17, 18, 19]
-
-    const userIndices = [0, 1, 2]
-
-    await checkUserRecords(dappRegistry.connect(userAccount1), user1RecordHashes, [8, 9], [1, 0], userAccount1.address)
-    await checkUserRecords(
-      dappRegistry.connect(userAccount2),
-      user2RecordHashes,
-      [10, 11, 12],
-      userIndices,
-      userAccount2.address,
-    )
-    await checkUserRecords(
-      dappRegistry.connect(userAccount3),
-      user3RecordHashes,
-      [13, 14, 15],
-      userIndices,
-      userAccount3.address,
-    )
-
-    // User 1 before deleting the record with hash = 1 => records = [1, 2, 3]
-    // User 1 after deleting the record with hash = 1 => records = [3, 2]
-    await checkUser(dappRegistry.connect(userAccount1), [13, 12], userAccount1.address)
-    await checkUser(dappRegistry.connect(userAccount2), user2RecordHashes, userAccount2.address)
-    await checkUser(dappRegistry.connect(userAccount3), user3RecordHashes, userAccount3.address)
-
-    // Before deleting the record with hash = 9 => recordList = [9, 2, 3, 4, 5, 6, 7, 8]
-    // After deleting the record with hash = 9 => recordList = [8, 2, 3, 4, 5, 6, 7]
-    await dappRegistry.connect(userAccount3).deleteRecord(createRecordHash(19))
-
-    user3RecordHashes = [17, 18]
-
-    await checkUserRecords(dappRegistry.connect(userAccount1), user1RecordHashes, [8, 9], [1, 0], userAccount1.address)
-    await checkUserRecords(
-      dappRegistry.connect(userAccount2),
-      user2RecordHashes,
-      [10, 11, 12],
-      userIndices,
-      userAccount2.address,
-    )
-    await checkUserRecords(
-      dappRegistry.connect(userAccount3),
-      user3RecordHashes,
-      [13, 14],
-      [0, 1],
-      userAccount3.address,
-    )
-
-    // User 3 before deleting the record with hash = 9 => records = [7, 8, 9]
-    // User 3 after deleting the record with hash = 9 => records = [7, 8]
-    await checkUser(dappRegistry.connect(userAccount1), [13, 12], userAccount1.address)
-    await checkUser(dappRegistry.connect(userAccount2), user2RecordHashes, userAccount2.address)
-    await checkUser(dappRegistry.connect(userAccount3), user3RecordHashes, userAccount3.address)
-  })
-
   it('Should return correct record count', async () => {
     const count = await dappRegistry.getRecordCount()
-    expect(count).equals(16)
+    expect(count).equals(7)
   })
 
   it('Should fetch right records', async () => {
-    const recordHashes = await dappRegistry.getRecordSlice(8, 3)
+    const recordHashes = await dappRegistry.getRecordSlice(1, 3)
+    const locations = [2, 3, 8]
 
     expect(recordHashes.length).equals(3)
-    ;[12, 13, 14].forEach((recordHash, index) => {
-      expect(recordHashes[index]).equals(createRecordHash(recordHash))
-    })
+    await Promise.all(
+      recordHashes.map(async (recordHash, index) => {
+        const record = await dappRegistry.getRecord(recordHash)
 
-    const records = await dappRegistry.getRecords(recordHashes)
-
-    records.forEach((record, index) => {
-      expect(record[0]).equals(index < 2 ? userAccount1.address : userAccount2.address)
-      expect(record[1]).equals(recordHashes[index])
-    })
+        expect(record[2]).equals(createHash(locations[index]))
+      }),
+    )
   })
 
-  it('Should validate records', async () => {
+  it('Should validate records and unvalidate on edit', async () => {
     const validatorDappRegistry = dappRegistry.connect(validatorAccount)
 
-    await validatorDappRegistry.validateRecord(createRecordHash(12))
+    const [recordHash] = await validatorDappRegistry.getRecordSlice(0, 1)
+
+    await validatorDappRegistry.validateRecord(recordHash)
 
     const validatedRecords = await validatorDappRegistry.getValidatedRecords(validatorAccount.address)
 
     expect(validatedRecords.length).equals(1)
-    expect(validatedRecords[0][1]).equals(createRecordHash(12))
+
+    let record = await dappRegistry.getRecord(recordHash)
+    expect(record[2]).equals(createHash(1))
+    expect(record[4]).equals(false)
+
+    await dappRegistry.connect(userAccount1).editRecord(recordHash, createHash(9))
+
+    record = await dappRegistry.getRecord(recordHash)
+    expect(record[2]).equals(createHash(9))
+    expect(record[4]).equals(true)
   })
 })

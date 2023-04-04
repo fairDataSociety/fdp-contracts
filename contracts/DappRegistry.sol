@@ -11,9 +11,11 @@ contract DappRegistry is Ownable, AccessControl {
   
   // Dapp record
   struct Record {
+    bytes32 recordHash;
     address creator;
     bytes32 location;
     bytes32 urlHash;
+    bool edited;
     uint index;
     uint creatorIndex;
     uint256 timestamp;
@@ -24,12 +26,16 @@ contract DappRegistry is Ownable, AccessControl {
     bytes32[] records;
     // dapps that the user validated
     bytes32[] validatedRecords;
+    // mapping of dapps that the user validated
+    mapping(bytes32 => bool) validatedRecordsMapping;
   }
 
   mapping(address => User) internal _users;
   mapping(bytes32 => Record) internal _records;
   
   bytes32[] public recordList;
+
+  bytes32 public constant VALIDATOR_ROLE = keccak256("VALIDATOR_ROLE");
 
   constructor () {
     _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -53,53 +59,60 @@ contract DappRegistry is Ownable, AccessControl {
    * _urlHash - keccak256 hash of the dApp URL
    */
   function createRecord(bytes32 _location, bytes32 _urlHash) public {
-    Record storage record = _records[_location];
+    User storage user = _users[msg.sender];
+    bytes32 recordHash = keccak256(abi.encode(msg.sender, user.records.length, block.timestamp));
+
+    Record storage record = _records[recordHash];
     require(record.location == bytes32(0), "Record already exists");
 
-    User storage user = _users[msg.sender];
-
+    record.recordHash = recordHash;
     record.creator = msg.sender;
     record.location = _location;
     record.urlHash = _urlHash;
+    record.edited = true;
     record.timestamp = block.timestamp;
     record.index = recordList.length;
     record.creatorIndex = user.records.length;
 
-    _records[_location] = record;
-    recordList.push(_location);
-    user.records.push(_location);
+    _records[recordHash] = record;
+    recordList.push(recordHash);
+    user.records.push(recordHash);
   }
 
-  function deleteRecord(bytes32 _location) public recordEditingAllowed(_location) {
-    Record memory record = _records[_location];
-    User storage user = _users[record.creator];
+  function editRecord(bytes32 _recordHash, bytes32 _newLocation) public recordEditingAllowed(_recordHash) {
+    Record storage record = _records[_recordHash];
 
-    uint lastIndex = user.records.length - 1;
-    if (record.creatorIndex != lastIndex) {
-      user.records[record.creatorIndex] = user.records[lastIndex];
-      _records[user.records[record.creatorIndex]].creatorIndex = record.creatorIndex;
-    }
-
-    user.records.pop();
+    record.location = _newLocation;
+    record.edited = true;
   }
 
-  function validateRecord(bytes32 _location) public {
+  function validateRecord(bytes32 _recordHash) public {
     User storage validator = _users[msg.sender];
+    require(_records[_recordHash].location != 0, "No record");
+
+    if (hasRole(DEFAULT_ADMIN_ROLE, msg.sender) || hasRole(VALIDATOR_ROLE, msg.sender)) {
+      Record storage record = _records[_recordHash];
+      record.edited = false;
+    }
     
-    validator.validatedRecords.push(_location);
+    if (!validator.validatedRecordsMapping[_recordHash]) {
+      validator.validatedRecords.push(_recordHash);
+      validator.validatedRecordsMapping[_recordHash] = true;
+    }
   }
 
-  function unvalidateRecord(bytes32 _location) public {
+  function unvalidateRecord(bytes32 _recordHash) public {
     User storage validator = _users[msg.sender];
     uint lastIndex = validator.validatedRecords.length - 1;
 
     for (uint i = 0; i <= lastIndex; i++) {
-      if (validator.validatedRecords[i] == _location) {
+      if (validator.validatedRecords[i] == _recordHash) {
         if (i != lastIndex) {
           validator.validatedRecords[i] = validator.validatedRecords[lastIndex];
         }
 
         validator.validatedRecords.pop();
+        validator.validatedRecordsMapping[_recordHash] = true;
 
         break;
       }
@@ -118,7 +131,7 @@ contract DappRegistry is Ownable, AccessControl {
     bytes32[] memory hashes = new bytes32[](_length);
 
     for (uint i = 0; i < _length; i++) {
-        hashes[i] = recordList[_startIndex + i];
+      hashes[i] = recordList[_startIndex + i];
     }
 
     return hashes;
@@ -128,14 +141,14 @@ contract DappRegistry is Ownable, AccessControl {
     Record[] memory records = new Record[](_recordHashes.length);
     
     for (uint i = 0; i < _recordHashes.length; i++) {
-        records[i] = _records[_recordHashes[i]];
+      records[i] = _records[_recordHashes[i]];
     }
 
     return records;
   }
 
   function getValidatedRecords(address _validatorAddress) public view returns (Record[] memory) {
-    User memory user = _users[_validatorAddress];
+    User storage user = _users[_validatorAddress];
     Record[] memory records = new Record[](user.validatedRecords.length);
     
     for (uint i = 0; i < user.validatedRecords.length; i++) {
@@ -149,8 +162,8 @@ contract DappRegistry is Ownable, AccessControl {
     return _records[_location];
   }
 
-  function getUser(address _account) public view returns (User memory) {
-    return _users[_account];
+  function getUserRecordHashes(address _account) public view returns (bytes32[] memory) {
+    return _users[_account].records;
   }
 
 }
