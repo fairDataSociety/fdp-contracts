@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.3.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.2.0...fdp-contracts-js-lib-v3.3.0) (2023-04-04)
+
+
+### Features
+
+* **contract-upgrade:** update contract metadata ([76cb289](https://github.com/fairDataSociety/fdp-contracts/commit/76cb289a975e9745c67762e0b306967ec61ca9d5))
+
+
+### Bug Fixes
+
+* delete records in dapp registry ([#127](https://github.com/fairDataSociety/fdp-contracts/issues/127)) ([0a7a20a](https://github.com/fairDataSociety/fdp-contracts/commit/0a7a20a62db74bf0167709bdd77890edc1f8a014))
+* goerli addresses ([d190b81](https://github.com/fairDataSociety/fdp-contracts/commit/d190b8120a95289b52c8d76a8fd93aa6aa68e213))
+
 ## [3.2.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.1.1...fdp-contracts-js-lib-v3.2.0) (2023-03-30)
 
 
