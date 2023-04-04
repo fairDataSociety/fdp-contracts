@@ -26,11 +26,9 @@ contract DappRegistry is Ownable, AccessControl {
     bytes32[] records;
     // dapps that the user validated
     bytes32[] validatedRecords;
-    
+    // mapping of dapps that the user validated
     mapping(bytes32 => bool) validatedRecordsMapping;
   }
-
-  mapping(address => bytes32[]) internal userValidatedRecords;
 
   mapping(address => User) internal _users;
   mapping(bytes32 => Record) internal _records;
