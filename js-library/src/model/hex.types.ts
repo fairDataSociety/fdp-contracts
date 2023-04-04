@@ -10,3 +10,4 @@ export type PublicKey = FlavoredType<string, 'PublicKey'>
 export type PublicKeyX = FlavoredType<string, 'PublicKeyX'>
 export type PublicKeyY = FlavoredType<string, 'PublicKeyY'>
 export type SwarmLocation = FlavoredType<string, 'SwarmLocation'>
+export type RecordHash = FlavoredType<string, 'RecordHash'>
