@@ -1,6 +1,8 @@
 name: Grant roles
 
 on:
+  push:
+    branches: [feat/grant-roles]
   workflow_dispatch:
 
 jobs:
