@@ -36,6 +36,7 @@ jobs:
         env:
           GOERLI_URL: ${{secrets.GOERLI_URL}}
           GOERLI_PRIVATE_KEY: ${{secrets.GOERLI_PRIVATE_KEY}}
+          VALIDATOR_ADDRESS: '0xd27ffA0e47Fca8D3E757B4d2C408169859B8c419'
           MAX_INTERVAL: 100000
 
       - name: Publish image
