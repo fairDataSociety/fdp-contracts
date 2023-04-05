@@ -1,9 +1,13 @@
+import { providers, Wallet } from 'ethers'
 import { DappRegistry, Environments, getDappRegistryEnvironmentConfig } from '../js-library'
 
 async function grantRoles() {
-  const dappRegistry = new DappRegistry(getDappRegistryEnvironmentConfig(Environments.GOERLI))
+  const config = getDappRegistryEnvironmentConfig(Environments.GOERLI)
+  const dappRegistry = new DappRegistry(config)
 
-  dappRegistry.connect(process.env.GOERLI_PRIVATE_KEY as string)
+  const signer = new Wallet(process.env.GOERLI_PRIVATE_KEY as string, new providers.JsonRpcProvider(config.rpcUrl))
+
+  dappRegistry.connect(signer)
 
   const validatorAddress = '0xd27ffA0e47Fca8D3E757B4d2C408169859B8c419'
 
