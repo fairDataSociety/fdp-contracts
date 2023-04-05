@@ -1,10 +1,7 @@
-import { DappRegistry } from '../js-library'
+import { DappRegistry, Environments, getDappRegistryEnvironmentConfig } from '../js-library'
 
 async function grantRoles() {
-  const dappRegistry = new DappRegistry({
-    rpcUrl: 'https://xdai.dev.fairdatasociety.org/',
-    contractAddress: '0x3F6fA527C6F08e1131791E7e1682715325DADaE2',
-  })
+  const dappRegistry = new DappRegistry(getDappRegistryEnvironmentConfig(Environments.GOERLI))
 
   dappRegistry.connect(process.env.GOERLI_PRIVATE_KEY as string)
 
