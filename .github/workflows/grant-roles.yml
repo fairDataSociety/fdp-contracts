@@ -26,3 +26,5 @@ jobs:
       - run: npm run build --prefix js-library
 
       - run: npx ts-node scripts/grant-roles.ts
+        env:
+          GOERLI_PRIVATE_KEY: ${{secrets.GOERLI_PRIVATE_KEY}}
