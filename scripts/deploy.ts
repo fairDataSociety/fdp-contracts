@@ -52,6 +52,8 @@ async function deployDappRegistry() {
     const tx = await dappRegistry.grantRole(VALIDATOR_ROLE, process.env.VALIDATOR_ADDRESS)
 
     await waitForTransactionMined(tx)
+
+    console.log(`VALIDATOR_ROLE granted to ${process.env.VALIDATOR_ADDRESS} address`)
   }
 
   console.log(`DappRegistry deployed to: ${dappRegistry.address}`)
