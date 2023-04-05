@@ -1,10 +1,12 @@
 // TODO There is a eslint configuration error that needs to be fixed
+import { utils } from 'ethers'
 import { keccak256, toUtf8Bytes, hexZeroPad } from 'ethers/lib/utils'
 import { ethers, network } from 'hardhat'
 import getChanges, { ContractsChange } from './get-changes'
 import { waitForTransactionMined } from './utils'
 
 const DOMAIN = 'fds'
+const VALIDATOR_ROLE = utils.keccak256(utils.toUtf8Bytes('VALIDATOR_ROLE'))
 
 async function deployENS() {
   const ENS = await ethers.getContractFactory('contracts/ENSRegistry.sol:ENSRegistry')
@@ -45,6 +47,12 @@ async function deployDappRegistry() {
   const dappRegistry = await DappRegistry.deploy()
 
   await dappRegistry.deployed()
+
+  if (process.env.VALIDATOR_ADDRESS) {
+    const tx = await dappRegistry.grantRole(VALIDATOR_ROLE, process.env.VALIDATOR_ADDRESS)
+
+    await waitForTransactionMined(tx)
+  }
 
   console.log(`DappRegistry deployed to: ${dappRegistry.address}`)
 }
