@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.5.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v2.4.0...fdp-contracts-main-v2.5.0) (2023-04-13)
+
+
+### Features
+
+* **contract-upgrade:** update contract metadata ([76cb289](https://github.com/fairDataSociety/fdp-contracts/commit/76cb289a975e9745c67762e0b306967ec61ca9d5))
+
+
+### Bug Fixes
+
+* dapp registry validation ([#131](https://github.com/fairDataSociety/fdp-contracts/issues/131)) ([884f3e5](https://github.com/fairDataSociety/fdp-contracts/commit/884f3e545752ce7a53316377d7ef9c3b8acdc71b))
+* goerli addresses ([d190b81](https://github.com/fairDataSociety/fdp-contracts/commit/d190b8120a95289b52c8d76a8fd93aa6aa68e213))
+
 ## [2.4.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v2.3.0...fdp-contracts-main-v2.4.0) (2023-04-04)
 
 
