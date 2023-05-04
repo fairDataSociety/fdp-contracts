@@ -12,5 +12,6 @@ export interface EnsEnvironment {
 
 export interface DappRegistryEnvironment {
   rpcUrl: string
-  contractAddress: EthAddress
+  dappRegistryAddress: EthAddress
+  ratingsAddress: EthAddress
 }

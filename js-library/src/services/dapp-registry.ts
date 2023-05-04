@@ -1,6 +1,7 @@
 import { utils, Contract, providers, BigNumber } from 'ethers'
 import { DAPP_REGISTRY_ENVIRONMENT_CONFIGS } from '../constants'
 import DappRegistryContractLocal from '../contracts/DappRegistry/DappRegistry.json'
+import RatingsContractLocal from '../contracts/Ratings/Ratings.json'
 import {
   DappRegistryEnvironment,
   Environments,
@@ -12,8 +13,10 @@ import {
 import { DappRecord } from '../model/dapp-record.model'
 import { waitTransaction } from '../utils/tx'
 import { SignerOrProvider } from './ens'
+import { Rating } from '../model/rating.model'
 
 export const DappRegistryContract = DappRegistryContractLocal
+export const RatingsContract = RatingsContractLocal
 
 const ADMIN_ROLE = utils.hexZeroPad(utils.hexlify(0), 32)
 const VALIDATOR_ROLE = utils.keccak256(utils.toUtf8Bytes('VALIDATOR_ROLE'))
@@ -25,6 +28,7 @@ const VALIDATOR_ROLE = utils.keccak256(utils.toUtf8Bytes('VALIDATOR_ROLE'))
 export class DappRegistry {
   private _provider: providers.JsonRpcProvider
   private _dappRegistryContract: Contract
+  private _ratingsContract: Contract
 
   constructor(
     config: DappRegistryEnvironment = DAPP_REGISTRY_ENVIRONMENT_CONFIGS[Environments.LOCALHOST],
@@ -33,10 +37,12 @@ export class DappRegistry {
     this._provider = new providers.JsonRpcProvider(config.rpcUrl)
 
     this._dappRegistryContract = new Contract(
-      config.contractAddress,
+      config.dappRegistryAddress,
       DappRegistryContract.abi,
       this._provider,
     )
+
+    this._ratingsContract = new Contract(config.ratingsAddress, RatingsContract.abi, this._provider)
 
     if (signerOrProvider) {
       this.connect(signerOrProvider)
@@ -126,6 +132,28 @@ export class DappRegistry {
     return this._dappRegistryContract.getUser(address)
   }
 
+  public rateDapp(recordLocation: SwarmLocation, review: HexString, rating: number): Promise<void> {
+    return this._ratingsContract.rate(recordLocation, review, rating)
+  }
+
+  public getAverageRating(recordLocation: SwarmLocation): Promise<number> {
+    return this._ratingsContract.getAverageRating(recordLocation)
+  }
+
+  public getNumberOfRatings(recordLocation: SwarmLocation): Promise<number> {
+    return this._ratingsContract.getAverageRating(recordLocation)
+  }
+
+  public async hasUserRated(recordLocation: SwarmLocation): Promise<boolean> {
+    return Boolean(await this._ratingsContract.hasUserRated(recordLocation))
+  }
+
+  public async getRatingFor(recordLocation: SwarmLocation): Promise<Rating[]> {
+    const records = await this._ratingsContract.getRatingFor(recordLocation)
+
+    return records.map((record: string[]) => this.convertRatingRecord(record))
+  }
+
   private convertDappRecord(record: Array<string>): DappRecord {
     return {
       recordHash: record[0],
@@ -136,6 +164,14 @@ export class DappRegistry {
       index: BigNumber.from(record[5]),
       creatorIndex: BigNumber.from(record[6]),
       timestamp: new Date(record[7]),
+    }
+  }
+
+  private convertRatingRecord(record: Array<string>): Rating {
+    return {
+      rating: Number(record[0]),
+      review: record[1],
+      user: record[2],
     }
   }
 }
