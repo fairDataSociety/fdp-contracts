@@ -62,6 +62,7 @@ export class DappRegistry {
    */
   public connect(signerOrProvider: SignerOrProvider): void {
     this._dappRegistryContract = this._dappRegistryContract.connect(signerOrProvider)
+    this._ratingsContract = this._ratingsContract.connect(signerOrProvider)
   }
 
   public grantAdminRole(address: EthAddress): Promise<void> {
@@ -133,15 +134,17 @@ export class DappRegistry {
   }
 
   public rateDapp(recordLocation: SwarmLocation, review: HexString, rating: number): Promise<void> {
-    return this._ratingsContract.rate(recordLocation, review, rating)
+    return waitTransaction(this._ratingsContract.rate(recordLocation, review, rating))
   }
 
-  public getAverageRating(recordLocation: SwarmLocation): Promise<number> {
-    return this._ratingsContract.getAverageRating(recordLocation)
+  public async getAverageRating(recordLocation: SwarmLocation): Promise<number> {
+    const averageRating = Number(await this._ratingsContract.getAverageRating(recordLocation))
+
+    return Number.isInteger(averageRating) ? averageRating : 0
   }
 
-  public getNumberOfRatings(recordLocation: SwarmLocation): Promise<number> {
-    return this._ratingsContract.getAverageRating(recordLocation)
+  public async getNumberOfRatings(recordLocation: SwarmLocation): Promise<BigNumber> {
+    return this._ratingsContract.getNumberOfRatings(recordLocation)
   }
 
   public async hasUserRated(recordLocation: SwarmLocation): Promise<boolean> {
