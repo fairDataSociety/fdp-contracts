@@ -3,7 +3,7 @@ import { promisify } from 'util'
 
 const exec = promisify(childProcess.exec)
 
-export type ContractsChange = 'ENS' | 'BMT' | 'DAPP_REGISTRY'
+export type ContractsChange = 'ENS' | 'BMT' | 'DAPP_REGISTRY' | 'RATINGS'
 
 function processShellResponse({ stdout, stderr }: { stdout: string; stderr: string }): string {
   if (stderr) {
@@ -54,6 +54,10 @@ export default async function getChanges(): Promise<ContractsChange[]> {
 
   if (hasChange(changedFiles, 'contracts/DappRegistry.sol')) {
     changes.push('DAPP_REGISTRY')
+  }
+
+  if (hasChange(changedFiles, 'contracts/Ratings.sol')) {
+    changes.push('RATINGS')
   }
 
   return changes
