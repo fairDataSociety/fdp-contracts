@@ -42,8 +42,8 @@ jobs:
       - name: Deploy to Sepolia
         run: ./scripts/deploy.sh sepolia
         env:
-          GOERLI_URL: ${{secrets.SEPOLIA_URL}}
-          GOERLI_PRIVATE_KEY: ${{secrets.SEPOLIA_PRIVATE_KEY}}
+          SEPOLIA_URL: ${{secrets.SEPOLIA_URL}}
+          SEPOLIA_PRIVATE_KEY: ${{secrets.SEPOLIA_PRIVATE_KEY}}
           VALIDATOR_ADDRESS: '0xd27ffA0e47Fca8D3E757B4d2C408169859B8c419'
           MAX_INTERVAL: 100000
 

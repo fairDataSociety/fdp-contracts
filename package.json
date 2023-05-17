@@ -9,6 +9,7 @@
     "deploy": "npx hardhat run --network localhost scripts/deploy.ts",
     "deploy:docker": "npx hardhat run --network docker scripts/deploy.ts",
     "deploy:goerli": "npx hardhat run --network goerli scripts/deploy.ts",
+    "deploy:sepolia": "npx hardhat run --network sepolia scripts/deploy.ts",
     "env:start-base": "fdp-play start --detach --fresh --blockchain-image fairdatasociety/fdp-play-blockchain --without-bees",
     "env:stop-base": "fdp-play stop",
     "build:image": "./scripts/build-image.sh",
