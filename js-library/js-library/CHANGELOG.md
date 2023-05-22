@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.6.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.5.0...fdp-contracts-js-lib-v3.6.0) (2023-05-22)
+
+
+### Features
+
+* add ratings info to readme ([9039f3f](https://github.com/fairDataSociety/fdp-contracts/commit/9039f3f07ad5b9676e13c86dae7e35ecec12b529))
+
 ## [3.5.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.4.0...fdp-contracts-js-lib-v3.5.0) (2023-05-08)
 
 
