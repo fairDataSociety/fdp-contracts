@@ -108,6 +108,15 @@ dappRegistry.connect(signer)
 
 Then all methods will be available to interact with the smart contract.
 
+### Ratings
+
+The Ratings contract is available as a part of the `DappRegistry` class. So to interact with the contract, an
+instance of the `DappRegistry` class is needed:
+
+```typescript
+const rating = await dappRegistry.getAverageRating(dappLocation)
+```
+
 ## Development
 
 To compile the library in watch mode:
