@@ -12,7 +12,7 @@ import PublicResolverContractLocal from '../contracts/PublicResolver/PublicResol
 import FDSRegistrarContractLocal from '../contracts/FDSRegistrar/FDSRegistrar.json'
 import { Username } from '../model/domain.type'
 import { assertUsername } from '../utils/domains'
-import { checkMinBalance, extractMessageFromFailedTx, isTxError } from '../utils/blockchain'
+import { extractMessageFromFailedTx, isTxError } from '../utils/blockchain'
 import { ServiceRequest } from '../model/service-request.model'
 
 const { keccak256, toUtf8Bytes, namehash } = utils
@@ -22,8 +22,6 @@ export type SignerOrProvider = string | providers.Provider | Signer
 export const ENSRegistryContract = ENSRegistryContractLocal
 export const PublicResolverContract = PublicResolverContractLocal
 export const FDSRegistrarContract = FDSRegistrarContractLocal
-
-const MIN_BALANCE = BigNumber.from('10000000000000000')
 
 enum RegisterUsernameStage {
   FDS_REGISTER_COMPLETED = 1,
@@ -150,8 +148,6 @@ export class ENS {
         let ownerAddress: EthAddress = NULL_ADDRESS
 
         if (this.config.performChecks) {
-          await checkMinBalance(this.provider, address, MIN_BALANCE)
-
           ownerAddress = await this.getUsernameOwner(username)
 
           if (ownerAddress !== NULL_ADDRESS) {
