@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.6.1](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.6.0...fdp-contracts-js-lib-v3.6.1) (2023-06-12)
+
+
+### Bug Fixes
+
+* remove min balance ([#141](https://github.com/fairDataSociety/fdp-contracts/issues/141)) ([#142](https://github.com/fairDataSociety/fdp-contracts/issues/142)) ([68dbcda](https://github.com/fairDataSociety/fdp-contracts/commit/68dbcda0f272d9e51e11d4777ed12699083bc684))
+
 ## [3.6.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.5.0...fdp-contracts-js-lib-v3.6.0) (2023-05-22)
 
 
