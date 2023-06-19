@@ -27,4 +27,4 @@ jobs:
 
       - run: npx ts-node scripts/grant-roles.ts
         env:
-          GOERLI_PRIVATE_KEY: ${{secrets.GOERLI_PRIVATE_KEY}}
+          SEPOLIA_PRIVATE_KEY: ${{secrets.SEPOLIA_PRIVATE_KEY}}

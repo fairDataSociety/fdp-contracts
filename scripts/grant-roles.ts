@@ -2,10 +2,10 @@ import { providers, Wallet } from 'ethers'
 import { DappRegistry, Environments, getDappRegistryEnvironmentConfig } from '../js-library'
 
 async function grantRoles() {
-  const config = getDappRegistryEnvironmentConfig(Environments.GOERLI)
+  const config = getDappRegistryEnvironmentConfig(Environments.SEPOLIA)
   const dappRegistry = new DappRegistry(config)
 
-  const signer = new Wallet(process.env.GOERLI_PRIVATE_KEY as string, new providers.JsonRpcProvider(config.rpcUrl))
+  const signer = new Wallet(process.env.SEPOLIA_PRIVATE_KEY as string, new providers.JsonRpcProvider(config.rpcUrl))
 
   dappRegistry.connect(signer)
 
