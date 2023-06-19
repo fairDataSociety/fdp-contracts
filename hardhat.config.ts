@@ -68,6 +68,10 @@ const config: HardhatUserConfig = {
       url: process.env.GOERLI_URL || '',
       accounts: process.env.GOERLI_PRIVATE_KEY !== undefined ? [process.env.GOERLI_PRIVATE_KEY] : [],
     },
+    sepolia: {
+      url: process.env.SEPOLIA_URL || '',
+      accounts: process.env.SEPOLIA_PRIVATE_KEY !== undefined ? [process.env.SEPOLIA_PRIVATE_KEY] : [],
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,

@@ -31,8 +31,9 @@ docker commit $BLOCKCHAIN_CONTAINER_NAME $CONTRACTS_IMAGE_URL
 echo "Image generated: $CONTRACTS_IMAGE_URL"
 
 echo "Copying meta files to the JS library"
+cp "$JS_LIB_CONTRACTS_DIR/contracts-goerli.env" "$DIST_FOLDER"
+
 rm -rfv "$JS_LIB_CONTRACTS_DIR"/*
 cp -a "$ROOT_PATH/artifacts/contracts/." "$JS_LIB_CONTRACTS_DIR"
-#cp -a "$ROOT_PATH/artifacts/@ensdomains/ens-contracts/contracts/registry/." "$JS_LIB_CONTRACTS_DIR"
-cp "$ENV_FILE" "$JS_LIB_CONTRACTS_DIR"
+cp "$ENV_FILE" "$DIST_FOLDER/contracts-goerli.env" "$JS_LIB_CONTRACTS_DIR"
 node scripts/rename-contracts.js "$JS_LIB_CONTRACTS_DIR"

@@ -1,5 +1,33 @@
 # Changelog
 
+## [3.6.1](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.6.0...fdp-contracts-js-lib-v3.6.1) (2023-06-12)
+
+
+### Bug Fixes
+
+* remove min balance ([#141](https://github.com/fairDataSociety/fdp-contracts/issues/141)) ([#142](https://github.com/fairDataSociety/fdp-contracts/issues/142)) ([68dbcda](https://github.com/fairDataSociety/fdp-contracts/commit/68dbcda0f272d9e51e11d4777ed12699083bc684))
+
+## [3.6.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.5.0...fdp-contracts-js-lib-v3.6.0) (2023-05-22)
+
+
+### Features
+
+* add ratings info to readme ([9039f3f](https://github.com/fairDataSociety/fdp-contracts/commit/9039f3f07ad5b9676e13c86dae7e35ecec12b529))
+
+## [3.5.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.4.0...fdp-contracts-js-lib-v3.5.0) (2023-05-08)
+
+
+### Features
+
+* **contract-upgrade:** update contract metadata ([ea69a0b](https://github.com/fairDataSociety/fdp-contracts/commit/ea69a0bfee3492d4b25381a41a6d95ec91426ce5))
+
+## [3.4.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.3.0...fdp-contracts-js-lib-v3.4.0) (2023-04-13)
+
+
+### Features
+
+* **contract-upgrade:** update contract metadata ([26ca5c6](https://github.com/fairDataSociety/fdp-contracts/commit/26ca5c695565091cacf8f08acb11809dfcd82692))
+
 ## [3.3.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.2.0...fdp-contracts-js-lib-v3.3.0) (2023-04-04)
 
 

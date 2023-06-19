@@ -1,10 +1,12 @@
 // TODO There is a eslint configuration error that needs to be fixed
+import { utils } from 'ethers'
 import { keccak256, toUtf8Bytes, hexZeroPad } from 'ethers/lib/utils'
 import { ethers, network } from 'hardhat'
 import getChanges, { ContractsChange } from './get-changes'
 import { waitForTransactionMined } from './utils'
 
 const DOMAIN = 'fds'
+const VALIDATOR_ROLE = utils.keccak256(utils.toUtf8Bytes('VALIDATOR_ROLE'))
 
 async function deployENS() {
   const ENS = await ethers.getContractFactory('contracts/ENSRegistry.sol:ENSRegistry')
@@ -46,11 +48,28 @@ async function deployDappRegistry() {
 
   await dappRegistry.deployed()
 
+  if (process.env.VALIDATOR_ADDRESS) {
+    const tx = await dappRegistry.grantRole(VALIDATOR_ROLE, process.env.VALIDATOR_ADDRESS)
+
+    await waitForTransactionMined(tx)
+
+    console.log(`VALIDATOR_ROLE granted to ${process.env.VALIDATOR_ADDRESS} address`)
+  }
+
   console.log(`DappRegistry deployed to: ${dappRegistry.address}`)
 }
 
+async function deployRatings() {
+  const Ratings = await ethers.getContractFactory('Ratings')
+  const ratings = await Ratings.deploy()
+
+  await ratings.deployed()
+
+  console.log(`Ratings deployed to: ${ratings.address}`)
+}
+
 async function main() {
-  let changes: ContractsChange[] = ['ENS', 'BMT', 'DAPP_REGISTRY']
+  let changes: ContractsChange[] = ['ENS', 'BMT', 'DAPP_REGISTRY', 'RATINGS']
 
   if (network.name !== 'localhost' && network.name !== 'docker') {
     changes = await getChanges()
@@ -65,6 +84,11 @@ async function main() {
   if (changes.includes('DAPP_REGISTRY')) {
     console.log('Deploying DappRegistry contract')
     await deployDappRegistry()
+  }
+
+  if (changes.includes('DAPP_REGISTRY') || changes.includes('RATINGS')) {
+    console.log('Deploying Ratings contract')
+    await deployRatings()
   }
 }
 

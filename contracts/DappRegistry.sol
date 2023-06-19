@@ -112,7 +112,7 @@ contract DappRegistry is Ownable, AccessControl {
         }
 
         validator.validatedRecords.pop();
-        validator.validatedRecordsMapping[_recordHash] = true;
+        validator.validatedRecordsMapping[_recordHash] = false;
 
         break;
       }
