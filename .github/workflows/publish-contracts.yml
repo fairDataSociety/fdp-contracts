@@ -47,6 +47,22 @@ jobs:
           VALIDATOR_ADDRESS: '0xd27ffA0e47Fca8D3E757B4d2C408169859B8c419'
           MAX_INTERVAL: 100000
 
+      - name: Deploy to Optimism Goerli
+        run: ./scripts/deploy.sh optimism_goerli
+        env:
+          SEPOLIA_URL: ${{secrets.OPTIMISM_GOERLI_URL}}
+          SEPOLIA_PRIVATE_KEY: ${{secrets.OPTIMISM_GOERLI_PRIVATE_KEY}}
+          VALIDATOR_ADDRESS: '0xd27ffA0e47Fca8D3E757B4d2C408169859B8c419'
+          MAX_INTERVAL: 100000
+
+      - name: Deploy to Arbitrum Goerli
+        run: ./scripts/deploy.sh arbitrum_goerli
+        env:
+          SEPOLIA_URL: ${{secrets.ARBITRUM_GOERLI_URL}}
+          SEPOLIA_PRIVATE_KEY: ${{secrets.ARBITRUM_GOERLI_PRIVATE_KEY}}
+          VALIDATOR_ADDRESS: '0xd27ffA0e47Fca8D3E757B4d2C408169859B8c419'
+          MAX_INTERVAL: 100000
+
       - name: Publish image
         run: ./scripts/release-image.sh
 

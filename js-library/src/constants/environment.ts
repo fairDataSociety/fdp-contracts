@@ -33,6 +33,24 @@ export const ENS_ENVIRONMENT_CONFIGS: EnsEnvironmentConfigs = {
     },
     performChecks: false,
   },
+  [Environments.OPTIMISM_GOERLI]: {
+    rpcUrl: 'https://optimism-goerli.publicnode.com',
+    contractAddresses: {
+      ensRegistry: process.env.OPTIMISM_GOERLI_ENS_REGISTRY_ADDRESS as EthAddress,
+      fdsRegistrar: process.env.OPTIMISM_GOERLI_FDS_REGISTRAR_ADDRESS as EthAddress,
+      publicResolver: process.env.OPTIMISM_GOERLI_PUBLIC_RESOLVER_ADDRESS as EthAddress,
+    },
+    performChecks: false,
+  },
+  [Environments.ARBITRUM_GOERLI]: {
+    rpcUrl: 'https://arbitrum-goerli.rpc.thirdweb.com',
+    contractAddresses: {
+      ensRegistry: process.env.ARBITRUM_GOERLI_ENS_REGISTRY_ADDRESS as EthAddress,
+      fdsRegistrar: process.env.ARBITRUM_GOERLI_FDS_REGISTRAR_ADDRESS as EthAddress,
+      publicResolver: process.env.ARBITRUM_GOERLI_PUBLIC_RESOLVER_ADDRESS as EthAddress,
+    },
+    performChecks: false,
+  },
 }
 
 export const DAPP_REGISTRY_ENVIRONMENT_CONFIGS: DappRegistryEnvironmentConfigs = {
@@ -50,6 +68,16 @@ export const DAPP_REGISTRY_ENVIRONMENT_CONFIGS: DappRegistryEnvironmentConfigs =
     rpcUrl: 'https://rpc.sepolia.org/',
     dappRegistryAddress: process.env.SEPOLIA_DAPP_REGISTRY_ADDRESS as EthAddress,
     ratingsAddress: process.env.SEPOLIA_RATINGS_ADDRESS as EthAddress,
+  },
+  [Environments.OPTIMISM_GOERLI]: {
+    rpcUrl: 'https://optimism-goerli.publicnode.com',
+    dappRegistryAddress: process.env.OPTIMISM_GOERLI_DAPP_REGISTRY_ADDRESS as EthAddress,
+    ratingsAddress: process.env.OPTIMISM_GOERLI_RATINGS_ADDRESS as EthAddress,
+  },
+  [Environments.ARBITRUM_GOERLI]: {
+    rpcUrl: 'https://arbitrum-goerli.rpc.thirdweb.com',
+    dappRegistryAddress: process.env.ARBITRUM_GOERLI_DAPP_REGISTRY_ADDRESS as EthAddress,
+    ratingsAddress: process.env.ARBITRUM_GOERLI_RATINGS_ADDRESS as EthAddress,
   },
 }
 
