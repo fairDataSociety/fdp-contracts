@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.7.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.6.1...fdp-contracts-js-lib-v3.7.0) (2023-07-12)
+
+
+### Features
+
+* optimism and arbitrum goerli networks ([#144](https://github.com/fairDataSociety/fdp-contracts/issues/144)) ([7ea25fb](https://github.com/fairDataSociety/fdp-contracts/commit/7ea25fb1a8ddbf49d9850fadefa7710fe3066004))
+
 ## [3.6.1](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.6.0...fdp-contracts-js-lib-v3.6.1) (2023-06-12)
 
 
