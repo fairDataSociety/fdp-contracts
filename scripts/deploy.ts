@@ -14,22 +14,24 @@ async function deployENS() {
 
   let tx
   await ens.deployed()
+  console.log(`ENSRegistry deployed to:`, ens.address)
+
   const [owner] = await ethers.getSigners()
   const ownerAddress = owner.address
 
   const FDSRegistrar = await ethers.getContractFactory('FDSRegistrar')
   const registrar = await FDSRegistrar.deploy(ens.address)
+  console.log(`FDSRegistrar deployed to: ${registrar.address}`)
+
   tx = await registrar.addController(ownerAddress)
   await waitForTransactionMined(tx)
-
-  console.log(`FDSRegistrar deployed to: ${registrar.address}`)
+  console.log('FDSRegistrar.addController success')
 
   await registrar.deployed()
 
   tx = await ens.setSubnodeOwner(hexZeroPad('0x0', 32), keccak256(toUtf8Bytes(DOMAIN)), registrar.address)
   await waitForTransactionMined(tx)
-
-  console.log(`ENSRegistry deployed to:`, ens.address)
+  console.log('ENSRegistry.setSubnodeOwner success')
 
   const publicResolver = await ethers.getContractFactory('PublicResolver')
   const resolver = await publicResolver.deploy(ens.address)
@@ -40,6 +42,7 @@ async function deployENS() {
 
   tx = await registrar.setResolver(resolver.address)
   await waitForTransactionMined(tx)
+  console.log('FDSRegistrar.setResolver success')
 }
 
 async function deployDappRegistry() {
@@ -48,6 +51,8 @@ async function deployDappRegistry() {
 
   await dappRegistry.deployed()
 
+  console.log(`DappRegistry deployed to: ${dappRegistry.address}`)
+
   if (process.env.VALIDATOR_ADDRESS) {
     const tx = await dappRegistry.grantRole(VALIDATOR_ROLE, process.env.VALIDATOR_ADDRESS)
 
@@ -55,8 +60,6 @@ async function deployDappRegistry() {
 
     console.log(`VALIDATOR_ROLE granted to ${process.env.VALIDATOR_ADDRESS} address`)
   }
-
-  console.log(`DappRegistry deployed to: ${dappRegistry.address}`)
 }
 
 async function deployRatings() {

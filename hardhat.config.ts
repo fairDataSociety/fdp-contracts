@@ -72,6 +72,14 @@ const config: HardhatUserConfig = {
       url: process.env.SEPOLIA_URL || '',
       accounts: process.env.SEPOLIA_PRIVATE_KEY !== undefined ? [process.env.SEPOLIA_PRIVATE_KEY] : [],
     },
+    optimism_goerli: {
+      url: process.env.OPTIMISM_GOERLI_URL || '',
+      accounts: process.env.OPTIMISM_GOERLI_PRIVATE_KEY !== undefined ? [process.env.OPTIMISM_GOERLI_PRIVATE_KEY] : [],
+    },
+    arbitrum_goerli: {
+      url: process.env.ARBITRUM_GOERLI_URL || '',
+      accounts: process.env.ARBITRUM_GOERLI_PRIVATE_KEY !== undefined ? [process.env.ARBITRUM_GOERLI_PRIVATE_KEY] : [],
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,

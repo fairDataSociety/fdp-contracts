@@ -61,6 +61,8 @@ const config = (env: ENV) => {
       new Dotenv({ path: path.resolve(srcDir, 'contracts', 'contracts-docker.env') }),
       new Dotenv({ path: path.resolve(srcDir, 'contracts', 'contracts-goerli.env') }),
       new Dotenv({ path: path.resolve(srcDir, 'contracts', 'contracts-sepolia.env') }),
+      new Dotenv({ path: path.resolve(srcDir, 'contracts', 'contracts-optimism_goerli.env') }),
+      new Dotenv({ path: path.resolve(srcDir, 'contracts', 'contracts-arbitrum_goerli.env') }),
     ],
   }
 }
