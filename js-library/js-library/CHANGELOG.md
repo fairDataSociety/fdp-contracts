@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.7.1](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.7.0...fdp-contracts-js-lib-v3.7.1) (2023-08-09)
+
+
+### Bug Fixes
+
+* change sepolia rpc ([#147](https://github.com/fairDataSociety/fdp-contracts/issues/147)) ([#148](https://github.com/fairDataSociety/fdp-contracts/issues/148)) ([6797e71](https://github.com/fairDataSociety/fdp-contracts/commit/6797e718578f8db734bc7943b64b2f95c173cf57))
+
 ## [3.7.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.6.1...fdp-contracts-js-lib-v3.7.0) (2023-07-12)
 
 
