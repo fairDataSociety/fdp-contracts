@@ -25,7 +25,7 @@ export const ENS_ENVIRONMENT_CONFIGS: EnsEnvironmentConfigs = {
     performChecks: false,
   },
   [Environments.SEPOLIA]: {
-    rpcUrl: 'https://rpc.sepolia.org/',
+    rpcUrl: 'https://sepolia.dev.fairdatasociety.org/',
     contractAddresses: {
       ensRegistry: process.env.SEPOLIA_ENS_REGISTRY_ADDRESS as EthAddress,
       fdsRegistrar: process.env.SEPOLIA_FDS_REGISTRAR_ADDRESS as EthAddress,
@@ -65,7 +65,7 @@ export const DAPP_REGISTRY_ENVIRONMENT_CONFIGS: DappRegistryEnvironmentConfigs =
     ratingsAddress: process.env.GOERLI_RATINGS_ADDRESS as EthAddress,
   },
   [Environments.SEPOLIA]: {
-    rpcUrl: 'https://rpc.sepolia.org/',
+    rpcUrl: 'https://sepolia.dev.fairdatasociety.org/',
     dappRegistryAddress: process.env.SEPOLIA_DAPP_REGISTRY_ADDRESS as EthAddress,
     ratingsAddress: process.env.SEPOLIA_RATINGS_ADDRESS as EthAddress,
   },
