@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.7.2](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.7.1...fdp-contracts-js-lib-v3.7.2) (2023-09-01)
+
+
+### Bug Fixes
+
+* dapp-registry library ([#150](https://github.com/fairDataSociety/fdp-contracts/issues/150)) ([33562ed](https://github.com/fairDataSociety/fdp-contracts/commit/33562ed58a3c050eb6c88f7f094a97196fa0c5e3))
+
 ## [3.7.1](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.7.0...fdp-contracts-js-lib-v3.7.1) (2023-08-09)
 
 
