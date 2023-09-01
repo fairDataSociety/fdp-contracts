@@ -130,7 +130,7 @@ export class DappRegistry {
   }
 
   public async getUserRecordHashes(address: EthAddress): Promise<RecordHash[]> {
-    return this._dappRegistryContract.getUser(address)
+    return this._dappRegistryContract.getUserRecordHashes(address)
   }
 
   public rateDapp(recordLocation: SwarmLocation, review: HexString, rating: number): Promise<void> {
@@ -157,16 +157,22 @@ export class DappRegistry {
     return records.map((record: string[]) => this.convertRatingRecord(record))
   }
 
-  private convertDappRecord(record: Array<string>): DappRecord {
+  private convertDappRecord(record: Array<unknown>): DappRecord {
+    let timestamp: Date = new Date('')
+
+    try {
+      timestamp = new Date((record[7] as BigNumber).toNumber())
+    } catch (error) {}
+
     return {
-      recordHash: record[0],
-      creator: record[1],
-      location: record[2],
-      urlHash: record[3],
+      recordHash: record[0] as string,
+      creator: record[1] as string,
+      location: record[2] as string,
+      urlHash: record[3] as string,
       edited: Boolean(record[4]),
       index: BigNumber.from(record[5]),
       creatorIndex: BigNumber.from(record[6]),
-      timestamp: new Date(record[7]),
+      timestamp,
     }
   }
 
