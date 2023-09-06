@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.7.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v2.6.0...fdp-contracts-main-v2.7.0) (2023-09-06)
+
+
+### Features
+
+* add ratings info to readme ([9039f3f](https://github.com/fairDataSociety/fdp-contracts/commit/9039f3f07ad5b9676e13c86dae7e35ecec12b529))
+* approximate gas price calculation ([#153](https://github.com/fairDataSociety/fdp-contracts/issues/153)) ([a3f7b69](https://github.com/fairDataSociety/fdp-contracts/commit/a3f7b69a069f34ca6ebe899e777ee37a1d1725ea))
+* **contract-upgrade:** update contract metadata ([ea69a0b](https://github.com/fairDataSociety/fdp-contracts/commit/ea69a0bfee3492d4b25381a41a6d95ec91426ce5))
+* optimism and arbitrum goerli networks ([#144](https://github.com/fairDataSociety/fdp-contracts/issues/144)) ([7ea25fb](https://github.com/fairDataSociety/fdp-contracts/commit/7ea25fb1a8ddbf49d9850fadefa7710fe3066004))
+
+
+### Bug Fixes
+
+* change sepolia rpc ([#147](https://github.com/fairDataSociety/fdp-contracts/issues/147)) ([#148](https://github.com/fairDataSociety/fdp-contracts/issues/148)) ([6797e71](https://github.com/fairDataSociety/fdp-contracts/commit/6797e718578f8db734bc7943b64b2f95c173cf57))
+* dapp-registry library ([#150](https://github.com/fairDataSociety/fdp-contracts/issues/150)) ([33562ed](https://github.com/fairDataSociety/fdp-contracts/commit/33562ed58a3c050eb6c88f7f094a97196fa0c5e3))
+* remove min balance ([#141](https://github.com/fairDataSociety/fdp-contracts/issues/141)) ([#142](https://github.com/fairDataSociety/fdp-contracts/issues/142)) ([68dbcda](https://github.com/fairDataSociety/fdp-contracts/commit/68dbcda0f272d9e51e11d4777ed12699083bc684))
+
 ## [2.6.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v2.5.0...fdp-contracts-main-v2.6.0) (2023-05-08)
 
 
