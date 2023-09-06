@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.8.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.7.2...fdp-contracts-js-lib-v3.8.0) (2023-09-06)
+
+
+### Features
+
+* approximate gas price calculation ([#153](https://github.com/fairDataSociety/fdp-contracts/issues/153)) ([a3f7b69](https://github.com/fairDataSociety/fdp-contracts/commit/a3f7b69a069f34ca6ebe899e777ee37a1d1725ea))
+
 ## [3.7.2](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.7.1...fdp-contracts-js-lib-v3.7.2) (2023-09-01)
 
 
