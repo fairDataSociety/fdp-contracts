@@ -13,6 +13,7 @@ export const ENS_ENVIRONMENT_CONFIGS: EnsEnvironmentConfigs = {
       fdsRegistrar: process.env.DOCKER_FDS_REGISTRAR_ADDRESS as EthAddress,
       publicResolver: process.env.DOCKER_PUBLIC_RESOLVER_ADDRESS as EthAddress,
     },
+    gasEstimation: Number(process.env.DOCKER_GAS_ESTIMATION),
     performChecks: false,
   },
   [Environments.GOERLI]: {
@@ -22,6 +23,7 @@ export const ENS_ENVIRONMENT_CONFIGS: EnsEnvironmentConfigs = {
       fdsRegistrar: process.env.GOERLI_FDS_REGISTRAR_ADDRESS as EthAddress,
       publicResolver: process.env.GOERLI_PUBLIC_RESOLVER_ADDRESS as EthAddress,
     },
+    gasEstimation: Number(process.env.GOERLI_GAS_ESTIMATION),
     performChecks: false,
   },
   [Environments.SEPOLIA]: {
@@ -31,6 +33,7 @@ export const ENS_ENVIRONMENT_CONFIGS: EnsEnvironmentConfigs = {
       fdsRegistrar: process.env.SEPOLIA_FDS_REGISTRAR_ADDRESS as EthAddress,
       publicResolver: process.env.SEPOLIA_PUBLIC_RESOLVER_ADDRESS as EthAddress,
     },
+    gasEstimation: Number(process.env.SEPOLIA_GAS_ESTIMATION),
     performChecks: false,
   },
   [Environments.OPTIMISM_GOERLI]: {
@@ -40,6 +43,7 @@ export const ENS_ENVIRONMENT_CONFIGS: EnsEnvironmentConfigs = {
       fdsRegistrar: process.env.OPTIMISM_GOERLI_FDS_REGISTRAR_ADDRESS as EthAddress,
       publicResolver: process.env.OPTIMISM_GOERLI_PUBLIC_RESOLVER_ADDRESS as EthAddress,
     },
+    gasEstimation: Number(process.env.OPTIMISM_GOERLI_GAS_ESTIMATION),
     performChecks: false,
   },
   [Environments.ARBITRUM_GOERLI]: {
@@ -49,6 +53,7 @@ export const ENS_ENVIRONMENT_CONFIGS: EnsEnvironmentConfigs = {
       fdsRegistrar: process.env.ARBITRUM_GOERLI_FDS_REGISTRAR_ADDRESS as EthAddress,
       publicResolver: process.env.ARBITRUM_GOERLI_PUBLIC_RESOLVER_ADDRESS as EthAddress,
     },
+    gasEstimation: Number(process.env.ARBITRUM_GOERLI_GAS_ESTIMATION),
     performChecks: false,
   },
 }

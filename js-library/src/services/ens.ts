@@ -113,6 +113,7 @@ export class ENS {
    * @param username ENS username
    * @param address Owner address of the username
    * @param publicKey Hex string of a public key
+   * @param expires Time in seconds
    * @returns ServiceRequest instance that can be used to invoke the request multiple times if fails.
    */
   public createRegisterUsernameRequest(
@@ -189,10 +190,31 @@ export class ENS {
   }
 
   /**
+   * Retrieves the estimated gas usage for all methods involved in username registration
+   * @returns {number} gas amount estimation
+   */
+  public registerUsernameApproximateGas(): number {
+    return this.config.gasEstimation
+  }
+
+  /**
+   * Calculates total price for username registration
+   * @param priorityPrice an additional fee for the transaction, defaults to 1.5 gwei
+   * @returns {BigNumber} approximate total price for transactions in wei
+   */
+  public async registerUsernameApproximatePrice(priorityPrice = utils.parseUnits('1.5', 'gwei')): Promise<BigNumber> {
+    const gas = this.registerUsernameApproximateGas()
+    const gasPrice = await this._provider.getGasPrice()
+
+    return BigNumber.from(gas).mul(gasPrice.add(priorityPrice))
+  }
+
+  /**
    * Estimates gas amount for the registerUsername method
    * @param username ENS username
    * @param address Owner address of the username
    * @param publicKey Hex string of a public key
+   * @param expires Time in seconds
    * @param customRpc (optional) custom RPC provider if the default one can't calculate gas
    * @returns gas amount estimation
    */
