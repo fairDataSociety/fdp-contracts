@@ -10,6 +10,8 @@ import { EnsEnvironment } from '../model/environment.model'
 import ENSRegistryContractLocal from '../contracts/ENSRegistry/ENSRegistry.json'
 import PublicResolverContractLocal from '../contracts/PublicResolver/PublicResolver.json'
 import FDSRegistrarContractLocal from '../contracts/FDSRegistrar/FDSRegistrar.json'
+import FDSReverseRegistrarContractLocal from '../contracts/FDSReverseRegistrar/FDSReverseRegistrar.json'
+import FDSNameResolverContractLocal from '../contracts/FDSNameResolver/FDSNameResolver.json'
 import { Username } from '../model/domain.type'
 import { assertUsername } from '../utils/domains'
 import { extractMessageFromFailedTx, isTxError } from '../utils/blockchain'
@@ -22,11 +24,14 @@ export type SignerOrProvider = string | providers.Provider | Signer
 export const ENSRegistryContract = ENSRegistryContractLocal
 export const PublicResolverContract = PublicResolverContractLocal
 export const FDSRegistrarContract = FDSRegistrarContractLocal
+export const FDSReverseRegistrarContract = FDSReverseRegistrarContractLocal
+export const FDSNameResolverContract = FDSNameResolverContractLocal
 
 enum RegisterUsernameStage {
   FDS_REGISTER_COMPLETED = 1,
   SET_RESOLVER_COMPLETED = 2,
   SET_PUBLIC_KEY_COMPLETED = 3,
+  SET_NAME_COMPLETED = 4,
 }
 
 export interface RegisterUsernameRequestData {
@@ -45,6 +50,8 @@ export class ENS {
   private _ensRegistryContract: Contract
   private _fdsRegistrarContract: Contract
   private _publicResolverContract: Contract
+  private _reverseRegistrarContract: Contract
+  private _nameResolverContract: Contract
 
   constructor(
     private config: EnsEnvironment = ENS_ENVIRONMENT_CONFIGS[Environments.LOCALHOST],
@@ -53,11 +60,18 @@ export class ENS {
   ) {
     this._provider = new providers.JsonRpcProvider(config.rpcUrl)
 
-    const { ensRegistry, fdsRegistrar, publicResolver } = config.contractAddresses
+    const { ensRegistry, fdsRegistrar, publicResolver, reverseResolver, nameResolver } =
+      config.contractAddresses
 
     this._ensRegistryContract = new Contract(ensRegistry, ENSRegistryContract.abi, this._provider)
     this._publicResolverContract = new Contract(publicResolver, PublicResolverContract.abi, this._provider)
     this._fdsRegistrarContract = new Contract(fdsRegistrar, FDSRegistrarContract.abi, this._provider)
+    this._reverseRegistrarContract = new Contract(
+      reverseResolver,
+      FDSReverseRegistrarContract.abi,
+      this._provider,
+    )
+    this._nameResolverContract = new Contract(nameResolver, FDSNameResolverContract.abi, this._provider)
 
     if (signerOrProvider) {
       this.connect(signerOrProvider)
@@ -79,6 +93,8 @@ export class ENS {
     this._publicResolverContract = this._publicResolverContract.connect(signerOrProvider)
     this._fdsRegistrarContract = this._fdsRegistrarContract.connect(signerOrProvider)
     this._ensRegistryContract = this._ensRegistryContract.connect(signerOrProvider)
+    this._reverseRegistrarContract = this._reverseRegistrarContract.connect(signerOrProvider)
+    this._nameResolverContract = this._nameResolverContract.connect(signerOrProvider)
   }
 
   /**
@@ -86,7 +102,7 @@ export class ENS {
    * @param username ENS username
    * @returns owner's address
    */
-  public async getUsernameOwner(username: Username): Promise<EthAddress> {
+  public getUsernameOwner(username: Username): Promise<EthAddress> {
     assertUsername(username)
 
     const usernameHash = this.hashUsername(username)
@@ -102,6 +118,7 @@ export class ENS {
   public async isUsernameAvailable(username: Username): Promise<boolean> {
     assertUsername(username)
     const owner = await this.getUsernameOwner(username)
+
     return owner === NULL_ADDRESS
   }
 
@@ -120,7 +137,7 @@ export class ENS {
     username: Username,
     address: EthAddress,
     publicKey: PublicKey,
-    expires: number = 86400,
+    expires = 86400,
   ): ServiceRequest<RegisterUsernameRequestData> {
     return {
       stage: 0,
@@ -181,6 +198,14 @@ export class ENS {
 
         registerRequest.stage = RegisterUsernameStage.SET_PUBLIC_KEY_COMPLETED
       }
+
+      if (registerRequest.stage < RegisterUsernameStage.SET_NAME_COMPLETED) {
+        await waitRequestTransaction(this._provider, registerRequest, () =>
+          this._reverseRegistrarContract.setName(username),
+        )
+
+        registerRequest.stage = RegisterUsernameStage.SET_NAME_COMPLETED
+      }
     } catch (error) {
       if (isTxError(error)) {
         throw new Error(extractMessageFromFailedTx(error))
@@ -202,7 +227,9 @@ export class ENS {
    * @param priorityPrice an additional fee for the transaction, defaults to 1.5 gwei
    * @returns {BigNumber} approximate total price for transactions in wei
    */
-  public async registerUsernameApproximatePrice(priorityPrice = utils.parseUnits('1.5', 'gwei')): Promise<BigNumber> {
+  public async registerUsernameApproximatePrice(
+    priorityPrice = utils.parseUnits('1.5', 'gwei'),
+  ): Promise<BigNumber> {
     const gas = this.registerUsernameApproximateGas()
     const gasPrice = await this._provider.getGasPrice()
 
@@ -222,7 +249,7 @@ export class ENS {
     username: Username,
     address: EthAddress,
     publicKey: PublicKey,
-    expires: number = 86400,
+    expires = 86400,
     customRpc?: providers.JsonRpcProvider,
   ): Promise<BigNumber> {
     const rpc = customRpc || this._provider
@@ -289,6 +316,7 @@ export class ENS {
    */
   public getUserData(username: Username): Promise<EnsUserData> {
     assertUsername(username)
+
     return this._publicResolverContract.getAll(this.hashUsername(username))
   }
 
@@ -305,6 +333,7 @@ export class ENS {
   ): Promise<void> {
     assertUsername(username)
     const [publicKeyX, publicKeyY] = splitPublicKey(publicKey)
+
     return waitRequestTransaction(this._provider, request, () =>
       this._publicResolverContract.setPubkey(this.hashUsername(username), publicKeyX, publicKeyY),
     )
