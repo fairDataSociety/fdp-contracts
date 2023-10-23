@@ -17,6 +17,8 @@ contract FDSReverseRegistrar is Ownable, Controllable {
 
     bytes32 constant ZERO_HASH = 0x0000000000000000000000000000000000000000000000000000000000000000;
 
+    bytes32 constant NAME_HASH = keccak256(abi.encodePacked(ZERO_HASH, keccak256(abi.encodePacked("fds"))));
+
     event ReverseClaimed(address indexed addr, bytes32 indexed node);
     event DefaultResolverChanged(FDSNameResolver indexed resolver);
 
@@ -41,7 +43,7 @@ contract FDSReverseRegistrar is Ownable, Controllable {
             addr == msg.sender ||
                 controllers[msg.sender] ||
                 ens.isApprovedForAll(addr, msg.sender) ||
-                ownsContract(addr),
+                ownsContract(),
             "ReverseRegistrar: Caller is not a controller or authorised by address or the address itself"
         );
         _;
@@ -49,13 +51,16 @@ contract FDSReverseRegistrar is Ownable, Controllable {
 
     modifier authorisedByName(address addr, string memory name) {
         require(
-            addr == msg.sender ||
                 controllers[msg.sender] ||
-                ens.owner(namehash(name)) == msg.sender ||
-                ownsContract(addr),
+                ens.owner(nameToNode(name)) == addr ||
+                ownsContract(),
             "ReverseRegistrar: Caller is not a controller or authorised by address or the address itself"
         );
         _;
+    }
+
+    function nameToNode(string memory name) private pure returns(bytes32) {
+        return keccak256(abi.encodePacked(NAME_HASH, keccak256(abi.encodePacked(name))));
     }
 
     function setDefaultResolver(address resolver) public onlyOwner {
@@ -146,7 +151,7 @@ contract FDSReverseRegistrar is Ownable, Controllable {
         string memory name
     ) public authorisedByName(addr, name) returns (bytes32) {
         bytes32 node = claimForAddr(addr, owner, resolver);
-        FDSNameResolver(resolver).setName(node, namehash(name));
+        FDSNameResolver(resolver).setName(node, nameToNode(name));
         return node;
     }
 
@@ -188,12 +193,8 @@ contract FDSReverseRegistrar is Ownable, Controllable {
         }
     }
 
-    function ownsContract(address addr) internal view returns (bool) {
-        try Ownable(addr).owner() returns (address owner) {
-            return owner == msg.sender;
-        } catch {
-            return false;
-        }
+    function ownsContract() internal view returns (bool) {
+        return owner() == msg.sender;
     }
 
     function namehash(string memory name) private pure returns (bytes32) {
