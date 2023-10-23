@@ -1,14 +1,8 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
-import { FDSRegistrar, ENSRegistry, PublicResolver } from '../typechain'
-
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
-const ZERO_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000'
-
-function keccak256FromUtf8Bytes(value: string) {
-  return ethers.utils.keccak256(ethers.utils.toUtf8Bytes(value))
-}
+import { FDSRegistrar, ENSRegistry } from '../typechain'
+import { ZERO_ADDRESS, ZERO_HASH, initializeEns, keccak256FromUtf8Bytes } from './utils/ens'
 
 const advanceTime = (delay: number) => ethers.provider.send('evm_increaseTime', [delay])
 
@@ -22,27 +16,18 @@ describe('FDSRegistrar', () => {
 
   let ens: ENSRegistry
   let registrar: FDSRegistrar
-  let resolver: PublicResolver
+
   before(async () => {
     const signers = await ethers.getSigners()
     ownerAccount = signers[0]
     controllerAccount = signers[1]
     registrantAccount = signers[2]
     otherAccount = signers[3]
-    const ENS = await ethers.getContractFactory('ENSRegistry')
-    ens = await ENS.deploy()
-    await ens.deployed()
-    const FDSRegistrar = await ethers.getContractFactory('FDSRegistrar')
-    registrar = await FDSRegistrar.deploy(ens.address)
-    await registrar.addController(controllerAccount.address)
-    await ens.setSubnodeOwner(ZERO_HASH, keccak256FromUtf8Bytes('fds'), registrar.address)
 
-    const publicResolver = await ethers.getContractFactory('PublicResolver')
-    resolver = await publicResolver.deploy(ens.address)
+    const ensContracts = await initializeEns(controllerAccount)
 
-    console.log(`PublicResolver deployed to: ${resolver.address}`)
-    await resolver.deployed()
-    await registrar.setResolver(resolver.address)
+    ens = ensContracts.ens
+    registrar = ensContracts.registrar
   })
 
   it('should allow new registrations', async () => {
