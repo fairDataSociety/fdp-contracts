@@ -1,5 +1,5 @@
-import { utils } from 'ethers'
-import { isHexString as isHexStringEthers } from 'ethers/lib/utils'
+import { BigNumber, utils } from 'ethers'
+import { hexZeroPad, isHexString as isHexStringEthers } from 'ethers/lib/utils'
 import {
   HexString,
   PublicKey,
@@ -14,6 +14,10 @@ const { hexStripZeros } = utils
 
 export function isHexString(hexString: unknown): hexString is HexString {
   return isHexStringEthers(hexString)
+}
+
+export function isZeroHexString(hexString: HexString): boolean {
+  return BigNumber.from(hexString).eq(BigNumber.from(0))
 }
 
 export function isHexStringPublicKey(hexString: unknown): hexString is HexString {
@@ -42,4 +46,8 @@ export function joinPublicKey(publicKeyX: PublicKeyX, publicKeyY: PublicKeyY): P
     'One or both public key parts are not hex strings.',
   )
   return ('0x04' + publicKeyX.substring(2) + publicKeyY.substring(2)) as PublicKey
+}
+
+export function numberToBytes32(number: BigNumber): string {
+  return hexZeroPad(number.toHexString(), 32)
 }

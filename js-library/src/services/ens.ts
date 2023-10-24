@@ -2,7 +2,13 @@ import { utils, Contract, Signer, providers, BigNumber } from 'ethers'
 import { ENS_DOMAIN, NULL_ADDRESS } from '../constants/constants'
 import { ENS_ENVIRONMENT_CONFIGS } from '../constants/environment'
 import { waitRequestTransaction } from '../utils/tx'
-import { joinPublicKey, isPublicKeyValid, splitPublicKey } from '../utils/keys'
+import {
+  joinPublicKey,
+  isPublicKeyValid,
+  splitPublicKey,
+  numberToBytes32,
+  isZeroHexString,
+} from '../utils/keys'
 import { Environments } from '../model/environments.enum'
 import { EnsUserData } from '../model/ens-user-data.model'
 import { EthAddress, PublicKey } from '../model/hex.types'
@@ -16,6 +22,7 @@ import { Username } from '../model/domain.type'
 import { assertUsername } from '../utils/domains'
 import { extractMessageFromFailedTx, isTxError } from '../utils/blockchain'
 import { ServiceRequest } from '../model/service-request.model'
+import { hashAddress } from '../utils/address'
 
 const { keccak256, toUtf8Bytes, namehash } = utils
 
@@ -194,7 +201,7 @@ export class ENS {
       }
 
       if (registerRequest.stage < RegisterUsernameStage.SET_PUBLIC_KEY_COMPLETED) {
-        await this.setPublicKey(registerRequest, username, publicKey)
+        await this.setNameAndPublicKey(registerRequest, username, address, publicKey)
 
         registerRequest.stage = RegisterUsernameStage.SET_PUBLIC_KEY_COMPLETED
       }
@@ -320,22 +327,41 @@ export class ENS {
     return this._publicResolverContract.getAll(this.hashUsername(username))
   }
 
+  public async getUsernameByAddress(address: EthAddress): Promise<Username> {
+    const hash = await this._nameResolverContract.name(hashAddress(address))
+
+    if (!hash || isZeroHexString(hash)) {
+      throw new Error('Address is not available in reverse registrar.')
+    }
+
+    return this._publicResolverContract.name(hash)
+  }
+
   /**
    * Sets user's public key to the user's ENS entry
    * @param request object previously created by the createRegisterUsernameRequest method
    * @param username ENS username
    * @param publicKey Public key that will be added to ENS
    */
-  public setPublicKey(
+  public setNameAndPublicKey(
     request: ServiceRequest<RegisterUsernameRequestData>,
     username: Username,
+    address: EthAddress,
     publicKey: PublicKey,
   ): Promise<void> {
     assertUsername(username)
     const [publicKeyX, publicKeyY] = splitPublicKey(publicKey)
 
     return waitRequestTransaction(this._provider, request, () =>
-      this._publicResolverContract.setPubkey(this.hashUsername(username), publicKeyX, publicKeyY),
+      this._publicResolverContract.setAll(
+        this.hashUsername(username),
+        address,
+        numberToBytes32(BigNumber.from(0)),
+        numberToBytes32(BigNumber.from(0)),
+        publicKeyX,
+        publicKeyY,
+        username,
+      ),
     )
   }
 
