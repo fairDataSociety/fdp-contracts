@@ -21,15 +21,19 @@ echo "" > "$ENV_FILE"
 FDS_REGISTRAR_ADDRESS=$(echo "$2" | grep -Po 'FDSRegistrar deployed to: \K[^\s]*')
 ENS_REGISTRY_ADDRESS=$(echo "$2" | grep -Po 'ENSRegistry deployed to: \K[^\s]*')
 PUBLIC_RESOLVER_ADDRESS=$(echo "$2" | grep -Po 'PublicResolver deployed to: \K[^\s]*')
+REVERSE_RESOLVER_ADDRESS=$(echo "$2" | grep -Po 'FDSReverseRegistrar deployed to: \K[^\s]*')
+NAME_RESOLVER_ADDRESS=$(echo "$2" | grep -Po 'FDSNameResolver deployed to: \K[^\s]*')
 DAPP_REGISTRY_ADDRESS=$(echo "$2" | grep -Po 'DappRegistry deployed to: \K[^\s]*')
 RATINGS_ADDRESS=$(echo "$2" | grep -Po 'Ratings deployed to: \K[^\s]*')
 
-if [[ -z "$FDS_REGISTRAR_ADDRESS" || -z "$ENS_REGISTRY_ADDRESS" || -z "$PUBLIC_RESOLVER_ADDRESS" ]];
+if [[ -z "$FDS_REGISTRAR_ADDRESS" || -z "$ENS_REGISTRY_ADDRESS" || -z "$PUBLIC_RESOLVER_ADDRESS" || -z "$REVERSE_RESOLVER_ADDRESS" || -z "$NAME_RESOLVER_ADDRESS" ]];
 then
   # Extracting contract addresses from existing file
   FDS_REGISTRAR_ADDRESS=$(echo "$EXISTING_ADDRESSES" | grep -Po '_FDS_REGISTRAR_ADDRESS=\K[^\s]*')
   ENS_REGISTRY_ADDRESS=$(echo "$EXISTING_ADDRESSES" | grep -Po '_ENS_REGISTRY_ADDRESS=\K[^\s]*')
   PUBLIC_RESOLVER_ADDRESS=$(echo "$EXISTING_ADDRESSES" | grep -Po '_PUBLIC_RESOLVER_ADDRESS=\K[^\s]*')
+  REVERSE_RESOLVER_ADDRESS=$(echo "$EXISTING_ADDRESSES" | grep -Po '_REVERSE_RESOLVER_ADDRESS=\K[^\s]*')
+  NAME_RESOLVER_ADDRESS=$(echo "$EXISTING_ADDRESSES" | grep -Po '_NAME_RESOLVER_ADDRESS=\K[^\s]*')
 fi
 
 if [[ -z "$DAPP_REGISTRY_ADDRESS" ]];
@@ -48,6 +52,8 @@ fi
 echo "${1^^}_ENS_REGISTRY_ADDRESS=$ENS_REGISTRY_ADDRESS" >> "$ENV_FILE"
 echo "${1^^}_FDS_REGISTRAR_ADDRESS=$FDS_REGISTRAR_ADDRESS" >> "$ENV_FILE"
 echo "${1^^}_PUBLIC_RESOLVER_ADDRESS=$PUBLIC_RESOLVER_ADDRESS" >> "$ENV_FILE"
+echo "${1^^}_REVERSE_RESOLVER_ADDRESS=$REVERSE_RESOLVER_ADDRESS" >> "$ENV_FILE"
+echo "${1^^}_NAME_RESOLVER_ADDRESS=$NAME_RESOLVER_ADDRESS" >> "$ENV_FILE"
 echo "${1^^}_DAPP_REGISTRY_ADDRESS=$DAPP_REGISTRY_ADDRESS" >> "$ENV_FILE"
 echo "${1^^}_RATINGS_ADDRESS=$RATINGS_ADDRESS" >> "$ENV_FILE"
 sed -i '/^$/d' "$ENV_FILE"

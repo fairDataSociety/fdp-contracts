@@ -33,6 +33,26 @@ describe('ENS service tests', () => {
     expect(publicKey).toEqual(wallet.publicKey)
   })
 
+  test('Should retrieve correct name by address', async () => {
+    const address = await wallet.getAddress()
+
+    const fetchedUsername = await ens.getUsernameByAddress(address)
+
+    expect(fetchedUsername).toEqual(username)
+  })
+
+  test('Accessing nonexistent address should throw an error', async () => {
+    let errorMessage = ''
+
+    try {
+      const username = await ens.getUsernameByAddress('0xa52847b29182B2DEE40F7915E94cdDc738437EE9')
+    } catch (error) {
+      errorMessage = String(error)
+    }
+
+    expect(errorMessage).toEqual('Error: Address is not available in reverse registrar.')
+  })
+
   test('Register username with different wallet', async () => {
     const ens2 = initEns()
     let wallet2 = Wallet.createRandom()

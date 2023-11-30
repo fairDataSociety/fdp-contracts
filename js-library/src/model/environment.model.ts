@@ -6,6 +6,8 @@ export interface EnsEnvironment {
     ensRegistry: EthAddress
     fdsRegistrar: EthAddress
     publicResolver: EthAddress
+    reverseResolver: EthAddress
+    nameResolver: EthAddress
   }
   /**
    * Gas estimation for executing the three required smart contract methods

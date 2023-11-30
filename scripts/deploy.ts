@@ -43,6 +43,22 @@ async function deployENS() {
   tx = await registrar.setResolver(resolver.address)
   await waitForTransactionMined(tx)
   console.log('FDSRegistrar.setResolver success')
+
+  const FDSReverseRegistrar = await ethers.getContractFactory('FDSReverseRegistrar')
+  const reverseRegistrar = await FDSReverseRegistrar.deploy(ens.address)
+  console.log(`FDSReverseRegistrar deployed to: ${reverseRegistrar.address}`)
+
+  const FDSNameResolver = await ethers.getContractFactory('FDSNameResolver')
+  const nameResolver = await FDSNameResolver.deploy(reverseRegistrar.address)
+  console.log(`FDSNameResolver deployed to: ${nameResolver.address}`)
+
+  tx = await reverseRegistrar.setDefaultResolver(nameResolver.address)
+  await waitForTransactionMined(tx)
+  console.log('FDSReverseRegistrar.setDefaultResolver success')
+
+  tx = await reverseRegistrar.setName(DOMAIN)
+  await waitForTransactionMined(tx)
+  console.log('reverseRegistrar.setName success')
 }
 
 async function deployDappRegistry() {
