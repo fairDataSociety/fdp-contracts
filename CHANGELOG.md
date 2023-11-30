@@ -3,10 +3,9 @@
 ## [2.8.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v2.7.0...fdp-contracts-main-v2.8.0) (2023-11-30)
 
 
-### Miscellaneous Chores
+### Features
 
-* release 2.7.0 ([e7108dc](https://github.com/fairDataSociety/fdp-contracts/commit/e7108dc343db86424bafbf306bfc6212f62f4ebd))
-* release 2.8.0 ([c7c72ef](https://github.com/fairDataSociety/fdp-contracts/commit/c7c72ef03bcbacd16ce729adc930c52c887564f9))
+* Feat/reverse registrar (#157) ([115cecf](https://github.com/fairDataSociety/fdp-contracts/commit/115cecf5f0d446362b63db993bb3437da43c274d))
 
 ## [2.7.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v2.6.0...fdp-contracts-main-v2.7.0) (2023-09-06)
 
