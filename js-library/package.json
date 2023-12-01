@@ -1,6 +1,6 @@
 {
   "name": "@fairdatasociety/fdp-contracts-js",
-  "version": "3.8.0",
+  "version": "2.8.0",
   "description": "Library for interaction with FDS contracts",
   "main": "build/index.js",
   "scripts": {
