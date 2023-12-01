@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.9.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.8.0...fdp-contracts-js-lib-v3.9.0) (2023-12-01)
+
+
+### Features
+
+* feat/reverse registrar (#157)
+  ([115cecf](https://github.com/fairDataSociety/fdp-contracts/commit/115cecf5f0d446362b63db993bb3437da43c274d))
+
 ## [3.8.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.7.2...fdp-contracts-js-lib-v3.8.0) (2023-09-06)
 
 
