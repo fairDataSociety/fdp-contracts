@@ -15,7 +15,7 @@ export const ENS_ENVIRONMENT_CONFIGS: EnsEnvironmentConfigs = {
       reverseResolver: process.env.DOCKER_REVERSE_RESOLVER_ADDRESS as EthAddress,
       nameResolver: process.env.DOCKER_NAME_RESOLVER_ADDRESS as EthAddress,
     },
-    gasEstimation: Number(process.env.DOCKER_GAS_ESTIMATION),
+    gasEstimation: 268359,
     performChecks: false,
   },
   [Environments.GOERLI]: {
@@ -27,7 +27,7 @@ export const ENS_ENVIRONMENT_CONFIGS: EnsEnvironmentConfigs = {
       reverseResolver: process.env.GOERLI_REVERSE_RESOLVER_ADDRESS as EthAddress,
       nameResolver: process.env.GOERLI_NAME_RESOLVER_ADDRESS as EthAddress,
     },
-    gasEstimation: Number(process.env.GOERLI_GAS_ESTIMATION),
+    gasEstimation: 268359,
     performChecks: false,
   },
   [Environments.SEPOLIA]: {
@@ -39,7 +39,7 @@ export const ENS_ENVIRONMENT_CONFIGS: EnsEnvironmentConfigs = {
       reverseResolver: process.env.SEPOLIA_REVERSE_RESOLVER_ADDRESS as EthAddress,
       nameResolver: process.env.SEPOLIA_NAME_RESOLVER_ADDRESS as EthAddress,
     },
-    gasEstimation: Number(process.env.SEPOLIA_GAS_ESTIMATION),
+    gasEstimation: 268359,
     performChecks: false,
   },
   [Environments.OPTIMISM_GOERLI]: {
@@ -51,7 +51,7 @@ export const ENS_ENVIRONMENT_CONFIGS: EnsEnvironmentConfigs = {
       reverseResolver: process.env.OPTIMISM_GOERLI_REVERSE_RESOLVER_ADDRESS as EthAddress,
       nameResolver: process.env.OPTIMISM_GOERLI_NAME_RESOLVER_ADDRESS as EthAddress,
     },
-    gasEstimation: Number(process.env.OPTIMISM_GOERLI_GAS_ESTIMATION),
+    gasEstimation: 268359,
     performChecks: false,
   },
   [Environments.ARBITRUM_GOERLI]: {
@@ -63,7 +63,7 @@ export const ENS_ENVIRONMENT_CONFIGS: EnsEnvironmentConfigs = {
       reverseResolver: process.env.ARBITRUM_GOERLI_REVERSE_RESOLVER_ADDRESS as EthAddress,
       nameResolver: process.env.ARBITRUM_GOERLI_NAME_RESOLVER_ADDRESS as EthAddress,
     },
-    gasEstimation: Number(process.env.ARBITRUM_GOERLI_GAS_ESTIMATION),
+    gasEstimation: 268359,
     performChecks: false,
   },
 }

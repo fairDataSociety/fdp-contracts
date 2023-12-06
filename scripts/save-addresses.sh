@@ -25,6 +25,7 @@ REVERSE_RESOLVER_ADDRESS=$(echo "$2" | grep -Po 'FDSReverseRegistrar deployed to
 NAME_RESOLVER_ADDRESS=$(echo "$2" | grep -Po 'FDSNameResolver deployed to: \K[^\s]*')
 DAPP_REGISTRY_ADDRESS=$(echo "$2" | grep -Po 'DappRegistry deployed to: \K[^\s]*')
 RATINGS_ADDRESS=$(echo "$2" | grep -Po 'Ratings deployed to: \K[^\s]*')
+DATAHUB_ADDRESS=$(echo "$2" | grep -Po 'DataHub deployed to: \K[^\s]*')
 
 if [[ -z "$FDS_REGISTRAR_ADDRESS" || -z "$ENS_REGISTRY_ADDRESS" || -z "$PUBLIC_RESOLVER_ADDRESS" || -z "$REVERSE_RESOLVER_ADDRESS" || -z "$NAME_RESOLVER_ADDRESS" ]];
 then
@@ -48,6 +49,13 @@ then
   RATINGS_ADDRESS=$(echo "$EXISTING_ADDRESSES" | grep -Po '_RATINGS_ADDRESS=\K[^\s]*')
 fi
 
+if [[ -z "$DATAHUB_ADDRESS" ]];
+then
+  # Extracting contract addresses from existing file
+  DATAHUB_ADDRESS=$(echo "$EXISTING_ADDRESSES" | grep -Po '_DATAHUB_ADDRESS=\K[^\s]*')
+fi
+
+
 # Saving contract addresses to an .env file
 echo "${1^^}_ENS_REGISTRY_ADDRESS=$ENS_REGISTRY_ADDRESS" >> "$ENV_FILE"
 echo "${1^^}_FDS_REGISTRAR_ADDRESS=$FDS_REGISTRAR_ADDRESS" >> "$ENV_FILE"
@@ -56,5 +64,6 @@ echo "${1^^}_REVERSE_RESOLVER_ADDRESS=$REVERSE_RESOLVER_ADDRESS" >> "$ENV_FILE"
 echo "${1^^}_NAME_RESOLVER_ADDRESS=$NAME_RESOLVER_ADDRESS" >> "$ENV_FILE"
 echo "${1^^}_DAPP_REGISTRY_ADDRESS=$DAPP_REGISTRY_ADDRESS" >> "$ENV_FILE"
 echo "${1^^}_RATINGS_ADDRESS=$RATINGS_ADDRESS" >> "$ENV_FILE"
+echo "${1^^}_DATAHUB_ADDRESS=$DATAHUB_ADDRESS" >> "$ENV_FILE"
 sed -i '/^$/d' "$ENV_FILE"
 echo "Contract addresses saved to: $ENV_FILE"

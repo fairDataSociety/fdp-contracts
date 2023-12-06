@@ -87,8 +87,17 @@ async function deployRatings() {
   console.log(`Ratings deployed to: ${ratings.address}`)
 }
 
+async function deployDataHub() {
+  const DataHub = await ethers.getContractFactory('DataHub')
+  const dataHub = await DataHub.deploy()
+
+  await dataHub.deployed()
+
+  console.log(`DataHub deployed to: ${dataHub.address}`)
+}
+
 async function main() {
-  let changes: ContractsChange[] = ['ENS', 'BMT', 'DAPP_REGISTRY', 'RATINGS']
+  let changes: ContractsChange[] = ['ENS', 'BMT', 'DAPP_REGISTRY', 'RATINGS', 'DATA_HUB']
 
   if (network.name !== 'localhost' && network.name !== 'docker') {
     changes = await getChanges()
@@ -108,6 +117,11 @@ async function main() {
   if (changes.includes('DAPP_REGISTRY') || changes.includes('RATINGS')) {
     console.log('Deploying Ratings contract')
     await deployRatings()
+  }
+
+  if (changes.includes('DATA_HUB')) {
+    console.log('Deploying DataHub contract')
+    await deployDataHub()
   }
 }
 
