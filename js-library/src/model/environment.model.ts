@@ -21,3 +21,8 @@ export interface DappRegistryEnvironment {
   dappRegistryAddress: EthAddress
   ratingsAddress: EthAddress
 }
+
+export interface DataHubEnvironment {
+  rpcUrl: string
+  dataHubAddress: EthAddress
+}

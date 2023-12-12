@@ -1,9 +1,10 @@
 import { Environments } from '../model/environments.enum'
-import { DappRegistryEnvironment, EnsEnvironment } from '../model/environment.model'
+import { DappRegistryEnvironment, DataHubEnvironment, EnsEnvironment } from '../model/environment.model'
 import { EthAddress } from '../model'
 
 export type EnsEnvironmentConfigs = { [environment in Environments]: EnsEnvironment }
 export type DappRegistryEnvironmentConfigs = { [environment in Environments]: DappRegistryEnvironment }
+export type DataHubEnvironmentConfigs = { [environment in Environments]: DataHubEnvironment }
 
 export const ENS_ENVIRONMENT_CONFIGS: EnsEnvironmentConfigs = {
   [Environments.LOCALHOST]: {
@@ -96,10 +97,37 @@ export const DAPP_REGISTRY_ENVIRONMENT_CONFIGS: DappRegistryEnvironmentConfigs =
   },
 }
 
+export const DATA_HUB_ENVIRONMENT_CONFIGS: DataHubEnvironmentConfigs = {
+  [Environments.LOCALHOST]: {
+    rpcUrl: 'http://127.0.0.1:9545/',
+    dataHubAddress: process.env.DOCKER_DATAHUB_ADDRESS as EthAddress,
+  },
+  [Environments.GOERLI]: {
+    rpcUrl: 'https://xdai.dev.fairdatasociety.org/',
+    dataHubAddress: process.env.GOERLI_DATAHUB_ADDRESS as EthAddress,
+  },
+  [Environments.SEPOLIA]: {
+    rpcUrl: 'https://sepolia.dev.fairdatasociety.org/',
+    dataHubAddress: process.env.SEPOLIA_DATAHUB_ADDRESS as EthAddress,
+  },
+  [Environments.OPTIMISM_GOERLI]: {
+    rpcUrl: 'https://optimism-goerli.publicnode.com',
+    dataHubAddress: process.env.OPTIMISM_GOERLI_DATAHUB_ADDRESS as EthAddress,
+  },
+  [Environments.ARBITRUM_GOERLI]: {
+    rpcUrl: 'https://arbitrum-goerli.rpc.thirdweb.com',
+    dataHubAddress: process.env.ARBITRUM_GOERLI_DATAHUB_ADDRESS as EthAddress,
+  },
+}
+
 export function getEnsEnvironmentConfig(environment: Environments): EnsEnvironment {
   return ENS_ENVIRONMENT_CONFIGS[environment]
 }
 
 export function getDappRegistryEnvironmentConfig(environment: Environments): DappRegistryEnvironment {
   return DAPP_REGISTRY_ENVIRONMENT_CONFIGS[environment]
+}
+
+export function getDataHubEnvironmentConfig(environment: Environments): DataHubEnvironment {
+  return DATA_HUB_ENVIRONMENT_CONFIGS[environment]
 }
