@@ -1,4 +1,3 @@
 export * from './constants'
-export * from './services/ens'
-export * from './services/dapp-registry'
+export * from './services'
 export * from './model'
