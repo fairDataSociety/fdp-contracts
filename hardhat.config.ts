@@ -88,6 +88,10 @@ const config: HardhatUserConfig = {
       url: process.env.ARBITRUM_GOERLI_URL || '',
       accounts: process.env.ARBITRUM_GOERLI_PRIVATE_KEY !== undefined ? [process.env.ARBITRUM_GOERLI_PRIVATE_KEY] : [],
     },
+    zkevm_testnet: {
+      url: process.env.ZKEVM_TESTNET_URL || '',
+      accounts: process.env.ZKEVM_TESTNET_PRIVATE_KEY !== undefined ? [process.env.ZKEVM_TESTNET_PRIVATE_KEY] : [],
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,

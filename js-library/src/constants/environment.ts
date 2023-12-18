@@ -67,6 +67,18 @@ export const ENS_ENVIRONMENT_CONFIGS: EnsEnvironmentConfigs = {
     gasEstimation: 268359,
     performChecks: false,
   },
+  [Environments.ZKEVM_TESTNET]: {
+    rpcUrl: 'https://rpc.public.zkevm-test.net',
+    contractAddresses: {
+      ensRegistry: process.env.ZKEVM_TESTNET_ENS_REGISTRY_ADDRESS as EthAddress,
+      fdsRegistrar: process.env.ZKEVM_TESTNET_FDS_REGISTRAR_ADDRESS as EthAddress,
+      publicResolver: process.env.ZKEVM_TESTNET_PUBLIC_RESOLVER_ADDRESS as EthAddress,
+      reverseResolver: process.env.ZKEVM_TESTNET_REVERSE_RESOLVER_ADDRESS as EthAddress,
+      nameResolver: process.env.ZKEVM_TESTNET_NAME_RESOLVER_ADDRESS as EthAddress,
+    },
+    gasEstimation: 268359,
+    performChecks: false,
+  },
 }
 
 export const DAPP_REGISTRY_ENVIRONMENT_CONFIGS: DappRegistryEnvironmentConfigs = {
@@ -95,6 +107,11 @@ export const DAPP_REGISTRY_ENVIRONMENT_CONFIGS: DappRegistryEnvironmentConfigs =
     dappRegistryAddress: process.env.ARBITRUM_GOERLI_DAPP_REGISTRY_ADDRESS as EthAddress,
     ratingsAddress: process.env.ARBITRUM_GOERLI_RATINGS_ADDRESS as EthAddress,
   },
+  [Environments.ZKEVM_TESTNET]: {
+    rpcUrl: 'https://rpc.public.zkevm-test.net',
+    dappRegistryAddress: process.env.ZKEVM_TESTNET_DAPP_REGISTRY_ADDRESS as EthAddress,
+    ratingsAddress: process.env.ZKEVM_TESTNET_RATINGS_ADDRESS as EthAddress,
+  },
 }
 
 export const DATA_HUB_ENVIRONMENT_CONFIGS: DataHubEnvironmentConfigs = {
@@ -117,6 +134,10 @@ export const DATA_HUB_ENVIRONMENT_CONFIGS: DataHubEnvironmentConfigs = {
   [Environments.ARBITRUM_GOERLI]: {
     rpcUrl: 'https://arbitrum-goerli.rpc.thirdweb.com',
     dataHubAddress: process.env.ARBITRUM_GOERLI_DATAHUB_ADDRESS as EthAddress,
+  },
+  [Environments.ZKEVM_TESTNET]: {
+    rpcUrl: 'https://rpc.public.zkevm-test.net',
+    dataHubAddress: process.env.ZKEVM_TESTNET_DATAHUB_ADDRESS as EthAddress,
   },
 }
 

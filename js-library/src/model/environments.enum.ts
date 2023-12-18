@@ -4,4 +4,5 @@ export enum Environments {
   SEPOLIA,
   OPTIMISM_GOERLI,
   ARBITRUM_GOERLI,
+  ZKEVM_TESTNET,
 }
