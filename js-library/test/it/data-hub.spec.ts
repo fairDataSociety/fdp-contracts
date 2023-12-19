@@ -8,7 +8,7 @@ describe('DataHub service tests', () => {
   const sellerUsername = 'test_user'
   const podAddress1 = '0x9BDc3DF70Db00Fdc745dA0FeAb9a70d153270244'
   const podAddress2 = '0x98d471aC5202ceD654d14612716f729EB24be7B8'
-  const sellerPrivateKey = '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d'
+  const sellerPrivateKey = '0x10b71dbc950ef7c575cde502139effa331e15ae23cdf856229799b2cedbd135c'
   const buyerPrivateKey = '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1e'
   let wallet: Wallet
 
@@ -16,6 +16,7 @@ describe('DataHub service tests', () => {
     dataHub = new DataHub(getDataHubEnvironmentConfig(Environments.LOCALHOST))
     wallet = new Wallet(sellerPrivateKey, dataHub.provider)
     dataHub.connect(wallet)
+    await topUpAddress(dataHub.provider, wallet.address, '0.5')
     await topUpAddress(dataHub.provider, new Wallet(buyerPrivateKey).address, '0.2')
   })
 

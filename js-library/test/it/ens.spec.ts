@@ -5,12 +5,14 @@ describe('ENS service tests', () => {
   const ens = initEns()
   const username = 'test_user'
   const missingUsername = 'nouser'
-  const privateKey = '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d'
+  const privateKey = '0x2ba2638f4fa1deb5bd363e8e99347cd3018774c24d11e826e5d7ef21643827bf'
   let wallet: Wallet
 
-  beforeAll(() => {
+  beforeAll(async () => {
     wallet = new Wallet(privateKey, ens.provider)
     ens.connect(wallet)
+
+    await topUpAddress(ens.provider, wallet.address, '1')
   })
 
   test('Username should be available', async () => {
