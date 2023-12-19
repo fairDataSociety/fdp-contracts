@@ -52,7 +52,15 @@ task('balances', 'Prints the balances of accounts')
 // Go to https://hardhat.org/config/ to learn more
 
 const config: HardhatUserConfig = {
-  solidity: '0.8.4',
+  solidity: {
+    version: '0.8.4',
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+    },
+  },
   networks: {
     localhost: {
       url: 'http://localhost:8545',
@@ -79,6 +87,10 @@ const config: HardhatUserConfig = {
     arbitrum_goerli: {
       url: process.env.ARBITRUM_GOERLI_URL || '',
       accounts: process.env.ARBITRUM_GOERLI_PRIVATE_KEY !== undefined ? [process.env.ARBITRUM_GOERLI_PRIVATE_KEY] : [],
+    },
+    zkevm_testnet: {
+      url: process.env.ZKEVM_TESTNET_URL || '',
+      accounts: process.env.ZKEVM_TESTNET_PRIVATE_KEY !== undefined ? [process.env.ZKEVM_TESTNET_PRIVATE_KEY] : [],
     },
   },
   gasReporter: {

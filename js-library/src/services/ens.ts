@@ -11,7 +11,7 @@ import {
 } from '../utils/keys'
 import { Environments } from '../model/environments.enum'
 import { EnsUserData } from '../model/ens-user-data.model'
-import { EthAddress, PublicKey } from '../model/hex.types'
+import { EthAddress, HexString, PublicKey } from '../model/hex.types'
 import { EnsEnvironment } from '../model/environment.model'
 import ENSRegistryContractLocal from '../contracts/ENSRegistry/ENSRegistry.json'
 import PublicResolverContractLocal from '../contracts/PublicResolver/PublicResolver.json'
@@ -305,7 +305,16 @@ export class ENS {
   public async getPublicKey(username: Username): Promise<PublicKey> {
     assertUsername(username)
 
-    const [publicKeyX, publicKeyY] = await this._publicResolverContract.pubkey(this.hashUsername(username))
+    return this.getPublicKeyByUsernameHash(this.hashUsername(username))
+  }
+
+  /**
+   * Returns public key of registered username
+   * @param usernameHash
+   * @returns public key
+   */
+  public async getPublicKeyByUsernameHash(usernameHash: HexString): Promise<PublicKey> {
+    const [publicKeyX, publicKeyY] = await this._publicResolverContract.pubkey(usernameHash)
 
     const publicKey = joinPublicKey(publicKeyX, publicKeyY)
 

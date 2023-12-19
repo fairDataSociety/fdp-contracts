@@ -1,5 +1,6 @@
 import { providers, utils } from 'ethers'
 import { ENS, Environments, getEnsEnvironmentConfig } from '../'
+import { HexString } from '../src'
 
 export function initEns(): ENS {
   return new ENS({
@@ -23,4 +24,8 @@ export async function topUpAddress(
   ])
 
   await provider.send('evm_mine', [1])
+}
+
+export function toHash(value: number): HexString {
+  return utils.hexZeroPad(utils.hexlify(value), 32)
 }
