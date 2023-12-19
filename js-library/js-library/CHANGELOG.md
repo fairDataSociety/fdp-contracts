@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.10.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.9.0...fdp-contracts-js-lib-v3.10.0) (2023-12-19)
+
+
+### Features
+
+* datahub contract ([#159](https://github.com/fairDataSociety/fdp-contracts/issues/159)) ([c0c354a](https://github.com/fairDataSociety/fdp-contracts/commit/c0c354afa4f25f914ed7d6281e370c19827fe1e6))
+* datahub contract ([#159](https://github.com/fairDataSociety/fdp-contracts/issues/159)) ([#165](https://github.com/fairDataSociety/fdp-contracts/issues/165)) ([c0c354a](https://github.com/fairDataSociety/fdp-contracts/commit/c0c354afa4f25f914ed7d6281e370c19827fe1e6))
+
 ## [3.9.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.8.0...fdp-contracts-js-lib-v3.9.0) (2023-12-01)
 
 
