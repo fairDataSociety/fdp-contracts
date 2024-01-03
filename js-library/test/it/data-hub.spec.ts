@@ -5,7 +5,7 @@ import { toHash, topUpAddress } from '../utils'
 
 describe('DataHub service tests', () => {
   let dataHub: DataHub
-  const sellerUsername = 'test_user'
+  const sellerUsername = 'testuser'
   const podAddress1 = '0x9BDc3DF70Db00Fdc745dA0FeAb9a70d153270244'
   const podAddress2 = '0x98d471aC5202ceD654d14612716f729EB24be7B8'
   const sellerPrivateKey = '0x10b71dbc950ef7c575cde502139effa331e15ae23cdf856229799b2cedbd135c'
