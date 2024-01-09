@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.10.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v2.9.0...fdp-contracts-main-v2.10.0) (2024-01-09)
+
+
+### Features
+
+* **contract-upgrade:** update contract metadata ([a8a6703](https://github.com/fairDataSociety/fdp-contracts/commit/a8a6703b19dbd49226d97d6607359e7e347cdad0))
+
+
+### Bug Fixes
+
+* data-hub service ([#168](https://github.com/fairDataSociety/fdp-contracts/issues/168)) ([4933193](https://github.com/fairDataSociety/fdp-contracts/commit/49331931c966e7c12f81fbd3b42e82538110c3b0))
+
 ## [2.9.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v2.8.0...fdp-contracts-main-v2.9.0) (2023-12-19)
 
 
