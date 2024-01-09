@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.10.1](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.10.0...fdp-contracts-js-lib-v3.10.1) (2024-01-09)
+
+
+### Bug Fixes
+
+* data-hub service ([#168](https://github.com/fairDataSociety/fdp-contracts/issues/168)) ([4933193](https://github.com/fairDataSociety/fdp-contracts/commit/49331931c966e7c12f81fbd3b42e82538110c3b0))
+
 ## [3.10.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.9.0...fdp-contracts-js-lib-v3.10.0) (2023-12-19)
 
 
