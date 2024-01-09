@@ -73,10 +73,11 @@ contract DataHub is Ownable, ReentrancyGuard, AccessControl  {
         uint256 price;
         bool    active; // is subscription active
         uint256 earned;  
-        uint32  bids;
-        uint32  sells;
-        uint32  reports; 
-        uint16  daysValid;
+        bytes32 category; // category of subscription listing
+        uint256  bids;
+        uint256  sells;
+        uint256  reports; 
+        uint256  daysValid;
     }
     Sub[] public  subscriptions;
     mapping(bytes32 => uint256) public subscriptionIds; 
@@ -236,15 +237,16 @@ contract DataHub is Ownable, ReentrancyGuard, AccessControl  {
         }
     }
     // Market to sell encrypted swarmLocation
-    function listSub(bytes32 fdpSellerNameHash, bytes32 dataSwarmLocation, uint price, bytes32 category, address podAddress, uint16 daysValid) public payable {
+    function listSub(bytes32 fdpSellerNameHash, bytes32 dataSwarmLocation, uint price, bytes32 category, address podAddress, uint256 daysValid) public payable {
         //bytes32 subHash = keccak256(abi.encode(msg.sender, fdpSeller, dataSwarmLocation, price, category, podIndex));
         require(msg.value>=minListingFee, "minFee"); // sent value must be equal to price
-        require(daysValid>=1 && daysValid<=365, "daysValid"); // must not exists
+        //require(daysValid>=1 && daysValid<=365, "daysValid"); // must not exists
+        require(daysValid>=1, "daysValid"); // must not exists
 
         bytes32 subHash = keccak256(abi.encode(msg.sender, fdpSellerNameHash, podAddress));// user can list same pod only once
         require(subscriptionIds[subHash] == 0, "SubExists"); // must not exists
 
-        Sub memory s = Sub(subHash, fdpSellerNameHash, msg.sender, dataSwarmLocation, price, true, 0, 0, 0, 0, daysValid);
+        Sub memory s = Sub(subHash, fdpSellerNameHash, msg.sender, dataSwarmLocation, price, true, 0, category, 0, 0, 0, daysValid);
         
         subscriptions.push(s);
         subscriptionIds[subHash] = subscriptions.length; // will point to 1 more than index
@@ -300,13 +302,15 @@ contract DataHub is Ownable, ReentrancyGuard, AccessControl  {
         require(seller.subRequestIds[requestHash] != 0, "No Req");
 
         SubRequest storage br = seller.subRequests[seller.subRequestIds[requestHash]-1];
-        require(br.served == false, "served"); // must exists
         require(subscriptionIds[br.subHash] != 0, "No Sub"); // must exists
-
-        Sub storage s = subscriptions[subscriptionIds[br.subHash]-1]; 
-        require(msg.sender==s.seller, "Not Sub Seller"); // sent value must be equal to price
+        require(br.served == false, "served"); // must exists
 
         User storage buyer = users[br.buyer];
+        require(buyer.activeBidIds[requestHash] != 0, "No Bid");
+        
+        Sub storage s = subscriptions[subscriptionIds[br.subHash]-1]; 
+        require(msg.sender==s.seller, "Not Sub Seller"); // sent value must be equal to price
+       
         //User storage buyer = users[userToPortable[br.buyer]];
         SubItem memory si;
         si.subHash = br.subHash;
@@ -326,20 +330,24 @@ contract DataHub is Ownable, ReentrancyGuard, AccessControl  {
         //removeSubRequest(msg.sender, requestHash); // seller removes request from his list
         //removeActiveBid(br.buyer, requestHash); // remove activeBid from buyer
 
-        // calculate fees and transfer to seller
-        uint256 fee = getFee(marketFee, s.price);
-        uint256 sellerPayout = s.price-fee;
-        payable(msg.sender).transfer(sellerPayout);
-        inEscrow -= s.price;
-        feesCollected += fee;
+        
+        uint256 sellerPayout = 0;
+        if(s.price>0)
+        {
+            uint256 fee = getFee(marketFee, s.price); // calculate fees and transfer to seller
+            sellerPayout = s.price-fee;
+            payable(msg.sender).transfer(sellerPayout);
+            inEscrow -= s.price;
+            feesCollected += fee;
+            s.earned += (sellerPayout);
+        }
 
         s.sells++;
-        s.earned += (sellerPayout);
-
+        
         if(subInfos[br.subHash].perSubscriberBalance[br.buyer]==0) // only add subscriber if not already added
            subInfos[br.subHash].subscribers.push(br.buyer);
 
-        subInfos[br.subHash].perSubscriberBalance[br.buyer] += (sellerPayout);
+        subInfos[br.subHash].perSubscriberBalance[br.buyer] += (sellerPayout);   
     }
 
     function requestAgain(bytes32 requestHash) public nonReentrant payable {
