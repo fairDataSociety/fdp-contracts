@@ -153,7 +153,7 @@ export class DataHub {
   }
 
   public getAllSubItemsForNameHash(nameHash: HexString): Promise<SubItem[]> {
-    return this._dataHubContract.getAllSubItems(nameHash)
+    return this._dataHubContract.getAllSubItemsForNameHash(nameHash)
   }
 
   public getNameHashSubItems(nameHash: HexString): Promise<HexString[]> {
