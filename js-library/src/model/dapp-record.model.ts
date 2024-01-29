@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers'
 import { EthAddress, HexString, RecordHash, SwarmLocation } from './hex.types'
 
 export interface DappRecord {
@@ -7,7 +6,7 @@ export interface DappRecord {
   location: SwarmLocation
   urlHash: HexString
   edited: boolean
-  index: BigNumber
-  creatorIndex: BigNumber
+  index: bigint
+  creatorIndex: bigint
   timestamp: Date
 }

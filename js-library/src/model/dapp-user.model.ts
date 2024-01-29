@@ -1,6 +1,4 @@
-import { BigNumber } from 'ethers'
-
 export interface DappUser {
-  records: BigNumber[]
-  validatedRecords: BigNumber[]
+  records: bigint[]
+  validatedRecords: bigint[]
 }

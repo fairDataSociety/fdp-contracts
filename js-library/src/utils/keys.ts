@@ -1,5 +1,5 @@
-import { BigNumber, utils } from 'ethers'
-import { hexZeroPad, isHexString as isHexStringEthers } from 'ethers/lib/utils'
+import { stripZerosLeft, toBeHex } from 'ethers'
+import { zeroPadValue, isHexString as isHexStringEthers } from 'ethers'
 import {
   HexString,
   PublicKey,
@@ -10,14 +10,12 @@ import {
 } from '../model/hex.types'
 import { assert } from './assert'
 
-const { hexStripZeros } = utils
-
 export function isHexString(hexString: unknown): hexString is HexString {
   return isHexStringEthers(hexString)
 }
 
 export function isZeroHexString(hexString: HexString): boolean {
-  return BigNumber.from(hexString).eq(BigNumber.from(0))
+  return BigInt(hexString) === BigInt(0)
 }
 
 export function isHexStringPublicKey(hexString: unknown): hexString is HexString {
@@ -29,7 +27,7 @@ export function isHexStringPublicKeyPart(hexString: unknown): hexString is HexSt
 }
 
 export function isPublicKeyValid(publicKey: unknown): publicKey is PublicKey {
-  return isHexStringPublicKey(publicKey) && hexStripZeros('0x' + publicKey.substring(4)) !== '0x'
+  return isHexStringPublicKey(publicKey) && stripZerosLeft('0x' + publicKey.substring(4)) !== '0x'
 }
 
 export function splitPublicKey(publicKey: PublicKey): [PublicKeyX, PublicKeyY] {
@@ -48,6 +46,6 @@ export function joinPublicKey(publicKeyX: PublicKeyX, publicKeyY: PublicKeyY): P
   return ('0x04' + publicKeyX.substring(2) + publicKeyY.substring(2)) as PublicKey
 }
 
-export function numberToBytes32(number: BigNumber): string {
-  return hexZeroPad(number.toHexString(), 32)
+export function numberToBytes32(number: bigint): string {
+  return zeroPadValue(toBeHex(number), 32)
 }

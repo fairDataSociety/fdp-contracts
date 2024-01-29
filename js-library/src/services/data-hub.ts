@@ -1,57 +1,56 @@
-import { BigNumber, Contract, providers } from 'ethers'
+import { Contract, ContractRunner, JsonRpcProvider } from 'ethers'
 import DataHubContractLocal from '../contracts/DataHub/DataHub.json'
 import { DataHubEnvironment, Environments, EthAddress, HexString, SwarmLocation } from '../model'
 import { DATA_HUB_ENVIRONMENT_CONFIGS, ENS_DOMAIN } from '../constants'
-import { SignerOrProvider } from './ens'
 import { Username } from '../model/domain.type'
 import { waitTransaction } from '../utils/tx'
 import { ActiveBid, Category, SubItem, Subscription, SubscriptionRequest } from '../model/subscription.model'
-import { namehash } from 'ethers/lib/utils'
+import { namehash } from 'ethers'
 import { UserStats } from '../model/user-stats.model'
 
 export const DataHubContract = DataHubContractLocal
 
 export class DataHub {
-  private _provider: providers.JsonRpcProvider
+  private _provider: JsonRpcProvider
   private _dataHubContract: Contract
 
   constructor(
     config: DataHubEnvironment = DATA_HUB_ENVIRONMENT_CONFIGS[Environments.LOCALHOST],
-    signerOrProvider: SignerOrProvider | null = null,
+    contractRunner: ContractRunner | null = null,
     private domain = ENS_DOMAIN,
   ) {
-    this._provider = new providers.JsonRpcProvider(config.rpcUrl)
+    this._provider = new JsonRpcProvider(config.rpcUrl)
 
     this._dataHubContract = new Contract(config.dataHubAddress, DataHubContract.abi, this._provider)
 
-    if (signerOrProvider) {
-      this.connect(signerOrProvider)
+    if (contractRunner) {
+      this.connect(contractRunner)
     }
   }
 
   /**
    * returns RPC provider
    */
-  public get provider(): providers.JsonRpcProvider {
+  public get provider(): JsonRpcProvider {
     return this._provider
   }
 
   /**
    * Connects signer to the smart contract
-   * @param signerOrProvider An instance of ethers.js Wallet or any other signer
+   * @param contractRunner An instance of ethers.js ContractRunner
    */
-  public connect(signerOrProvider: SignerOrProvider): void {
-    this._dataHubContract = this._dataHubContract.connect(signerOrProvider)
+  public connect(contractRunner: ContractRunner | null): void {
+    this._dataHubContract = this._dataHubContract.connect(contractRunner) as Contract
   }
 
   public createSubscription(
     ens: Username,
     location: SwarmLocation,
-    price: BigNumber,
+    price: bigint,
     categoryHash: HexString,
     podAddress: EthAddress,
     daysValid: number,
-    value?: BigNumber,
+    value?: bigint,
   ): Promise<void> {
     return waitTransaction(
       this._dataHubContract.listSub(
@@ -82,13 +81,13 @@ export class DataHub {
     return subscriptions
   }
 
-  public requestSubscription(subHash: HexString, buyerUsername: string, price: BigNumber): Promise<void> {
+  public requestSubscription(subHash: HexString, buyerUsername: string, price: bigint): Promise<void> {
     return waitTransaction(
       this._dataHubContract.bidSub(subHash, this.hashUsername(buyerUsername), { value: price }),
     )
   }
 
-  public requestSubscriptionAgain(requestHash: HexString, price: BigNumber): Promise<void> {
+  public requestSubscriptionAgain(requestHash: HexString, price: bigint): Promise<void> {
     return waitTransaction(this._dataHubContract.requestAgain(requestHash, { value: price }))
   }
 
@@ -112,15 +111,15 @@ export class DataHub {
     return this._dataHubContract.getPortableAddress(address)
   }
 
-  public getFee(fee: BigNumber, amount: BigNumber): Promise<BigNumber> {
+  public getFee(fee: bigint, amount: bigint): Promise<bigint> {
     return this._dataHubContract.getFee(fee, amount)
   }
 
-  public setFee(newFee: BigNumber): Promise<void> {
+  public setFee(newFee: bigint): Promise<void> {
     return waitTransaction(this._dataHubContract.setFee(newFee))
   }
 
-  public setListingFee(newListingFee: BigNumber): Promise<void> {
+  public setListingFee(newListingFee: bigint): Promise<void> {
     return waitTransaction(this._dataHubContract.setListingFee(newListingFee))
   }
 
@@ -132,7 +131,7 @@ export class DataHub {
     return this._dataHubContract.getSubs()
   }
 
-  public getSubByIndex(index: BigNumber): Promise<Subscription> {
+  public getSubByIndex(index: bigint): Promise<Subscription> {
     return this._dataHubContract.getSubByIndex(index)
   }
 
@@ -140,11 +139,11 @@ export class DataHub {
     return this._dataHubContract.getSubBy(subHash)
   }
 
-  public getSubRequestAt(address: EthAddress, index: BigNumber): Promise<SubscriptionRequest> {
+  public getSubRequestAt(address: EthAddress, index: bigint): Promise<SubscriptionRequest> {
     return this._dataHubContract.getSubRequestAt(address, index)
   }
 
-  public getActiveBidAt(address: EthAddress, index: BigNumber): Promise<ActiveBid> {
+  public getActiveBidAt(address: EthAddress, index: bigint): Promise<ActiveBid> {
     return this._dataHubContract.getActiveBidAt(address, index)
   }
 
@@ -184,7 +183,7 @@ export class DataHub {
     return this._dataHubContract.getSubSubscribers(subHash)
   }
 
-  public getSubInfoBalance(subHash: HexString, address: EthAddress): Promise<BigNumber> {
+  public getSubInfoBalance(subHash: HexString, address: EthAddress): Promise<bigint> {
     return this._dataHubContract.getSubInfoBalance(subHash, address)
   }
 

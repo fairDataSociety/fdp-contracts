@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers'
 import { EthAddress, HexString, SwarmLocation } from './hex.types'
 
 export interface Subscription {
@@ -6,9 +5,9 @@ export interface Subscription {
   fdpSellerNameHash: HexString
   seller: EthAddress
   swarmLocation: SwarmLocation
-  price: BigNumber
+  price: bigint
   active: boolean
-  earned: BigNumber
+  earned: bigint
   bids: number
   sells: number
   reports: number
@@ -24,7 +23,7 @@ export interface SubscriptionRequest {
 }
 
 export interface Category {
-  subIdxs: BigNumber[]
+  subIdxs: bigint[]
 }
 
 export interface ActiveBid {
@@ -36,5 +35,5 @@ export interface ActiveBid {
 export interface SubItem {
   subHash: HexString
   unlockKeyLocation: HexString
-  validTill: BigNumber
+  validTill: bigint
 }

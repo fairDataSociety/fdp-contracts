@@ -1,4 +1,12 @@
-import { utils, Contract, Signer, providers, BigNumber } from 'ethers'
+import {
+  Contract,
+  JsonRpcProvider,
+  keccak256,
+  toUtf8Bytes,
+  namehash,
+  parseUnits,
+  ContractRunner,
+} from 'ethers'
 import { ENS_DOMAIN, NULL_ADDRESS } from '../constants/constants'
 import { ENS_ENVIRONMENT_CONFIGS } from '../constants/environment'
 import { waitRequestTransaction } from '../utils/tx'
@@ -23,10 +31,6 @@ import { assertUsername } from '../utils/domains'
 import { extractMessageFromFailedTx, isTxError } from '../utils/blockchain'
 import { ServiceRequest } from '../model/service-request.model'
 import { hashAddress } from '../utils/address'
-
-const { keccak256, toUtf8Bytes, namehash } = utils
-
-export type SignerOrProvider = string | providers.Provider | Signer
 
 export const ENSRegistryContract = ENSRegistryContractLocal
 export const PublicResolverContract = PublicResolverContractLocal
@@ -53,7 +57,7 @@ export interface RegisterUsernameRequestData {
  * Provides interface for interaction with the ENS smart contracts
  */
 export class ENS {
-  private _provider: providers.JsonRpcProvider
+  private _provider: JsonRpcProvider
   private _ensRegistryContract: Contract
   private _fdsRegistrarContract: Contract
   private _publicResolverContract: Contract
@@ -62,10 +66,10 @@ export class ENS {
 
   constructor(
     private config: EnsEnvironment = ENS_ENVIRONMENT_CONFIGS[Environments.LOCALHOST],
-    signerOrProvider: SignerOrProvider | null = null,
+    contractRunner: ContractRunner | null = null,
     private domain = ENS_DOMAIN,
   ) {
-    this._provider = new providers.JsonRpcProvider(config.rpcUrl)
+    this._provider = new JsonRpcProvider(config.rpcUrl)
 
     const { ensRegistry, fdsRegistrar, publicResolver, reverseResolver, nameResolver } =
       config.contractAddresses
@@ -80,28 +84,28 @@ export class ENS {
     )
     this._nameResolverContract = new Contract(nameResolver, FDSNameResolverContract.abi, this._provider)
 
-    if (signerOrProvider) {
-      this.connect(signerOrProvider)
+    if (contractRunner) {
+      this.connect(contractRunner)
     }
   }
 
   /**
    * returns RPC provider
    */
-  public get provider(): providers.JsonRpcProvider {
+  public get provider(): JsonRpcProvider {
     return this._provider
   }
 
   /**
    * Connects signer to the smart contracts
-   * @param signerOrProvider An instance of ethers.js Wallet or any other signer
+   * @param contractRunner An instance of ethers.js Wallet or any other signer
    */
-  public connect(signerOrProvider: SignerOrProvider) {
-    this._publicResolverContract = this._publicResolverContract.connect(signerOrProvider)
-    this._fdsRegistrarContract = this._fdsRegistrarContract.connect(signerOrProvider)
-    this._ensRegistryContract = this._ensRegistryContract.connect(signerOrProvider)
-    this._reverseRegistrarContract = this._reverseRegistrarContract.connect(signerOrProvider)
-    this._nameResolverContract = this._nameResolverContract.connect(signerOrProvider)
+  public connect(contractRunner: ContractRunner | null) {
+    this._publicResolverContract = this._publicResolverContract.connect(contractRunner) as Contract
+    this._fdsRegistrarContract = this._fdsRegistrarContract.connect(contractRunner) as Contract
+    this._ensRegistryContract = this._ensRegistryContract.connect(contractRunner) as Contract
+    this._reverseRegistrarContract = this._reverseRegistrarContract.connect(contractRunner) as Contract
+    this._nameResolverContract = this._nameResolverContract.connect(contractRunner) as Contract
   }
 
   /**
@@ -232,15 +236,17 @@ export class ENS {
   /**
    * Calculates total price for username registration
    * @param priorityPrice an additional fee for the transaction, defaults to 1.5 gwei
-   * @returns {BigNumber} approximate total price for transactions in wei
+   * @returns {bigint} approximate total price for transactions in wei
    */
-  public async registerUsernameApproximatePrice(
-    priorityPrice = utils.parseUnits('1.5', 'gwei'),
-  ): Promise<BigNumber> {
+  public async registerUsernameApproximatePrice(priorityPrice = parseUnits('1.5', 'gwei')): Promise<bigint> {
     const gas = this.registerUsernameApproximateGas()
-    const gasPrice = await this._provider.getGasPrice()
+    const { gasPrice } = await this._provider.getFeeData()
 
-    return BigNumber.from(gas).mul(gasPrice.add(priorityPrice))
+    if (!gasPrice) {
+      throw new Error('Cannot estimate gas price')
+    }
+
+    return BigInt(gas) * gasPrice + priorityPrice
   }
 
   /**
@@ -257,8 +263,8 @@ export class ENS {
     address: EthAddress,
     publicKey: PublicKey,
     expires = 86400,
-    customRpc?: providers.JsonRpcProvider,
-  ): Promise<BigNumber> {
+    customRpc?: JsonRpcProvider,
+  ): Promise<bigint> {
     const rpc = customRpc || this._provider
     const [publicKeyX, publicKeyY] = splitPublicKey(publicKey)
 
@@ -281,20 +287,20 @@ export class ENS {
 
     const gasAmounts = await Promise.all([
       rpc.estimateGas({
-        to: this._fdsRegistrarContract.address,
+        to: await this._fdsRegistrarContract.getAddress(),
         data: encodedRegisterFn,
       }),
       rpc.estimateGas({
-        to: this._ensRegistryContract.address,
+        to: await this._ensRegistryContract.getAddress(),
         data: encodedSetResolverFn,
       }),
       rpc.estimateGas({
-        to: this._publicResolverContract.address,
+        to: await this._publicResolverContract.getAddress(),
         data: encodedSetPubkeyFn,
       }),
     ])
 
-    return gasAmounts.reduce((sum, amount) => sum.add(amount), BigNumber.from(0))
+    return gasAmounts.reduce((sum, amount) => sum + amount, BigInt(0))
   }
 
   /**
@@ -365,8 +371,8 @@ export class ENS {
       this._publicResolverContract.setAll(
         this.hashUsername(username),
         address,
-        numberToBytes32(BigNumber.from(0)),
-        numberToBytes32(BigNumber.from(0)),
+        numberToBytes32(BigInt(0)),
+        numberToBytes32(BigInt(0)),
         publicKeyX,
         publicKeyY,
         username,

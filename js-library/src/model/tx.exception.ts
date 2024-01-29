@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers'
 import { EthAddress, HexString } from './hex.types'
 
 export interface TxError {
@@ -23,7 +22,7 @@ export interface TxError {
     data: HexString
     to: EthAddress
     from: EthAddress
-    gasPrice: { type: BigNumber; hex: HexString }
+    gasPrice: { type: bigint; hex: HexString }
     type: number
     nonce: {}
     gasLimit: {}

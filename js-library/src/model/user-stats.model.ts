@@ -1,8 +1,6 @@
-import { BigNumber } from 'ethers'
-
 export interface UserStats {
-  numSubRequests: BigNumber
-  numSubItems: BigNumber
-  numActiveBids: BigNumber
-  numListedSubs: BigNumber
+  numSubRequests: bigint
+  numSubItems: bigint
+  numActiveBids: bigint
+  numListedSubs: bigint
 }

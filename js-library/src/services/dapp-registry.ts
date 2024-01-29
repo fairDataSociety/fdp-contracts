@@ -1,4 +1,12 @@
-import { utils, Contract, providers, BigNumber } from 'ethers'
+import {
+  Contract,
+  JsonRpcProvider,
+  zeroPadValue,
+  keccak256,
+  toBeHex,
+  toUtf8Bytes,
+  ContractRunner,
+} from 'ethers'
 import { DAPP_REGISTRY_ENVIRONMENT_CONFIGS } from '../constants'
 import DappRegistryContractLocal from '../contracts/DappRegistry/DappRegistry.json'
 import RatingsContractLocal from '../contracts/Ratings/Ratings.json'
@@ -12,29 +20,28 @@ import {
 } from '../model'
 import { DappRecord } from '../model/dapp-record.model'
 import { waitTransaction } from '../utils/tx'
-import { SignerOrProvider } from './ens'
 import { Rating } from '../model/rating.model'
 
 export const DappRegistryContract = DappRegistryContractLocal
 export const RatingsContract = RatingsContractLocal
 
-const ADMIN_ROLE = utils.hexZeroPad(utils.hexlify(0), 32)
-const VALIDATOR_ROLE = utils.keccak256(utils.toUtf8Bytes('VALIDATOR_ROLE'))
+const ADMIN_ROLE = zeroPadValue(toBeHex(0), 32)
+const VALIDATOR_ROLE = keccak256(toUtf8Bytes('VALIDATOR_ROLE'))
 
 /**
  * DappRegistry Class
  * Provides interface for interaction with the DappRegistry smart contracts
  */
 export class DappRegistry {
-  private _provider: providers.JsonRpcProvider
+  private _provider: JsonRpcProvider
   private _dappRegistryContract: Contract
   private _ratingsContract: Contract
 
   constructor(
     config: DappRegistryEnvironment = DAPP_REGISTRY_ENVIRONMENT_CONFIGS[Environments.LOCALHOST],
-    signerOrProvider: SignerOrProvider | null = null,
+    contractRunner: ContractRunner | null = null,
   ) {
-    this._provider = new providers.JsonRpcProvider(config.rpcUrl)
+    this._provider = new JsonRpcProvider(config.rpcUrl)
 
     this._dappRegistryContract = new Contract(
       config.dappRegistryAddress,
@@ -44,25 +51,25 @@ export class DappRegistry {
 
     this._ratingsContract = new Contract(config.ratingsAddress, RatingsContract.abi, this._provider)
 
-    if (signerOrProvider) {
-      this.connect(signerOrProvider)
+    if (contractRunner) {
+      this.connect(contractRunner)
     }
   }
 
   /**
    * returns RPC provider
    */
-  public get provider(): providers.JsonRpcProvider {
+  public get provider(): JsonRpcProvider {
     return this._provider
   }
 
   /**
    * Connects signer to the smart contract
-   * @param signerOrProvider An instance of ethers.js Wallet or any other signer
+   * @param contractRunner An instance of ethers.js ContractRunner
    */
-  public connect(signerOrProvider: SignerOrProvider): void {
-    this._dappRegistryContract = this._dappRegistryContract.connect(signerOrProvider)
-    this._ratingsContract = this._ratingsContract.connect(signerOrProvider)
+  public connect(contractRunner: ContractRunner | null): void {
+    this._dappRegistryContract = this._dappRegistryContract.connect(contractRunner) as Contract
+    this._ratingsContract = this._ratingsContract.connect(contractRunner) as Contract
   }
 
   public grantAdminRole(address: EthAddress): Promise<void> {
@@ -109,11 +116,11 @@ export class DappRegistry {
     return this._dappRegistryContract.getValidatedRecords(address)
   }
 
-  public getRecordCount(): Promise<BigNumber> {
+  public getRecordCount(): Promise<bigint> {
     return this._dappRegistryContract.getRecordCount()
   }
 
-  public getRecordSlice(start: BigNumber, length: BigNumber): Promise<RecordHash[]> {
+  public getRecordSlice(start: bigint, length: bigint): Promise<RecordHash[]> {
     return this._dappRegistryContract.getRecordSlice(start, length)
   }
 
@@ -143,7 +150,7 @@ export class DappRegistry {
     return Number.isInteger(averageRating) ? averageRating : 0
   }
 
-  public async getNumberOfRatings(recordLocation: SwarmLocation): Promise<BigNumber> {
+  public async getNumberOfRatings(recordLocation: SwarmLocation): Promise<bigint> {
     return this._ratingsContract.getNumberOfRatings(recordLocation)
   }
 
@@ -161,7 +168,7 @@ export class DappRegistry {
     let timestamp: Date = new Date('')
 
     try {
-      timestamp = new Date((record[7] as BigNumber).toNumber())
+      timestamp = new Date(Number(record[7] as bigint))
     } catch (error) {}
 
     return {
@@ -170,8 +177,8 @@ export class DappRegistry {
       location: record[2] as string,
       urlHash: record[3] as string,
       edited: Boolean(record[4]),
-      index: BigNumber.from(record[5]),
-      creatorIndex: BigNumber.from(record[6]),
+      index: record[5] as bigint,
+      creatorIndex: record[6] as bigint,
       timestamp,
     }
   }

@@ -1,12 +1,8 @@
-import { BigNumber, providers } from 'ethers'
+import { Provider } from 'ethers'
 import { EthAddress } from '../model'
 import { GanacheError, TxError } from '../model/tx.exception'
 
-export async function checkMinBalance(
-  provider: providers.Provider,
-  address: EthAddress,
-  minBalance: BigNumber,
-) {
+export async function checkMinBalance(provider: Provider, address: EthAddress, minBalance: bigint) {
   const balance = await provider.getBalance(address)
   if (balance < minBalance) {
     throw new Error('Not enough funds')
@@ -39,7 +35,7 @@ export function extractMessageFromFailedTx(exception: unknown): string {
     if (isGanacheError(errorBody)) {
       return extractGanacheErrorMessage(errorBody)
     }
-  } else if((exception as GanacheError)?.error?.message){
+  } else if ((exception as GanacheError)?.error?.message) {
     errorBody = (exception as GanacheError)?.error?.message
   } else {
     errorBody = 'Unknown error: ' + JSON.stringify(exception)

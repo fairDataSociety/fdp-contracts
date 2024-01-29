@@ -2,7 +2,7 @@ import { makeChunk, makeSpan } from '@fairdatasociety/bmt-js'
 import { expect } from 'chai'
 import { arrayify, BytesLike, keccak256 } from 'ethers/lib/utils'
 import { ethers } from 'hardhat'
-import { BMTChunk } from '../typechain'
+import { BMTChunk } from '../typechain/index'
 
 describe('chunk', () => {
   const payload = new Uint8Array([1, 2, 3])

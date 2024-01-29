@@ -1,4 +1,4 @@
-import { ContractTransaction, providers } from 'ethers'
+import { ContractTransaction, Provider } from 'ethers'
 import { ServiceRequest } from '../model/service-request.model'
 
 export async function waitTransaction(call: Promise<ContractTransaction>): Promise<void> {
@@ -14,7 +14,7 @@ export async function waitTransaction(call: Promise<ContractTransaction>): Promi
  * @param timeout how much time the function will wait until throws a timeout error
  */
 export async function waitRequestTransaction(
-  provider: providers.Provider,
+  provider: Provider,
   request: ServiceRequest<unknown>,
   sendTx: () => Promise<ContractTransaction>,
   timeout = 30000,

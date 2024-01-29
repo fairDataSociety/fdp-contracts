@@ -1,4 +1,4 @@
-import { BigNumber, Wallet, utils } from 'ethers'
+import { Wallet, utils } from 'ethers'
 import { Environments, SwarmLocation, getDataHubEnvironmentConfig } from '../../'
 import { DataHub } from '../../src/services/data-hub'
 import { toHash, topUpAddress } from '../utils'
@@ -52,7 +52,7 @@ describe('DataHub service tests', () => {
     expect(subscriptions[0].seller).toEqual(wallet.address)
     expect(subscriptions[0].swarmLocation).toEqual(swarmLocation1)
     expect(subscriptions[0].price).toEqual(price)
-    expect(subscriptions[0].daysValid).toEqual(BigNumber.from(daysValid))
+    expect(subscriptions[0].daysValid).toEqual(bigint.from(daysValid))
   })
 
   test('Buyer should be able to get subscription', async () => {

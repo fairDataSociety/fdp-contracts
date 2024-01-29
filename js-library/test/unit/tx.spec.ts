@@ -1,4 +1,4 @@
-import { ContractTransaction, providers } from 'ethers'
+import { ContractTransaction, Provider } from 'ethers'
 import { ServiceRequest } from '../../src/model/service-request.model'
 import { waitRequestTransaction } from '../../src/utils/tx'
 
@@ -10,9 +10,9 @@ describe('tx module tests', () => {
       data: undefined,
     }
 
-    const provider: providers.Provider = {
+    const provider: Provider = {
       waitForTransaction: jest.fn(),
-    } as unknown as providers.Provider
+    } as unknown as Provider
 
     // The first transaction should successfully complete
     provider.waitForTransaction = jest.fn().mockResolvedValue(true)
