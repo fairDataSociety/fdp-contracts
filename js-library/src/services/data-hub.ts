@@ -1,4 +1,4 @@
-import { BigNumber, Contract, providers } from 'ethers'
+import { BigNumber, Contract, providers, utils } from 'ethers'
 import DataHubContractLocal from '../contracts/DataHub/DataHub.json'
 import { DataHubEnvironment, Environments, EthAddress, HexString, SwarmLocation } from '../model'
 import { DATA_HUB_ENVIRONMENT_CONFIGS, ENS_DOMAIN } from '../constants'
@@ -19,8 +19,9 @@ export class DataHub {
     config: DataHubEnvironment = DATA_HUB_ENVIRONMENT_CONFIGS[Environments.LOCALHOST],
     signerOrProvider: SignerOrProvider | null = null,
     private domain = ENS_DOMAIN,
+    connectionConfig?: utils.ConnectionInfo,
   ) {
-    this._provider = new providers.JsonRpcProvider(config.rpcUrl)
+    this._provider = new providers.JsonRpcProvider(connectionConfig || config.rpcUrl)
 
     this._dataHubContract = new Contract(config.dataHubAddress, DataHubContract.abi, this._provider)
 
