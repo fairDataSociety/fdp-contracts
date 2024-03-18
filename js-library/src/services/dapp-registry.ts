@@ -33,8 +33,9 @@ export class DappRegistry {
   constructor(
     config: DappRegistryEnvironment = DAPP_REGISTRY_ENVIRONMENT_CONFIGS[Environments.LOCALHOST],
     signerOrProvider: SignerOrProvider | null = null,
+    connectionConfig?: utils.ConnectionInfo,
   ) {
-    this._provider = new providers.JsonRpcProvider(config.rpcUrl)
+    this._provider = new providers.JsonRpcProvider(connectionConfig || config.rpcUrl)
 
     this._dappRegistryContract = new Contract(
       config.dappRegistryAddress,

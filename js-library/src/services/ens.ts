@@ -64,8 +64,9 @@ export class ENS {
     private config: EnsEnvironment = ENS_ENVIRONMENT_CONFIGS[Environments.LOCALHOST],
     signerOrProvider: SignerOrProvider | null = null,
     private domain = ENS_DOMAIN,
+    connectionConfig?: utils.ConnectionInfo,
   ) {
-    this._provider = new providers.JsonRpcProvider(config.rpcUrl)
+    this._provider = new providers.JsonRpcProvider(connectionConfig || config.rpcUrl)
 
     const { ensRegistry, fdsRegistrar, publicResolver, reverseResolver, nameResolver } =
       config.contractAddresses
