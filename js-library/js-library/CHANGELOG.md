@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.11.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.10.1...fdp-contracts-js-lib-v3.11.0) (2024-03-18)
+
+
+### Features
+
+* rpc config ([#172](https://github.com/fairDataSociety/fdp-contracts/issues/172)) ([7bbd943](https://github.com/fairDataSociety/fdp-contracts/commit/7bbd9439cb31685f50102df72ce8acc8ab25f163))
+
 ## [3.10.1](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.10.0...fdp-contracts-js-lib-v3.10.1) (2024-01-09)
 
 
