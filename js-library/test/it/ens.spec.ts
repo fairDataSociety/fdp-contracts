@@ -1,5 +1,5 @@
 import { Wallet } from 'ethers'
-import { initEns, topUpAddress } from '../utils'
+import { initEns, randomWallet, topUpAddress } from '../utils'
 
 describe('ENS service tests', () => {
   const ens = initEns()
@@ -57,7 +57,7 @@ describe('ENS service tests', () => {
 
   test('Register username with different wallet', async () => {
     const ens2 = initEns()
-    let wallet2 = Wallet.createRandom()
+    let wallet2 = randomWallet()
     wallet2 = wallet2.connect(ens2.provider)
     ens2.connect(wallet2)
     const username2 = 'test_user_2'
