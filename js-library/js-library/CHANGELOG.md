@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.12.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.11.0...fdp-contracts-js-lib-v3.12.0) (2024-03-20)
+
+
+### Features
+
+* bump fdp-play and deploy contracts ([#174](https://github.com/fairDataSociety/fdp-contracts/issues/174)) ([a4d991c](https://github.com/fairDataSociety/fdp-contracts/commit/a4d991ce751b9e6791e2a45d18c08e3686b0ed0a))
+
 ## [3.11.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-js-lib-v3.10.1...fdp-contracts-js-lib-v3.11.0) (2024-03-18)
 
 
