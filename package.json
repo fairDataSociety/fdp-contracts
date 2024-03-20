@@ -71,6 +71,6 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "@fairdatasociety/fdp-play": "^2.0.0"
+    "@fairdatasociety/fdp-play": "^3.0.1"
   }
 }
