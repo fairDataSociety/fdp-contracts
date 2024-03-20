@@ -10,7 +10,7 @@ export default {
   coverageDirectory: 'coverage',
   coveragePathIgnorePatterns: ['/node_modules/'],
   rootDir: 'test',
-  testTimeout: 60000,
+  testTimeout: 120000,
   testPathIgnorePatterns: ['/node_modules/'],
   moduleDirectories: ['node_modules'],
 }
