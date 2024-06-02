@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.11.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v2.10.0...fdp-contracts-main-v2.11.0) (2024-03-20)
+
+
+### Features
+
+* bump fdp-play and deploy contracts ([#174](https://github.com/fairDataSociety/fdp-contracts/issues/174)) ([a4d991c](https://github.com/fairDataSociety/fdp-contracts/commit/a4d991ce751b9e6791e2a45d18c08e3686b0ed0a))
+* **contract-upgrade:** update contract metadata ([53b81c3](https://github.com/fairDataSociety/fdp-contracts/commit/53b81c30ea506c317d929aeb2e504e55075ac3f6))
+* rpc config ([#172](https://github.com/fairDataSociety/fdp-contracts/issues/172)) ([7bbd943](https://github.com/fairDataSociety/fdp-contracts/commit/7bbd9439cb31685f50102df72ce8acc8ab25f163))
+
 ## [2.10.0](https://github.com/fairDataSociety/fdp-contracts/compare/fdp-contracts-main-v2.9.0...fdp-contracts-main-v2.10.0) (2024-01-09)
 
 
